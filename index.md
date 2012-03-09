@@ -6,7 +6,7 @@ title: Moving right along...
 
 ## Come on down to Clevelandtown.
 
-<img src="http://i.imgur.com/9y2p3.jpg" />
+<img src="http://i.imgur.com/yLpgr.jpg" />
 
 ..more coming soon.
 
