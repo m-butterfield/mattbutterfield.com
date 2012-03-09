@@ -1,11 +1,10 @@
 ---
 layout: page
-title: Hello World!
-tagline: Supporting tagline
+title: Moving right along...
 ---
 {% include JB/setup %}
 
-## Come on down to Clevelandtown Everyone!!
+## Come on down to Clevelandtown.
 
 <img src="http://i.imgur.com/9y2p3.jpg" />
 
