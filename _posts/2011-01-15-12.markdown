@@ -1,0 +1,10 @@
+--- 
+date: 2011-01-15 22:46:15 -05:00
+layout: post
+title: Guess what
+wordpress_url: http://mattbutterfield.com/blog/?p=235
+wordpress_id: 235
+---
+<p style="text-align: center;"><img src="http://mattbutterfield.com/blogpics/054.jpg" alt="" /></p>
+<p style="text-align: center;">I now live in Cleveland</p>
+<p><P align "left">&nbsp;</P></p>

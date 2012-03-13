@@ -1,0 +1,13 @@
+--- 
+date: 2008-05-22 10:54:48 -04:00
+layout: post
+title: helloooo
+wordpress_url: http://mattbutterfield.com/blog/?p=3
+wordpress_id: 3
+---
+alright!  thanks to chris I now have my very own sweet "blog" thing.  awesome.
+sooo this is my first post.  n'stuff.
+
+i'm just gonna put up an image here to test this out.  here goes:  <img src="http://mattbutterfield.com/blogpics/001.jpg" alt="" />
+
+weeee!

@@ -1,0 +1,10 @@
+--- 
+date: 2009-03-18 20:17:41 -04:00
+layout: post
+title: update
+wordpress_url: http://mattbutterfield.com/blog/?p=63
+wordpress_id: 63
+---
+Well it is getting relatively warm out again, which is nice.  I also have a job.  Woooo.  And I guess that's pretty much itfor now.  Please enjoy this picture:
+
+<img src="http://www.mattbutterfield.com/blogpics/007.jpg">

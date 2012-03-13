@@ -1,0 +1,26 @@
+--- 
+date: 2011-08-17 14:10:37 -04:00
+layout: post
+title: Ledges
+wordpress_url: http://mattbutterfield.com/blog/?p=383
+wordpress_id: 383
+---
+<p style="text-align: center;"><img src="http://mattbutterfield.com/blogpics/068.jpg" alt="" /></p>
+<p style="text-align: center;"> </p>
+<p><P align "left">&nbsp;</P></p>
+
+<p style="text-align: center;"><img src="http://mattbutterfield.com/blogpics/059.jpg" alt="" /></p>
+<p style="text-align: center;"> </p>
+<p><P align "left">&nbsp;</P></p>
+
+<p style="text-align: center;"><img src="http://mattbutterfield.com/blogpics/060.jpg" alt="" /></p>
+<p style="text-align: center;"> </p>
+<p><P align "left">&nbsp;</P></p>
+
+<p style="text-align: center;"><img src="http://mattbutterfield.com/blogpics/063.jpg" alt="" /></p>
+<p style="text-align: center;"> </p>
+<p><P align "left">&nbsp;</P></p>
+
+<p style="text-align: center;"><img src="http://mattbutterfield.com/blogpics/065.jpg" alt="" /></p>
+<p style="text-align: center;"> </p>
+<p><P align "left">&nbsp;</P></p>
