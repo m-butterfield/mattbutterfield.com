@@ -1,8 +1,0 @@
---- 
-date: 2008-07-14 22:17:50 -04:00
-layout: post
-title: " "
-wordpress_url: http://mattbutterfield.com/blog/?p=21
-wordpress_id: 21
----
-<img SRC="http://farm4.static.flickr.com/3019/2670051192_9828670b1d_o.jpg">
