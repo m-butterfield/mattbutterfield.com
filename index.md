@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Moving right along...
+title: Home
 ---
 {% include JB/setup %}
 

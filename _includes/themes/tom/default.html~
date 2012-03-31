@@ -12,9 +12,6 @@
    <!-- Homepage CSS -->
    <link rel="stylesheet" href="{{ ASSET_PATH }}/css/screen.css" type="text/css" media="screen, projection" />
 
-   <!-- Typekit -->
-   <script type="text/javascript" src="http://use.typekit.com/jpd0pfm.js"></script>
-   <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 </head>
 <body>
 
@@ -31,7 +28,7 @@
     <div class="footer">
       <div class="contact">
         <p>
-          {{ site.author.name }}<br />
+          &copy; {{ site.author.name }} 2012<br />
 	  <a href="http://github.com/{{ site.author.github }}/">github.com/{{ site.author.github }}</a><br />
           <a href='mailto:{{ site.author.email }}'>{{ site.author.email }}</a><br />
           <a href="http://feeds.feedburner.com/{{ site.author.feedburner }}">
