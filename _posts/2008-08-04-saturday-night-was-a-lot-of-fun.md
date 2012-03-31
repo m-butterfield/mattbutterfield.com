@@ -6,29 +6,29 @@ wordpress_url: http://mattbutterfield.com/blog/?p=26
 wordpress_id: 26
 ---
 <p style="text-align: center;"><img class="aligncenter" src="http://farm4.static.flickr.com/3105/2731882231_af6dc2d379_o.jpg" alt="" /></p>
-<p align="left">&nbsp;</p>
+
 
 <p style="text-align: center;"><img class="aligncenter" src="http://farm4.static.flickr.com/3257/2732712694_922f9a96ae_o.jpg" alt="" /></p>
-<p align="left">&nbsp;</p>
+
 
 <p style="text-align: center;"><img class="aligncenter" src="http://farm4.static.flickr.com/3236/2731882909_170ccca4ba_o.jpg" alt="" /></p>
-<p align="left">&nbsp;</p>
+
 
 <p style="text-align: center;"><img class="aligncenter" src="http://farm4.static.flickr.com/3081/2731883333_38f8d8af6d_o.jpg" alt="" /></p>
-<p align="left">&nbsp;</p>
+
 
 <p style="text-align: center;"><img class="aligncenter" src="http://farm4.static.flickr.com/3061/2732713552_7782e444f9_o.jpg" alt="" /></p>
-<p align="left">&nbsp;</p>
+
 
 <p style="text-align: center;"><img class="aligncenter" src="http://farm4.static.flickr.com/3104/2731883671_068ae1ab13_o.jpg" alt="" /></p>
-<p align="left">&nbsp;</p>
+
 
 <p style="text-align: center;"><img class="aligncenter" src="http://farm4.static.flickr.com/3030/2731883865_e85a84fffd_o.jpg" alt="" /></p>
-<p align="left">&nbsp;</p>
+
 
 <p style="text-align: center;"><img class="aligncenter" src="http://farm4.static.flickr.com/3071/2732714076_ea69f6694a_o.jpg" alt="" /></p>
 two flashes went off here.  weird.
-<p align="left">&nbsp;</p>
+
 
 My apologies to anyone who tried to access my site yesterday.  Chris was moving his server and it was down most of the day as a result.  I'm sorry, I should have warned you.  Everything appears to be fine now though.  Whew.  I am getting really frustrated with my job.  I don't think my boss even has my phone number but he keeps telling me that he'll 'call me back' every time I call him.  Also, why do pictures look different (less contrast-y, and slightly desaturated) when viewed in Mozilla as opposed to when I am editing them in Photoshop?  It's kind of annoying.  
 

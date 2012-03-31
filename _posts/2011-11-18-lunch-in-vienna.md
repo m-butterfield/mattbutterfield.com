@@ -7,4 +7,4 @@ wordpress_id: 480
 ---
 <p style="text-align: center;"><img src="http://i.imgur.com/7et3p.jpg" alt="" /></p>
 <p style="text-align: center;"> </p>
-<p><P align "left">&nbsp;</P></p>
+

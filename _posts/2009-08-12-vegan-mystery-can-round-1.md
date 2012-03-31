@@ -19,48 +19,48 @@ Indian food may sound like a poor choice for something to eat during mystery can
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/01.jpg" alt="" /></p>
 <p style="text-align: center;">I decided to go with the big gold can first because it was freaking me out.  This thing was huge.  Ok it was only twice the size of a regular can, but I didn't want to get stuck eating the equivalent of a regular sized can on the last night if it turned out to be bile.  Might as well get it out of the way first.  </p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/03.jpg" alt="" /></p>
 <p style="text-align: center;">Opening...</p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/04.jpg" alt="" /></p>
 <p style="text-align: center;">Awesome.  A 32oz can of whole tomatoes.  It could definitely be worse.  I do like tomatoes...but what the hell am I going to do with all these.</p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/07.jpg" alt="" /></p>
 <p style="text-align: center;">Might as well just pour them in...</p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/08.jpg" alt="" /></p>
 <p style="text-align: center;">Hmmm...</p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/10-1.jpg" alt="" /></p>
 <p style="text-align: center;">Wait a second.  After warming these up in the microwave, adding a little salt and pepper, this actually tastes really really good.  Round one is a success!  This actually greatly improved my sub-par stupidly spicy Indian food!</p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/02.jpg" alt="" /></p>
 <p style="text-align: center;">Chris's can...what could it be?</p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/05.jpg" alt="" /></p>
 <p style="text-align: center;">Loki could not take the suspense!</p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/06.jpg" alt="" /></p>
 <p style="text-align: center;">A nice big can of mushrooms.  Mmmm...</p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/09.jpg" alt="" /></p>
 <p style="text-align: center;">The mushrooms did not mix as well with the Indian food...</p>
-<p><P align "left">&nbsp;</P></p>
+
 
 <p style="text-align: center;"><img src="http://i70.photobucket.com/albums/i115/fireparagon/11-1.jpg" alt="" /></p>
 <p style="text-align: center;">Well he ate most of the required half can although he did put some of it in the fridge for later.  I believe this might be infringing on the rules of mystery can, but I'll let it slide this time.</p>
-<p><P align "left">&nbsp;</P></p>
 
-<p><P align "left">&nbsp;</P></p>
+
+
 
 Well the first night of mystery can was a complete success!  Maybe not so much for Chris...but my meal turned out to be extremely delicious!  Long live mystery can!  Tune in tomorrow for vegan mystery can round two...

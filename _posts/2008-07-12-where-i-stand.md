@@ -14,19 +14,19 @@ Anyways ladies and gents, every day is an adventure.  I found the broken window 
 So now I will quote, if I may, the late Hunter S. Thompson:
 
 "The Edge... there is no honest way to explain it because the only people who really know where it is are the ones who have gone over. The others-the living-are those who pushed their control as far as they felt they could handle it, and then pulled back, or slowed down, or did whatever they had to when it came time to choose between now and later."
-<p align="left">&nbsp;</p>
+
 <p style="text-align: center;">And today I devised a way to bring my camera <em>and</em> my water thing on bike rides.  It is absolutely genius!  Weee!  Now the internets can reap the benefits.  Reap them!:</p>
 <p style="text-align: center;"><img src="http://farm3.static.flickr.com/2420/2660463572_44c0b51af6_o.jpg" alt="" /></p>
 <p style="text-align: center;">The Peugeot.</p>
-<p align="left">&nbsp;</p>
+
 
 <p style="text-align: center;"><img src="http://farm4.static.flickr.com/3202/2659634889_60bd235346_o.jpg" alt="" /></p>
 <p style="text-align: center;">Where one there was a bridge...</p>
-<p align="left">&nbsp;</p>
+
 <p style="text-align: center;"><img class="aligncenter" src="http://farm4.static.flickr.com/3026/2660463330_c53f580b69_o.jpg" alt="" /></p>
 <p style="text-align: center;">...there is now progress.</p>
-<p align="left">&nbsp;</p>
+
 
 <p style="text-align: center;"><img src="http://farm4.static.flickr.com/3092/2659634497_6c92f737d0_o.jpg" alt="" /></p>
 <p style="text-align: center;">Peace of neglect at dusk.</p>
-<p align="left">&nbsp;</p>
+
