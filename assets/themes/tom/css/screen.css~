@@ -87,7 +87,7 @@ ul.posts {
 }
 
 .title {
-  color: #05002E;
+  color: #a00;
   font-weight: bold;
   margin-bottom: 2em;
 }
