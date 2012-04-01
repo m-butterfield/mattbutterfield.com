@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
 <head>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <title>{{ page.title }}</title>
@@ -31,8 +31,8 @@
           &copy; {{ site.author.name }} 2012<br />
 	  <a href="http://github.com/{{ site.author.github }}/">github.com/{{ site.author.github }}</a><br />
           <a href='mailto:{{ site.author.email }}'>{{ site.author.email }}</a><br />
-          <a href="http://feeds.feedburner.com/{{ site.author.feedburner }}">
-          <img src="{{ ASSET_PATH }}/images/rss.png" alt="Subscribe to RSS Feed" /><br />
+          <!-- <a href="http://feeds.feedburner.com/{{ site.author.feedburner }}">
+          <img src="{{ ASSET_PATH }}/images/rss.png" alt="Subscribe to RSS Feed" /><br />-->
         </p>
       </div>
     </div>
