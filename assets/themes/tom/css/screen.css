@@ -87,7 +87,7 @@ ul.posts {
 }
 
 .title {
-  color: #05002E;
+  color: #a00;
   font-weight: bold;
   margin-bottom: 2em;
 }
@@ -124,6 +124,7 @@ ul.posts {
     .site .footer .contact {
       float: left;
       margin-right: 3em;
+      margin-top: 1em;
     }
 
       .site .footer .contact a {
