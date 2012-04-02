@@ -28,7 +28,6 @@ body {
   background-color: white;
   font: 13.34px helvetica, arial, clean, sans-serif;
   *font-size: small;
-  text-align: center;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -36,15 +35,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  margin-bottom: 1em;
+  margin-bottom: 0em;
 }
 
 p {
-  margin: 1em 0;
+  margin: 0.5em 0 1em 0;
 }
 
 a {
   color: #00a;
+  text-decoration: none;
 }
 
 a:hover {
@@ -52,7 +52,7 @@ a:hover {
 }
 
 a:visited {
-  color: #a0a;
+  color: #00a;
 }
 
 table {
@@ -91,11 +91,12 @@ ul.posts {
   font-size: 110%;
   text-align: justify;
   width: 1200px;
-  margin: 3em auto 2em auto;
+  margin: 2em auto 2em auto;
   line-height: 1.5em;
 }
 
 .title {
+  text-align: center;
   color: #a00;
   font-weight: bold;
   margin-bottom: 2em;
@@ -131,9 +132,7 @@ ul.posts {
   }
 
     .site .footer .contact {
-      float: left;
-      margin-right: 3em;
-      margin-top: 1em;
+      text-align: center;
     }
 
       .site .footer .contact a {
@@ -150,6 +149,10 @@ ul.posts {
         border: 0;
       }
 
+  .site .posttext {
+   width: 750px;
+   margin: auto;
+  }
 /*****************************************************************************/
 /*
 /* Posts
@@ -157,7 +160,7 @@ ul.posts {
 /*****************************************************************************/
 
 #post {
-
+  text-align: center;
 }
 
   /* standard */
@@ -197,7 +200,7 @@ ul.posts {
   }
   
  .pagination{
-  height:36px;margin:18px 0;
+  height:36px;margin:18px 470px;
 }
 
  .pagination ul{
@@ -234,7 +237,7 @@ ul.posts {
   
   .pagination .disabled a,.pagination .disabled a:hover{
     background-color:transparent;
-    color:white;
+    color:#AAAAAA;
   }
   
   .pagination .next a{

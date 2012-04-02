@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
 <head>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <title>{{ page.title }}</title>
@@ -19,7 +19,7 @@
     <div class="title">
       <a href="{{ HOME_PATH }}">{{ site.title }}</a>
 
-      <a class="extra" href="{{ BASE_PATH }}{{ site.JB.archive_path }}">Blog</a>
+      <a class="extra" href="{{ BASE_PATH }}{{ site.JB.archive_path }}">Archive</a>
       <a class="extra" href="{{ BASE_PATH }}{{ site.JB.pages_path }}">About</a>
     </div>
   

@@ -11,8 +11,7 @@ pygments: true
 #
 title : MattButterfield.com
 tagline: 
-author :
-  name : Matt Butterfield
+author : Matt Butterfield
   email : deneb150@gmail.com
   github : m-butterfield
   twitter : MadD00dz
@@ -70,6 +69,7 @@ JB :
   # Some JB helpers refer to these paths; change theme here if needed.
   #
   archive_path: /archive.html
+  pages_path: /pages.html
   categories_path : /categories.html
   tags_path : /tags.html
 
