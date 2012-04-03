@@ -11,7 +11,8 @@ pygments: true
 #
 title : MattButterfield.com
 tagline: 
-author : Matt Butterfield
+author :
+  name : Matt Butterfield
   email : deneb150@gmail.com
   github : m-butterfield
   twitter : MadD00dz
