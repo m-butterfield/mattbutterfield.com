@@ -4,5 +4,5 @@ layout: post
 title: 8 a.m. college
 ---
 
-<img alt="college" src="https://s3.amazonaws.com/m-butterfield/photos/20040909_001.jpg" height="375" width="500" />
+<img alt="college" src="http://images.mattbutterfield.com/20040909_001.jpg" height="375" width="500" />
 

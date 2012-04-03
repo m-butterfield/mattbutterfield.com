@@ -133,6 +133,7 @@ ul.posts {
 
     .site .footer .contact {
       text-align: center;
+      margin-top: 1.75em;
     }
 
       .site .footer .contact a {
@@ -150,9 +151,13 @@ ul.posts {
       }
 
   .site .posttext {
-   width: 750px;
-   margin: 1em auto;
+   width: 1000px;
+   margin: 1em auto 3em;
+   font-size: 0.95em;
+   text-align: justify;
   }
+ 
+    
 /*****************************************************************************/
 /*
 /* Posts
@@ -173,7 +178,7 @@ ul.posts {
 
   #post ul,
   #post ol {
-    margin-left: 1.35em;
+    list-style: none;
   }
 
   #post code {
@@ -198,6 +203,11 @@ ul.posts {
   #post pre.terminal code {
     background-color: #333;
   }
+  
+ .comments{
+   width: 1000px;
+   margin: auto;
+ }
   
  .pagination{
   height:36px;margin:18px 470px;
