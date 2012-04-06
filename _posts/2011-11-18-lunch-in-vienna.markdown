@@ -5,6 +5,7 @@ title: Lunch in Vienna
 wordpress_url: http://mattbutterfield.com/blog/?p=480
 wordpress_id: 480
 ---
-<p style="text-align: center;"><img src="http://i.imgur.com/7et3p.jpg" alt="" /></p>
-<p style="text-align: center;"> </p>
+
+<img src="http://images.mattbutterfield.com/20111118_001.jpg" alt="lunch in wien" width="1200px" height="565px"/>
+<p class="posttext"> </p>
 

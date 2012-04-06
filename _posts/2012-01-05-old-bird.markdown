@@ -2,7 +2,7 @@
 date: 2012-01-05 00:38:11 -05:00
 layout: post
 title: Old bird.
-alias: /blog/?p=544
+wordpress_url: http://mattbutterfield.com/blog/?p=544
 wordpress_id: 544
 ---
 

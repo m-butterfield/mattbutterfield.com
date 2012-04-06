@@ -5,6 +5,7 @@ title: Discussions
 wordpress_url: http://mattbutterfield.com/blog/?p=459
 wordpress_id: 459
 ---
-<p style="text-align: center;"><img src="http://i.imgur.com/LrMe8.jpg" alt="" /></p>
-<p style="text-align: center;"> </p>
+
+<img src="http://images.mattbutterfield.com/20111117_001.jpg" alt="airplane discussions" width="1200px" height="549px"/>
+<p class="posttext"> </p>
 
