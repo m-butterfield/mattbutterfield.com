@@ -1,43 +1,82 @@
 #!/usr/bin/env python
 """
-Scrape an Instagram user's feed and store the files on S3
+Scrape my Instagram feed and store the files on S3 if they don't already exist.
 
 """
+import hashlib
 import os
 
+from boto.s3.connection import S3Connection
+from instagram.client import InstagramAPI
 import requests
 
-from instagram.client import InstagramAPI
 
+AWS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 INSTAGRAM_SECRET = os.getenv("INSTAGRAM_CLIENT_SECRET")
 INSTAGRAM_TOKEN = os.getenv("INSTAGRAM_ACCESS_TOKEN")
+
+S3_BUCKET_NAME = "images.mattbutterfield.com"
 
 
 def scrape_images():
     api = InstagramAPI(
         access_token=INSTAGRAM_TOKEN, client_secret=INSTAGRAM_SECRET)
-    next_url = _get_images(api)
+    next_url = _get_images(api, None)
     while next_url:
-        next_url = _get_images(api)
+        next_url = _get_images(api, next_url)
+    print "Done!"
 
 
-def _get_images(api):
-    posts, next_url = api.user_recent_media()
-    for post in posts:
-        if _scrape_image_from_post(post):
-            next_url = None
-            break
+def _get_images(api, next_url):
+    medias, next_url = api.user_recent_media(with_next_url=next_url)
+    for media in medias:
+        url, date = media.get_standard_resolution_url(), media.created_time
+        if _scrape_and_upload_image(url, date) is False:
+            return
     return next_url
 
 
-def _scrape_image_from_post(post):
-    img_data, hash = _download_image(post.get_standard_resolution_url())
+def _scrape_and_upload_image(url, date):
+    img_data, content_type, digest = _get_image_data(url)
+    extension = os.path.splitext(url)[1]
+    return _upload_to_s3(img_data, content_type, digest, date, extension)
 
 
-def _download_image(url):
-    img_data = requests.get(url).content
-    return img_data
+def _upload_to_s3(img_data, content_type, digest, date, extension):
+    bucket = _get_s3_bucket()
+    new_key_name = _determine_key_name(bucket, digest, date, extension)
+    if not new_key_name:
+        return False
+    print "Uploading new key: " + new_key_name
+    key = bucket.new_key(new_key_name)
+    key.set_contents_from_string(
+        img_data, headers={"Content-Type": content_type}, policy='public-read')
+
+
+def _determine_key_name(bucket, digest, date, extension):
+    date_str = date.strftime("%Y%m%d")
+    counter = 1
+    for key in bucket.list(date_str):
+        counter += 1
+        if key.etag.replace('"', "") == digest:
+            print "Found duplicate: " + key.name + " stopping..."
+            return None
+    return "{date}_{0:03}{ext}".format(counter, date=date_str, ext=extension)
+
+
+def _get_s3_bucket():
+    s3_conn = S3Connection(AWS_KEY, AWS_SECRET)
+    return s3_conn.get_bucket(S3_BUCKET_NAME)
+
+
+def _get_image_data(url):
+    response = requests.get(url)
+    img_data = response.content
+    content_type = response.headers.get('content-type')
+    return img_data, content_type, hashlib.md5(img_data).hexdigest()
+
 
 if __name__ == '__main__':
     scrape_images()
