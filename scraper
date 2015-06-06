@@ -5,21 +5,39 @@ Scrape an Instagram user's feed and store the files on S3
 """
 import os
 
+import requests
+
 from instagram.client import InstagramAPI
 
 
-CLIENT_SECRET = os.getenv("INSTAGRAM_CLIENT_SECRET")
-ACCESS_TOKEN = os.getenv("INSTAGRAM_ACCESS_TOKEN")
+INSTAGRAM_SECRET = os.getenv("INSTAGRAM_CLIENT_SECRET")
+INSTAGRAM_TOKEN = os.getenv("INSTAGRAM_ACCESS_TOKEN")
 
 
-def main():
-    api = InstagramAPI(access_token=ACCESS_TOKEN, client_secret=CLIENT_SECRET)
-    posts, next_url = api.user_recent_media()
-    urls = [p.get_standard_resolution_url() for p in posts]
+def scrape_images():
+    api = InstagramAPI(
+        access_token=INSTAGRAM_TOKEN, client_secret=INSTAGRAM_SECRET)
+    next_url = _get_images(api)
     while next_url:
-        posts, next_url = api.user_recent_media(with_next_url=next_url)
-        urls += [p.get_standard_resolution_url() for p in posts]
+        next_url = _get_images(api)
 
+
+def _get_images(api):
+    posts, next_url = api.user_recent_media()
+    for post in posts:
+        if _scrape_image_from_post(post):
+            next_url = None
+            break
+    return next_url
+
+
+def _scrape_image_from_post(post):
+    img_data, hash = _download_image(post.get_standard_resolution_url())
+
+
+def _download_image(url):
+    img_data = requests.get(url).content
+    return img_data
 
 if __name__ == '__main__':
-    main()
+    scrape_images()
