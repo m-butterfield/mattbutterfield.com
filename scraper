@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+"""
+Scrape an Instagram user's feed and store the files on S3
+
+"""
+import os
+
+from instagram.client import InstagramAPI
+
+
+CLIENT_SECRET = os.getenv("INSTAGRAM_CLIENT_SECRET")
+ACCESS_TOKEN = os.getenv("INSTAGRAM_ACCESS_TOKEN")
+
+
+def main():
+    api = InstagramAPI(access_token=ACCESS_TOKEN, client_secret=CLIENT_SECRET)
+    posts, next_url = api.user_recent_media()
+    urls = [p.get_standard_resolution_url() for p in posts]
+    while next_url:
+        media, next_url = api.user_recent_media(with_next_url=next_url)
+        urls += [p.get_standard_resolution_url() for p in posts]
+    print urls
+
+
+if __name__ == '__main__':
+    main()
