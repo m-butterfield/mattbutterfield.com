@@ -17,9 +17,8 @@ def main():
     posts, next_url = api.user_recent_media()
     urls = [p.get_standard_resolution_url() for p in posts]
     while next_url:
-        media, next_url = api.user_recent_media(with_next_url=next_url)
+        posts, next_url = api.user_recent_media(with_next_url=next_url)
         urls += [p.get_standard_resolution_url() for p in posts]
-    print urls
 
 
 if __name__ == '__main__':
