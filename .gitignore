@@ -12,3 +12,6 @@ Thumbs.db
 *.swp
 *~
 .directory
+
+.idea
+
