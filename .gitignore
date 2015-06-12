@@ -1,2 +1,7 @@
+*.pyc
+
+app.db
+
 .idea
+
 
