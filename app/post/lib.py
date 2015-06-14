@@ -2,10 +2,11 @@
 Helpers for post models/resources
 
 """
+from urlparse import urlunsplit
+
 from flask_restful import fields
 
-
-IMAGE_URL_BASE = 'http://images.mattbutterfield.com/post_images/{}.jpg'
+from app import app
 
 
 class ImageUrlField(fields.Raw):
@@ -15,4 +16,13 @@ class ImageUrlField(fields.Raw):
     """
 
     def output(self, key, obj):
-        return IMAGE_URL_BASE.format(obj.id)
+        return _build_image_url(obj.id)
+
+
+def _build_image_url(image_id):
+    return urlunsplit((
+        app.config['PREFERRED_URL_SCHEME'],
+        app.config['S3_IMAGE_BUCKET'],
+        "{}/{}.jpg".format(app.config['S3_IMAGE_FOLDER'], image_id),
+        None,
+        None))
