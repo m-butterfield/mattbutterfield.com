@@ -14,5 +14,7 @@ class BaseTest(TestCase):
     def setUpClass(cls):
         if not app.config['TESTING']:
             raise EnvironmentError("Only run tests in a testing environment!")
+        db.session.expunge_all()
         db.drop_all()
         db.create_all()
+        cls.client = app.test_client()

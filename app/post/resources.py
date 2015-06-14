@@ -10,7 +10,7 @@ from app.post.lib import ImageUrlField
 
 
 post_fields = {
-    'id': fields.Integer,
+    'id': fields.String,
     'text': fields.String,
     'image_url': ImageUrlField,
 }
