@@ -1,5 +1,5 @@
 """
-Tests for post/api.py
+Tests for post/resources.py
 
 """
 import json
