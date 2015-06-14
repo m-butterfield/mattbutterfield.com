@@ -2,7 +2,7 @@
 Resources for Posts
 
 """
-from flask_restful import fields, marshal_with, Resource
+from flask.ext.restful import fields, marshal_with, Resource
 
 from app import db
 from app.post.models import Post
