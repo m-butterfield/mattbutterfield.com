@@ -34,38 +34,28 @@ def _scrape_images():
 def _get_posts(api, bucket, next_url):
     medias, next_url = api.user_recent_media(with_next_url=next_url)
     for media in medias:
-        url, date = media.get_standard_resolution_url(), media.created_time
-        if _scrape_and_upload_image(url, date, bucket) is False:
+        url = media.get_standard_resolution_url()
+        if _scrape_and_upload_image(url, bucket) is False:
             return
     return next_url
 
 
-def _scrape_and_upload_image(url, date, bucket):
+def _scrape_and_upload_image(url, bucket):
     img_data, content_type, digest = _get_image_data(url)
     extension = os.path.splitext(url)[1]
-    return _upload_to_s3(
-        bucket, img_data, content_type, digest, date, extension)
+    return _upload_to_s3(bucket, img_data, content_type, digest, extension)
 
 
-def _upload_to_s3(bucket, img_data, content_type, digest, date, extension):
-    new_key_name = _determine_key_name(bucket, digest, date, extension)
-    if not new_key_name:
-        return False
-    print "Uploading new key: " + new_key_name
-    key = bucket.new_key(new_key_name)
+def _upload_to_s3(bucket, img_data, content_type, digest, extension):
+    key_name = os.path.join(app.config['S3_IMAGE_FOLDER'], digest + extension)
+    key = bucket.get_key(key_name)
+    if key:
+        print "Key {} already exists, skipping.".format(key_name)
+        return
+    print "Uploading new key: " + key_name
+    key = bucket.new_key(key_name)
     key.set_contents_from_string(
         img_data, headers={"Content-Type": content_type}, policy='public-read')
-
-
-def _determine_key_name(bucket, digest, date, extension):
-    date_str = date.strftime("%Y%m%d")
-    counter = 1
-    for key in bucket.list(date_str):
-        counter += 1
-        if key.etag.replace('"', "") == digest:
-            print "Found duplicate: " + key.name + " stopping..."
-            return None
-    return "{date}_{0:03}{ext}".format(counter, date=date_str, ext=extension)
 
 
 def _get_s3_bucket():
