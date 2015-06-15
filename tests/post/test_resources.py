@@ -4,7 +4,9 @@ Tests for post/resources.py
 """
 import json
 
-from app.post import api as post_api
+from flask.ext.restful import marshal
+
+from app.post.resources import POST_FIELDS
 
 from tests.post.lib import PostTestBase
 
@@ -12,5 +14,10 @@ from tests.post.lib import PostTestBase
 class PostResourceTestCase(PostTestBase):
 
     def test_get(self):
-        resp = json.loads(self.client.get('/api/post/' + self.post_id).data)
-        self.assertEqual(post_api.get(self.post_id).id, resp['id'])
+        resp = self.client.get('/api/post/' + self.post_id)
+        self.assertEqual(
+            marshal(self.post, POST_FIELDS), json.loads(resp.data))
+
+    def test_get_404(self):
+        resp = self.client.get('/api/post/bogus_id')
+        self.assertEqual(resp.status_code, 404)
