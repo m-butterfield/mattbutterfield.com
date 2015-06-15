@@ -7,8 +7,7 @@ import json
 from flask.ext.restful import marshal
 
 from app.post.resources import POST_FIELDS
-
-from tests.post.lib import PostTestBase
+from app.tests.post.lib import PostTestBase
 
 
 class PostResourceTestCase(PostTestBase):

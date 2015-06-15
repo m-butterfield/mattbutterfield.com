@@ -5,8 +5,7 @@ Helpers for Post tests
 from datetime import datetime
 
 from app.post import api as post_api
-
-from tests.lib import BaseTest
+from app.tests.lib import BaseTest
 
 
 class PostTestBase(BaseTest):

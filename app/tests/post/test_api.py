@@ -5,8 +5,7 @@ Tests for post/api.py
 from datetime import datetime
 
 from app.post import api as post_api
-
-from tests.post.lib import PostTestBase
+from app.tests.post.lib import PostTestBase
 
 
 class PostAPITestCase(PostTestBase):

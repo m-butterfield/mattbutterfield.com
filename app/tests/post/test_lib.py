@@ -6,7 +6,7 @@ from datetime import datetime
 
 from app.post import api as post_api
 from app.post.lib import ImageUrlField
-from tests.lib import BaseTest
+from app.tests.lib import BaseTest
 
 
 class ImageUrlFieldTestCase(BaseTest):
