@@ -21,6 +21,10 @@ class Post(db.Model):
 
     @property
     def image_url(self):
+        """
+        Build a url for this post's image on S3 based on its image_uri
+
+        """
         return urlunsplit((
             app.config['S3_URL_SCHEME'],
             app.config['S3_IMAGE_BUCKET'],

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-Scrape my Instagram feed, create posts and store the files on S3 if they don't
-already exist.
+Scrape my Instagram feed, store new posts in the database, and upload images
+to S3 if they don't already exist.
 
 """
 import hashlib
