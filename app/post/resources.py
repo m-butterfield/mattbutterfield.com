@@ -11,7 +11,10 @@ from app.post.models import Post
 POST_FIELDS = {
     'id': fields.String,
     'text': fields.String,
+    'created_at': fields.DateTime,
     'image_url': fields.String,
+    'next_post_id': fields.String(attribute='next_post.id'),
+    'previous_post_id': fields.String(attribute='previous_post.id'),
 }
 
 

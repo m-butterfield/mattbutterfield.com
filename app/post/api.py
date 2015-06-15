@@ -2,7 +2,7 @@
 Api for using Post objects
 
 """
-from sqlite3 import IntegrityError
+from sqlalchemy.exc import IntegrityError
 
 from app import db
 from app.post.models import Post
@@ -49,6 +49,7 @@ def get_or_create(post_id, image_uri, created_at, text=None):
     try:
         db.session.commit()
     except IntegrityError:
+        db.session.rollback()
         return get(post_id), False
 
     return post, True

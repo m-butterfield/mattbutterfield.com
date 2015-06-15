@@ -31,3 +31,23 @@ class Post(db.Model):
             os.path.join(app.config['S3_IMAGE_FOLDER'], self.image_uri),
             None,
             None))
+
+    @property
+    def next_post(self):
+        """
+        Return the next most recently created post or None
+
+        """
+        return (db.session.query(Post)
+                .filter(Post.created_at > self.created_at)
+                .order_by(Post.created_at).first())
+
+    @property
+    def previous_post(self):
+        """
+        Return the next oldest created post or None
+
+        """
+        return (db.session.query(Post)
+                .filter(Post.created_at < self.created_at)
+                .order_by(Post.created_at.desc()).first())
