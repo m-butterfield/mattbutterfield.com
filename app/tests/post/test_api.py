@@ -15,5 +15,5 @@ class PostAPITestCase(PostTestBase):
 
     def test_create(self):
         post_id2 = "post_id2"
-        post = post_api.create(post_id2, "image_id", datetime.now())
+        post, _ = post_api.get_or_create(post_id2, "image_uri", datetime.now())
         self.assertEqual(post_id2, post.id)

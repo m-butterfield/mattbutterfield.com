@@ -2,6 +2,8 @@
 Api for using Post objects
 
 """
+from sqlite3 import IntegrityError
+
 from app import db
 from app.post.models import Post
 
@@ -20,26 +22,33 @@ def get(post_id):
     return db.session.query(Post).get(post_id)
 
 
-def create(post_id, image_id, created_at, text=None):
+def get_or_create(post_id, image_uri, created_at, text=None):
     """
     Create a new Post
 
     Args:
         id (str): Id of the new post
-        image_id (str): Image id for this post
+        image_uri (str): Image uri for this post
         created_at (Datetime): The date this post was created
 
     Kwargs:
         text (str): The text of the post
 
     Returns:
-        Post: The newly created Post object
+        tuple(Post, bool): The newly created Post object, whether it was
+            created or not
 
     """
     post = Post(id=post_id,
-                image_id=image_id,
+                image_uri=image_uri,
                 created_at=created_at,
                 text=text)
+
     db.session.add(post)
-    db.session.commit()
-    return post
+
+    try:
+        db.session.commit()
+    except IntegrityError:
+        return get(post_id), False
+
+    return post, True

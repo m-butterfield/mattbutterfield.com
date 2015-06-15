@@ -6,13 +6,12 @@ from flask.ext.restful import abort, fields, marshal_with, Resource
 
 from app import db
 from app.post.models import Post
-from app.post.lib import ImageUrlField
 
 
 POST_FIELDS = {
     'id': fields.String,
     'text': fields.String,
-    'image_url': ImageUrlField,
+    'image_url': fields.String,
 }
 
 
