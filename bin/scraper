@@ -41,8 +41,7 @@ def _get_posts(api, bucket, next_url):
 
 
 def _scrape_and_upload_image(url, bucket):
-    img_data, content_type, digest = _get_image_data(url)
-    extension = os.path.splitext(url)[1]
+    img_data, content_type, digest, extension = _get_image_data(url)
     return _upload_to_s3(bucket, img_data, content_type, digest, extension)
 
 
@@ -58,16 +57,18 @@ def _upload_to_s3(bucket, img_data, content_type, digest, extension):
         img_data, headers={"Content-Type": content_type}, policy='public-read')
 
 
-def _get_s3_bucket():
-    s3_conn = S3Connection(AWS_KEY, AWS_SECRET)
-    return s3_conn.get_bucket(app.config['S3_IMAGE_BUCKET'])
-
-
 def _get_image_data(url):
     response = requests.get(url)
     img_data = response.content
     content_type = response.headers.get('content-type')
-    return img_data, content_type, hashlib.md5(img_data).hexdigest()
+    digest = hashlib.md5(img_data).hexdigest()
+    extension = os.path.splitext(url)[1]
+    return img_data, content_type, digest, extension
+
+
+def _get_s3_bucket():
+    s3_conn = S3Connection(AWS_KEY, AWS_SECRET)
+    return s3_conn.get_bucket(app.config['S3_IMAGE_BUCKET'])
 
 
 if __name__ == '__main__':
