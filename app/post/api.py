@@ -53,3 +53,14 @@ def get_or_create(post_id, image_uri, created_at, text=None):
         return get(post_id), False
 
     return post, True
+
+
+def get_most_recent_post():
+    """
+    Get the most recently created post
+
+    Returns:
+        Post: The most recently created post object or None
+
+    """
+    return db.session.query(Post).order_by(Post.created_at.desc()).first()

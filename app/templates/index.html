@@ -5,6 +5,37 @@
         <title>mattbutterfield.com</title>
     </head>
     <body>
-        Hello
+        <div id="post-content"></div>
+        <script type="text/template" id="post-template">
+            <img src="<%= image_url %>" />
+            <p><%= text %></p>
+        </script>
+        <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='vendor/underscore/underscore-min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='vendor/backbone/backbone-min.js') }}"></script>
+        <script>
+            (function() {
+                var Post = Backbone.Model.extend();
+
+                var PostView = Backbone.View.extend({
+                    el: '#post-content',
+
+                    template: _.template($('#post-template').html()),
+
+                    initialize: function(data) {
+                        this.postData = data.data;
+                        this.model = new Post(this.postData);
+                    },
+
+                    render: function(){
+                        this.$el.html(this.template(this.model.attributes));
+                    }
+                });
+
+                var postData = {{ post|safe }};
+                var postView = new PostView(postData);
+                postView.render()
+            })();
+        </script>
     </body>
 </html>
