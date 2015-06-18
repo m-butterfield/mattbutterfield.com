@@ -10,10 +10,10 @@
             <img src="<%= image_url %>" />
             <p><%= text %></p>
             <% if (next_url) { %>
-                <a href="<%= next_url %>">Next</a>
+                <a class="page-button" href="<%= next_url %>">Next</a>
             <% } %>
             <% if (previous_url) { %>
-                <a href="<%= previous_url %>">Previous</a>
+                <a class="page-button" href="<%= previous_url %>">Previous</a>
             <% } %>
         </script>
         <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
@@ -21,29 +21,36 @@
         <script type="text/javascript" src="{{ url_for('static', filename='vendor/backbone/backbone-min.js') }}"></script>
         <script>
             (function() {
-                var Post = Backbone.Model.extend({
-                    urlRoot: "/post/"
-                });
+                var Post = Backbone.Model.extend();
 
                 var PostView = Backbone.View.extend({
                     el: '#post-content',
 
+                    events: {
+                        "click .page-button": "loadPost"
+                    },
+
                     template: _.template($('#post-template').html()),
 
-                    initialize: function(postData) {
-                        this.postData = postData.data;
+                    initialize: function(options) {
+                        this.postData = options.postData;
+                        this.paginationData = options.paginationData;
+                        this.router = options.router;
                         this.model = new Post(this.postData);
-                        this.paginationData = postData.pagination;
                     },
 
                     getPaginationUrls: function() {
-                        var urlRoot = this.model.urlRoot;
+                        var postUrl = "/post/";
                         var next_id = this.paginationData['next_post_id'];
                         var previous_id = this.paginationData['previous_post_id'];
                         return {
-                            "next_url": (urlRoot + next_id) ? next_id : null,
-                            "previous_url": (urlRoot + previous_id) ? previous_id : null
+                            "next_url": next_id ? (postUrl + next_id) : null,
+                            "previous_url": previous_id ? (postUrl + previous_id) : null
                         }
+                    },
+
+                    loadPost: function(event) {
+
                     },
 
                     render: function(){
@@ -52,9 +59,34 @@
                     }
                 });
 
+                var Router = Backbone.Router.extend({
+                    routes: {
+                        "post/:postId": 'loadPost',
+                        "": "defaultRoute"
+                    },
+
+                    initialize: function(options) {
+                        this.postView = new PostView({
+                            postData: options.postData.data,
+                            paginationData: options.postData.pagination,
+                            router: this
+                        });
+                    },
+
+                    defaultRoute: function() {
+                        this.postView.render();
+                    },
+
+                    loadPost: function(postId) {
+
+                    }
+                });
+
                 var postData = {{ post|safe }};
-                var postView = new PostView(postData);
-                postView.render()
+                new Router({postData: postData});
+
+                Backbone.history.start({pushState: true});
+
             })();
         </script>
     </body>
