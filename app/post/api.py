@@ -49,13 +49,17 @@ def get_or_create(post_id, image_uri, created_at, text=None):
     try:
         db.session.flush()
     except IntegrityError:
-        post = get(post_id), False
+        db.session.rollback()
+        created = False
+        post = get(post_id)
+    else:
+        created = True
 
     _update_post_links(post)
 
     db.session.commit()
 
-    return post, True
+    return post, created
 
 
 def _update_post_links(post):
