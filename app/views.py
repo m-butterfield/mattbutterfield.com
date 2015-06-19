@@ -8,7 +8,8 @@ from flask import render_template
 
 from app import app
 from app.post import api as post_api
-from app.post.resources import get_post_or_404, serialize_post
+from app.post.lib import get_post_or_404
+from app.post.resources import serialize_post
 
 
 @app.route('/')

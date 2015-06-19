@@ -2,37 +2,45 @@
 Resources for Posts
 
 """
-from flask.ext.restful import abort, fields, marshal, Resource
+from flask.ext.restful import fields, marshal, Resource
 
-from app import db
-from app.post.models import Post
+from app.post.lib import get_post_or_404, MethodField
 
-POST_PAGINATION_FIELDS = {
-    'next_post_id': fields.String(attribute='next_post.id'),
-    'previous_post_id': fields.String(attribute='previous_post.id'),
-}
+
+def _next_post_url(post):
+    next_post = post.next_post
+    if next_post:
+        return '/post/{}'.format(next_post.id)
+
+
+def _previous_post_url(post):
+    previous_post = post.previous_post
+    if previous_post:
+        return '/post/{}'.format(post.previous_post.id)
+
 
 POST_FIELDS = {
     'id': fields.String,
     'text': fields.String,
     'created_at': fields.DateTime,
     'image_url': fields.String,
+    'next_post_url': MethodField(_next_post_url),
+    'previous_post_url': MethodField(_previous_post_url),
 }
 
+
 def serialize_post(post):
-    data = marshal(post, POST_PAGINATION_FIELDS, envelope='pagination')
-    data.update(marshal(post, POST_FIELDS, envelope='data'))
-    return data
+    """
+    Serialize a Post object
 
-
-def get_post_or_404(post_id):
-    post = db.session.query(Post).get(post_id)
-    if not post:
-        abort(404, message="Post {} not found".format(post_id))
-    return post
+    """
+    return marshal(post, POST_FIELDS)
 
 
 class PostResource(Resource):
+    """
+    Api Resource for posts
 
+    """
     def get(self, post_id):
         return serialize_post(get_post_or_404(post_id))

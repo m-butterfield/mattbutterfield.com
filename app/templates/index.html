@@ -9,11 +9,11 @@
         <script type="text/template" id="post-template">
             <img src="<%= image_url %>" />
             <p><%= text %></p>
-            <% if (next_url) { %>
-                <a class="page-button" href="<%= next_url %>">Next</a>
+            <% if (next_post_url) { %>
+                <a class="page-button" href="<%= next_post_url %>">Next</a>
             <% } %>
-            <% if (previous_url) { %>
-                <a class="page-button" href="<%= previous_url %>">Previous</a>
+            <% if (previous_post_url) { %>
+                <a class="page-button" href="<%= previous_post_url %>">Previous</a>
             <% } %>
         </script>
         <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
@@ -21,40 +21,36 @@
         <script type="text/javascript" src="{{ url_for('static', filename='vendor/backbone/backbone-min.js') }}"></script>
         <script>
             (function() {
-                var Post = Backbone.Model.extend();
+                var Post = Backbone.Model.extend({
+                    urlRoot: "/api/post"
+                });
 
                 var PostView = Backbone.View.extend({
                     el: '#post-content',
 
                     events: {
-                        "click .page-button": "loadPost"
+                        "click .page-button": "page"
                     },
 
                     template: _.template($('#post-template').html()),
 
                     initialize: function(options) {
-                        this.postData = options.postData;
-                        this.paginationData = options.paginationData;
+                        this.model = new Post(options.postData);
                         this.router = options.router;
-                        this.model = new Post(this.postData);
+                        this.listenTo(this.model, 'sync', this.render);
                     },
 
-                    getPaginationUrls: function() {
-                        var postUrl = "/post/";
-                        var next_id = this.paginationData['next_post_id'];
-                        var previous_id = this.paginationData['previous_post_id'];
-                        return {
-                            "next_url": next_id ? (postUrl + next_id) : null,
-                            "previous_url": previous_id ? (postUrl + previous_id) : null
-                        }
+                    page: function(event) {
+                        event.preventDefault();
+                        this.router.navigate(event.target.getAttribute('href'), {trigger: true});
                     },
 
-                    loadPost: function(event) {
-
+                    updatePost: function(postId) {
+                        this.model.set('id', postId);
+                        this.model.fetch({reset: true});
                     },
 
                     render: function(){
-                        var data = _.extend(this.model.attributes, this.getPaginationUrls());
                         this.$el.html(this.template(this.model.attributes));
                     }
                 });
@@ -67,8 +63,7 @@
 
                     initialize: function(options) {
                         this.postView = new PostView({
-                            postData: options.postData.data,
-                            paginationData: options.postData.pagination,
+                            postData: options.postData,
                             router: this
                         });
                     },
@@ -78,7 +73,11 @@
                     },
 
                     loadPost: function(postId) {
-                        this.postView.render();
+                        if (postId !== this.postView.model.id) {
+                            this.postView.updatePost(postId);
+                        } else {
+                            this.postView.render();
+                        }
                     }
                 });
 
@@ -86,7 +85,6 @@
                 new Router({postData: postData});
 
                 Backbone.history.start({pushState: true});
-
             })();
         </script>
     </body>
