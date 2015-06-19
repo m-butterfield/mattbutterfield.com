@@ -47,12 +47,37 @@ def get_or_create(post_id, image_uri, created_at, text=None):
     db.session.add(post)
 
     try:
-        db.session.commit()
+        db.session.flush()
     except IntegrityError:
-        db.session.rollback()
-        return get(post_id), False
+        post = get(post_id), False
+
+    _update_post_links(post)
+
+    db.session.commit()
 
     return post, True
+
+
+def _update_post_links(post):
+    next_post = _get_next_post(post)
+    previous_post = _get_previous_post(post)
+    if next_post:
+        post.next_post_id = next_post.id
+        next_post.previous_post_id = post.id
+    if previous_post:
+        post.previous_post_id = previous_post.id
+        previous_post.next_post_id = post.id
+
+
+def _get_next_post(post):
+    return (db.session.query(Post)
+            .filter(Post.created_at > post.created_at)
+            .order_by(Post.created_at).first())
+
+def _get_previous_post(post):
+    return (db.session.query(Post)
+            .filter(Post.created_at < post.created_at)
+            .order_by(Post.created_at.desc()).first())
 
 
 def get_most_recent_post():

@@ -6,7 +6,7 @@ import json
 
 from flask.ext.restful import marshal
 
-from app.post.resources import POST_FIELDS
+from app.post.lib import POST_FIELDS
 from app.tests.post.lib import PostTestBase
 
 

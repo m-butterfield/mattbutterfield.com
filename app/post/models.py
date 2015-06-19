@@ -18,6 +18,10 @@ class Post(db.Model):
     image_uri = db.Column(db.String, nullable=False)
     text = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False)
+    previous_post_id = db.Column(
+        db.String, db.ForeignKey('post.id'), nullable=True)
+    next_post_id = db.Column(
+        db.String, db.ForeignKey('post.id'), nullable=True)
 
     @property
     def image_url(self):
@@ -31,23 +35,3 @@ class Post(db.Model):
             os.path.join(app.config['S3_IMAGE_FOLDER'], self.image_uri),
             None,
             None))
-
-    @property
-    def next_post(self):
-        """
-        Return the next most recently created post or None
-
-        """
-        return (db.session.query(Post)
-                .filter(Post.created_at > self.created_at)
-                .order_by(Post.created_at).first())
-
-    @property
-    def previous_post(self):
-        """
-        Return the next oldest created post or None
-
-        """
-        return (db.session.query(Post)
-                .filter(Post.created_at < self.created_at)
-                .order_by(Post.created_at.desc()).first())

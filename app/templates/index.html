@@ -9,11 +9,11 @@
         <script type="text/template" id="post-template">
             <img src="<%= image_url %>" />
             <p><%= text %></p>
-            <% if (next_post_url) { %>
-                <a class="page-button" href="<%= next_post_url %>">Next</a>
+            <% if (next_post_id) { %>
+                <a class="page-button" href="/post/<%= next_post_id %>">Next</a>
             <% } %>
-            <% if (previous_post_url) { %>
-                <a class="page-button" href="<%= previous_post_url %>">Previous</a>
+            <% if (previous_post_id) { %>
+                <a class="page-button" href="/post/<%= previous_post_id %>">Previous</a>
             <% } %>
         </script>
         <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>

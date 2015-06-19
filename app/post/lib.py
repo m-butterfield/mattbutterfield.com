@@ -1,33 +1,42 @@
 """
-Helpers for Posts
+Shared helper code for Posts
 
 """
-from flask.ext.restful import abort, fields
+from flask.ext.restful import abort, fields, marshal
 
 from app.post import api as post_api
 
 
-class MethodField(fields.Raw):
+POST_FIELDS = {
+    'id': fields.String,
+    'text': fields.String,
+    'created_at': fields.DateTime,
+    'image_url': fields.String,
+    'next_post_id': fields.String,
+    'previous_post_id': fields.String,
+}
+
+
+def serialize_post(post):
     """
-    A field which accepts a callable object to extract and format data from
-    an object in a custom way.  The callable should expect one argument, the
-    object being serialized.
+    Serialize a Post object
+
+    Args:
+        post (Post): The Post object to serialize
 
     """
-
-    def __init__(self, callable, **kwargs):
-        self.callable = callable
-        super(MethodField, self).__init__(**kwargs)
-
-    def output(self, key, obj):
-        return self.callable(obj)
+    return marshal(post, POST_FIELDS)
 
 
 def get_post_or_404(post_id):
+    """
+    Attempt to fetch a Post from the database. Abort with a 404 if not found.
+
+    Args:
+        post_id (str): The id of the Post
+
+    """
     post = post_api.get(post_id)
     if not post:
         abort(404, message="Post {} not found".format(post_id))
     return post
-
-
-
