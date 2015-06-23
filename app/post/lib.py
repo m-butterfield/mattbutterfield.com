@@ -12,6 +12,8 @@ POST_FIELDS = {
     'text': fields.String,
     'created_at': fields.DateTime,
     'image_url': fields.String,
+    'image_width': fields.Integer,
+    'image_height': fields.Integer,
     'next_post_id': fields.String,
     'previous_post_id': fields.String,
 }

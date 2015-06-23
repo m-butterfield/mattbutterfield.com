@@ -16,6 +16,8 @@ class Post(db.Model):
 
     id = db.Column(db.String, primary_key=True)
     image_uri = db.Column(db.String, nullable=False)
+    image_width = db.Column(db.Integer, nullable=False)
+    image_height = db.Column(db.Integer, nullable=False)
     text = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False)
     previous_post_id = db.Column(

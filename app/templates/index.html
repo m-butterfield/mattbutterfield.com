@@ -7,7 +7,7 @@
     <body>
         <div id="post-content"></div>
         <script type="text/template" id="post-template">
-            <img src="<%= image_url %>" />
+            <img src="<%= image_url %>" width="<%= image_width %>" height="<%= image_height %>"/>
             <p><%= text %></p>
             <% if (next_post_id) { %>
                 <a class="page-button" href="/post/<%= next_post_id %>">Next</a>
