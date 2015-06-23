@@ -22,7 +22,12 @@ def get(post_id):
     return db.session.query(Post).get(post_id)
 
 
-def get_or_create(post_id, image_uri, created_at, text=None):
+def get_or_create(post_id,
+                  image_uri,
+                  created_at,
+                  image_width,
+                  image_height,
+                  text=None):
     """
     Create a new Post
 
@@ -30,6 +35,8 @@ def get_or_create(post_id, image_uri, created_at, text=None):
         id (str): Id of the new post
         image_uri (str): Image uri for this post
         created_at (Datetime): The date this post was created
+        image_width (int): Width of the image for this post
+        image_height (int): Height of the image for this post
 
     Kwargs:
         text (str): The text of the post
@@ -42,6 +49,8 @@ def get_or_create(post_id, image_uri, created_at, text=None):
     post = Post(id=post_id,
                 image_uri=image_uri,
                 created_at=created_at,
+                image_width=image_width,
+                image_height=image_height,
                 text=text)
 
     db.session.add(post)

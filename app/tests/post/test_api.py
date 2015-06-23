@@ -16,7 +16,7 @@ class PostAPITestCase(PostTestBase):
     def test_create(self):
         new_post_id = "new_post"
         post, _ = post_api.get_or_create(
-            new_post_id, "new_image_uri", datetime.now())
+            new_post_id, "new_image_uri", datetime.now(), 640, 640)
         self.assertEqual(new_post_id, post.id)
 
     def test_get_most_recent_post(self):
@@ -24,6 +24,8 @@ class PostAPITestCase(PostTestBase):
         recent_post, _ = post_api.get_or_create(
             recent_id,
             "recent_image_uri",
-            self.post.created_at + timedelta(days=1))
+            self.post.created_at + timedelta(days=1),
+            640,
+            640,)
         result = post_api.get_most_recent_post()
         self.assertEqual(recent_post, result)
