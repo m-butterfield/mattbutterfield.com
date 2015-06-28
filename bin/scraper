@@ -8,7 +8,7 @@ import hashlib
 import io
 import os
 
-from boto.s3.connection import S3Connection
+from boto.s3.connection import S3Connection, OrdinaryCallingFormat
 from PIL import Image
 from instagram.client import InstagramAPI
 import requests
@@ -89,7 +89,8 @@ def _get_image_data(url):
 
 
 def _get_s3_bucket():
-    s3_conn = S3Connection(AWS_KEY, AWS_SECRET)
+    s3_conn = S3Connection(
+        AWS_KEY, AWS_SECRET, calling_format=OrdinaryCallingFormat())
     return s3_conn.get_bucket(app.config['S3_IMAGE_BUCKET'])
 
 
