@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+"""
+Scrape my Instagram feed, store new posts in the database, and upload images
+to S3 if they don't already exist.
+
+"""
+import hashlib
+import io
+import os
+
+from boto.s3.connection import S3Connection
+from PIL import Image
+from instagram.client import InstagramAPI
+import requests
+
+from app import app
+from app.post import api as post_api
+
+
+AWS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET = os.getenv("AWS_SECRET_ACCESS_KEY")
+
+INSTAGRAM_SECRET = os.getenv("INSTAGRAM_CLIENT_SECRET")
+INSTAGRAM_TOKEN = os.getenv("INSTAGRAM_ACCESS_TOKEN")
+INSTAGRAM_VIDEO_TYPE = 'video'
+
+
+def _scrape_posts():
+    api = InstagramAPI(
+        access_token=INSTAGRAM_TOKEN, client_secret=INSTAGRAM_SECRET)
+    bucket = _get_s3_bucket()
+    next_url = _get_posts(api, bucket, None)
+    while next_url:
+        next_url = _get_posts(api, bucket, next_url)
+    print "Done!"
+
+
+def _get_posts(api, bucket, next_url):
+    medias, next_url = api.user_recent_media(with_next_url=next_url)
+    for media in medias:
+        if media.type == INSTAGRAM_VIDEO_TYPE:
+            continue
+        url = media.get_standard_resolution_url()
+        image_uri, width, height = _scrape_and_upload_image(url, bucket)
+        if _create_post_from_media(media, image_uri, width, height) is False:
+            print "Found existing post, stopping."
+            return
+    return next_url
+
+
+def _create_post_from_media(media, image_uri, width, height):
+    text = media.caption.text if media.caption else None
+    _, created = post_api.get_or_create(
+        media.id, image_uri, media.created_time, width, height, text)
+    return created
+
+
+def _scrape_and_upload_image(url, bucket):
+    img_data, content_type, uri = _get_image_data(url)
+    uri = _upload_to_s3(bucket, img_data, content_type, uri)
+    width, height = _get_image_dimensions(img_data)
+    return uri, width, height
+
+
+def _get_image_dimensions(img_data):
+    with io.BytesIO(img_data) as fp:
+        return Image.open(fp).size
+
+
+def _upload_to_s3(bucket, img_data, content_type, uri):
+    key_name = os.path.join(app.config['S3_IMAGE_FOLDER'], uri)
+    key = bucket.get_key(key_name)
+    if key:
+        print "Key {} already exists, skipping.".format(key_name)
+        return uri
+    print "Uploading new key: " + key_name
+    key = bucket.new_key(key_name)
+    key.set_contents_from_string(
+        img_data, headers={"Content-Type": content_type}, policy='public-read')
+    return uri
+
+
+def _get_image_data(url):
+    response = requests.get(url)
+    img_data = response.content
+    content_type = response.headers.get('content-type')
+    uri = hashlib.md5(img_data).hexdigest() + os.path.splitext(url)[1]
+    return img_data, content_type, uri
+
+
+def _get_s3_bucket():
+    s3_conn = S3Connection(AWS_KEY, AWS_SECRET)
+    return s3_conn.get_bucket(app.config['S3_IMAGE_BUCKET'])
+
+
+if __name__ == '__main__':
+    _scrape_posts()

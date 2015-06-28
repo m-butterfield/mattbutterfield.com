@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <title>mattbutterfield.com</title>
+        <style>
+            body {
+                background-color: #fafafa;
+                color: #4A4A4A;
+            }
+            .navbar {
+                border-radius: 0;
+                background-color: white;
+            }
+            .navbar-header {
+                float: left;
+                padding: 15px;
+                text-align: center;
+                width: 100%;
+            }
+            .navbar-default .navbar-brand {
+                float: none;
+                color: #4A4A4A;
+                position: relative;
+                z-index: 10;
+            }
+            .btn-default {
+                border-radius: 0;
+                color: #4A4A4A;
+            }
+            .row {
+                margin-bottom: 15px;
+            }
+            .buttons {
+                position: absolute;
+                top: 9px;
+                left: 50%;
+                width: 640px;
+                margin-left: -320px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">mattbutterfield.com</a>
+            </div>
+        </nav>
+        <div class="container-fluid">
+            <div class="text-center">
+                <div id="post-content"></div>
+            </div>
+        </div>
+        <script type="text/template" id="post-template">
+            <div class="row">
+                <img src="<%= image_url %>" width="<%= image_width %>" height="<%= image_height %>"/>
+            </div>
+            <div class="buttons">
+                <% if (previous_post_id) { %>
+                    <a class="pull-left btn btn-default" href="/post/<%= previous_post_id %>">&laquo; previous</a>
+                <% } else { %>
+                    <a class="pull-left btn btn-default disabled" href="#">&laquo; previous</a>
+                <% } %>
+                <% if (next_post_id) { %>
+                    <a class="pull-right btn btn-default" href="/post/<%= next_post_id %>">next &raquo;</a>
+                <% } else { %>
+                    <a class="pull-right btn btn-default disabled" href="#">next &raquo;</a>
+                <% } %>
+            </div>
+            <div class="row">
+                <p><%= text %></p>
+            </div>
+        </script>
+        <script type="text/javascript" src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='vendor/underscore/underscore-min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='vendor/backbone/backbone-min.js') }}"></script>
+        <script>
+            (function() {
+                var Post = Backbone.Model.extend({
+                    urlRoot: "/api/post"
+                });
+
+                var PostView = Backbone.View.extend({
+                    el: '#post-content',
+
+                    events: {
+                        "click .btn": "page"
+                    },
+
+                    template: _.template($('#post-template').html()),
+
+                    initialize: function(options) {
+                        this.model = new Post(options.postData);
+                        this.router = options.router;
+                        this.listenTo(this.model, 'sync', this.render);
+                    },
+
+                    page: function(event) {
+                        event.preventDefault();
+                        this.router.navigate(event.target.getAttribute('href'), {trigger: true});
+                    },
+
+                    updatePost: function(postId) {
+                        this.model.set('id', postId);
+                        this.model.fetch({reset: true});
+                    },
+
+                    render: function(){
+                        this.$el.html(this.template(this.model.attributes));
+                    }
+                });
+
+                var Router = Backbone.Router.extend({
+                    routes: {
+                        "post/:postId": 'loadPost',
+                        "": "defaultRoute"
+                    },
+
+                    initialize: function(options) {
+                        this.postView = new PostView({
+                            postData: options.postData,
+                            router: this
+                        });
+                    },
+
+                    defaultRoute: function() {
+                        this.postView.render();
+                    },
+
+                    loadPost: function(postId) {
+                        if (postId !== this.postView.model.id) {
+                            this.postView.updatePost(postId);
+                        } else {
+                            this.postView.render();
+                        }
+                    }
+                });
+
+                var postData = {{ post|safe }};
+                new Router({postData: postData});
+
+                Backbone.history.start({pushState: true});
+            })();
+        </script>
+    </body>
+</html>

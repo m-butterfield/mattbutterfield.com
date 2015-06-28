@@ -1,17 +1,7 @@
-_site
-_theme_packages/*
+*.pyc
 
-Thumbs.db
-.DS_Store
-
-!.gitkeep
-
-.rbenv-version
-.rvmrc
-
-*.swp
-*~
-.directory
+app.db
 
 .idea
 
+node_modules
