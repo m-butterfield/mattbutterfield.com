@@ -7,10 +7,34 @@
         <link href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
         <title>mattbutterfield.com</title>
+        <style>
+            body {
+                background-color: #fafafa;
+            }
+            .navbar {
+                border-radius: 0;
+                background-color: white;
+            }
+            .navbar-header {
+                float: left;
+                padding: 15px;
+                text-align: center;
+                width: 100%;
+            }
+            .navbar-default .navbar-brand {
+                float: none;
+                color: #4A4A4A;
+            }
+        </style>
     </head>
     <body>
+        <nav class="navbar navbar-default">
+{#            <a href="/" id="main-title">MattButterfield.com</a>#}
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">MattButterfield.com</a>
+            </div>
+        </nav>
         <div class="container-fluid">
-            <div class="row text-center">mattbutterfield.com</div>
             <div class="row text-center">
                 <div id="post-content"></div>
             </div>
