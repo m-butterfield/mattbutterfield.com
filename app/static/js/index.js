@@ -1,5 +1,3 @@
-var TRANSITION_TIME = 200;
-
 var Post = Backbone.Model.extend({
     urlRoot: "/api/post"
 });
@@ -40,6 +38,7 @@ var PostContentView = Backbone.View.extend({
 
     initialize: function(options) {
         this.listenTo(this.model, 'sync', this.render);
+        this.transitionTime = 200;
     },
 
     render: function() {
@@ -53,17 +52,17 @@ var PostContentView = Backbone.View.extend({
     transitionRender: function() {
         var that = this;
         this.$el.fadeOut({
-            duration: TRANSITION_TIME,
+            duration: this.transitionTime,
             complete: function() {
                 that.$el.html(that.template(that.model.attributes));
-                that.$el.fadeIn({duration: TRANSITION_TIME});
+                that.$el.fadeIn({duration: that.transitionTime});
             }
         });
     },
 
     initialRender: function() {
         this.$el.html(this.template(this.model.attributes));
-        this.$el.fadeIn({duration: TRANSITION_TIME});
+        this.$el.fadeIn({duration: this.transitionTime});
         this.rendered = true;
     }
 });
