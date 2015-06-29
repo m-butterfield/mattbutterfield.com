@@ -45,7 +45,6 @@
             (function() {
                 var postData = {{ post|safe }};
                 new Router({postData: postData});
-
                 Backbone.history.start({pushState: true});
             })();
         </script>
