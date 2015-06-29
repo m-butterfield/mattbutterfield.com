@@ -131,24 +131,31 @@
 
                     initialize: function(options) {
                         this.listenTo(this.model, 'sync', this.render);
-                        this.rendered = false;
                     },
 
                     render: function() {
                         if (this.rendered) {
-                            var that = this;
-                            this.$el.fadeOut({
-                                duration: TRANSITION_TIME,
-                                complete: function() {
-                                    that.$el.html(that.template(that.model.attributes));
-                                    that.$el.fadeIn({duration: TRANSITION_TIME});
-                                }
-                            });
+                            this.transitionRender();
                         } else {
-                            this.$el.html(this.template(this.model.attributes));
-                            this.$el.fadeIn({duration: TRANSITION_TIME});
-                            this.rendered = true;
+                            this.initialRender();
                         }
+                    },
+
+                    transitionRender: function() {
+                        var that = this;
+                        this.$el.fadeOut({
+                            duration: TRANSITION_TIME,
+                            complete: function() {
+                                that.$el.html(that.template(that.model.attributes));
+                                that.$el.fadeIn({duration: TRANSITION_TIME});
+                            }
+                        });
+                    },
+
+                    initialRender: function() {
+                        this.$el.html(this.template(this.model.attributes));
+                        this.$el.fadeIn({duration: TRANSITION_TIME});
+                        this.rendered = true;
                     }
                 });
 
