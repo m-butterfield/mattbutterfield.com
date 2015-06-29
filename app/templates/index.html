@@ -35,12 +35,20 @@
             .row {
                 margin-bottom: 15px;
             }
-            .buttons {
+            #page-buttons {
                 position: absolute;
                 top: 9px;
                 left: 50%;
                 width: 640px;
                 margin-left: -320px;
+            }
+            #post-content {
+                display: none;
+            }
+            #post-text {
+                margin: auto;
+                width: 640px;
+                font-size: 16px;
             }
         </style>
     </head>
@@ -48,6 +56,7 @@
         <nav class="navbar navbar-default">
             <div class="navbar-header">
                 <a href="/" class="navbar-brand">mattbutterfield.com</a>
+                <div id="page-buttons"></div>
             </div>
         </nav>
         <div class="container-fluid">
@@ -55,23 +64,23 @@
                 <div id="post-content"></div>
             </div>
         </div>
-        <script type="text/template" id="post-template">
+        <script type="text/template" id="page-buttons-template">
+            <% if (previous_post_id) { %>
+                <a class="pull-left btn btn-default" href="/post/<%= previous_post_id %>">&laquo; previous</a>
+            <% } else { %>
+                <a class="pull-left btn btn-default disabled" href="#">&laquo; previous</a>
+            <% } %>
+            <% if (next_post_id) { %>
+                <a class="pull-right btn btn-default" href="/post/<%= next_post_id %>">next &raquo;</a>
+            <% } else { %>
+                <a class="pull-right btn btn-default disabled" href="#">next &raquo;</a>
+            <% } %>
+        </script>
+        <script type="text/template" id="post-content-template">
             <div class="row">
                 <img src="<%= image_url %>" width="<%= image_width %>" height="<%= image_height %>"/>
             </div>
-            <div class="buttons">
-                <% if (previous_post_id) { %>
-                    <a class="pull-left btn btn-default" href="/post/<%= previous_post_id %>">&laquo; previous</a>
-                <% } else { %>
-                    <a class="pull-left btn btn-default disabled" href="#">&laquo; previous</a>
-                <% } %>
-                <% if (next_post_id) { %>
-                    <a class="pull-right btn btn-default" href="/post/<%= next_post_id %>">next &raquo;</a>
-                <% } else { %>
-                    <a class="pull-right btn btn-default disabled" href="#">next &raquo;</a>
-                <% } %>
-            </div>
-            <div class="row">
+            <div class="row post-content" id="post-text">
                 <p><%= text %></p>
             </div>
         </script>
@@ -80,21 +89,22 @@
         <script type="text/javascript" src="{{ url_for('static', filename='vendor/backbone/backbone-min.js') }}"></script>
         <script>
             (function() {
+                var TRANSITION_TIME = 200;
+
                 var Post = Backbone.Model.extend({
                     urlRoot: "/api/post"
                 });
 
-                var PostView = Backbone.View.extend({
-                    el: '#post-content',
+                var PageButtonsView = Backbone.View.extend({
+                    el: '#page-buttons',
 
                     events: {
                         "click .btn": "page"
                     },
 
-                    template: _.template($('#post-template').html()),
+                    template: _.template($('#page-buttons-template').html()),
 
                     initialize: function(options) {
-                        this.model = new Post(options.postData);
                         this.router = options.router;
                         this.listenTo(this.model, 'sync', this.render);
                     },
@@ -109,34 +119,67 @@
                         this.model.fetch({reset: true});
                     },
 
-                    render: function(){
+                    render: function() {
                         this.$el.html(this.template(this.model.attributes));
+                    }
+                });
+
+                var PostContentView = Backbone.View.extend({
+                    el: '#post-content',
+
+                    template: _.template($('#post-content-template').html()),
+
+                    initialize: function(options) {
+                        this.listenTo(this.model, 'sync', this.render);
+                        this.rendered = false;
+                    },
+
+                    render: function() {
+                        if (this.rendered) {
+                            var that = this;
+                            this.$el.fadeOut({
+                                duration: TRANSITION_TIME,
+                                complete: function() {
+                                    that.$el.html(that.template(that.model.attributes));
+                                    that.$el.fadeIn({duration: TRANSITION_TIME});
+                                }
+                            });
+                        } else {
+                            this.$el.html(this.template(this.model.attributes));
+                            this.$el.fadeIn({duration: TRANSITION_TIME});
+                            this.rendered = true;
+                        }
                     }
                 });
 
                 var Router = Backbone.Router.extend({
                     routes: {
                         "post/:postId": 'loadPost',
-                        "": "defaultRoute"
+                        "": "renderViews"
                     },
 
                     initialize: function(options) {
-                        this.postView = new PostView({
-                            postData: options.postData,
+                        var post = new Post(options.postData);
+                        this.pageButtonsView = new PageButtonsView({
+                            model: post,
                             router: this
+                        });
+                        this.postContentView = new PostContentView({
+                            model: post
                         });
                     },
 
-                    defaultRoute: function() {
-                        this.postView.render();
+                    loadPost: function(postId) {
+                        if (postId !== this.pageButtonsView.model.id) {
+                            this.pageButtonsView.updatePost(postId);
+                        } else {
+                            this.renderViews();
+                        }
                     },
 
-                    loadPost: function(postId) {
-                        if (postId !== this.postView.model.id) {
-                            this.postView.updatePost(postId);
-                        } else {
-                            this.postView.render();
-                        }
+                    renderViews: function() {
+                        this.pageButtonsView.render();
+                        this.postContentView.render();
                     }
                 });
 
