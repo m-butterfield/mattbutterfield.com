@@ -1,6 +1,7 @@
 body {
     background-color: #fafafa;
     color: #4A4A4A;
+    min-width: 640px;
 }
 .btn-default {
     border-radius: 0;
