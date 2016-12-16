@@ -9,11 +9,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type Page struct {
-	Caption  string
-	ImageURL string
-}
-
 const (
 	dbFileName             = "app.db"
 	imageBaseURL           = "http://images.mattbutterfield.com/"
@@ -26,6 +21,11 @@ var (
 	db            *sql.DB
 	indexTemplate *template.Template
 )
+
+type Page struct {
+	Caption  string
+	ImageURL string
+}
 
 func serve(res http.ResponseWriter, req *http.Request) {
 	err := indexTemplate.Execute(res, getRandomPage())
