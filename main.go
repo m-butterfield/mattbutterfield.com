@@ -14,8 +14,16 @@ type Page struct {
 	ImageURL string
 }
 
+const (
+	dbFileName             = "app.db"
+	imageBaseURL           = "http://images.mattbutterfield.com/"
+	indexFileName          = "index.html"
+	port                   = 8000
+	selectRandomImageQuery = "SELECT id, caption FROM images ORDER BY RANDOM() LIMIT 1"
+)
+
 var (
-	db *sql.DB
+	db            *sql.DB
 	indexTemplate *template.Template
 )
 
@@ -28,26 +36,26 @@ func serve(res http.ResponseWriter, req *http.Request) {
 
 func main() {
 	var err error
-	db, err = sql.Open("sqlite3", "app.db")
+	db, err = sql.Open("sqlite3", dbFileName)
 	if err != nil {
 		panic(err)
 	}
-	indexTemplate = template.New("index.html")
-	indexTemplate.ParseFiles("index.html")
+	indexTemplate = template.New(indexFileName)
+	indexTemplate.ParseFiles(indexFileName)
 	http.HandleFunc("/", serve)
-	fmt.Println("Serving...")
-	http.ListenAndServe(":8000", nil)
+	fmt.Printf("Serving on port: %d\n", port)
+	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
 
 func getRandomPage() Page {
 	var imageID, caption string
-	row := db.QueryRow("SELECT id, caption FROM images ORDER BY RANDOM() LIMIT 1")
+	row := db.QueryRow(selectRandomImageQuery)
 	err := row.Scan(&imageID, &caption)
 	if err != nil {
 		panic(err)
 	}
 	return Page{
-		Caption: caption,
-		ImageURL: "http://images.mattbutterfield.com/" + imageID,
+		Caption:  caption,
+		ImageURL: imageBaseURL + imageID,
 	}
 }
