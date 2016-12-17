@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -19,6 +20,7 @@ const (
 
 var (
 	db *sql.DB
+	svc *s3.S3
 )
 
 func main() {
@@ -28,6 +30,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	svc = s3.New(session.New(&aws.Config{Region: aws.String(awsRegion)}))
 	latestID, err := getLatestID()
 	if err != nil {
 		panic(err)
@@ -37,16 +40,33 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Done")
+	fmt.Println("Program completed successfully!")
 }
 
-func getLatestID() (id string, err error) {
-	err = db.QueryRow("SELECT id FROM images ORDER BY created_at DESC LIMIT 1").Scan(&id)
-	return
+func getLatestID() (string, error) {
+	fmt.Println("Fetching latest ID from database...")
+	var id string
+	err := db.QueryRow("SELECT id FROM images ORDER BY created_at DESC LIMIT 1").Scan(&id)
+	if err == sql.ErrNoRows {
+		fmt.Println("No rows found in database, so fetching first key name from S3...")
+		result, err := svc.ListObjects(&s3.ListObjectsInput{
+			Bucket:  aws.String(bucketName),
+			MaxKeys: aws.Int64(1),
+		})
+		if err != nil {
+			return "", err
+		}
+		if len(result.Contents) == 0 {
+			return "", errors.New("No keys found in bucket.")
+		}
+		return *result.Contents[0].Key, nil
+	}
+	return id, err
 }
 
 func fetchImages(latestID string) error {
-	svc := s3.New(session.New(&aws.Config{Region: aws.String(awsRegion)}))
+	fmt.Println("Fetching new keys from S3...")
+	firstRunThrough := true
 	for {
 		result, err := svc.ListObjects(&s3.ListObjectsInput{
 			Bucket:  aws.String(bucketName),
@@ -57,21 +77,25 @@ func fetchImages(latestID string) error {
 			return err
 		}
 		if len(result.Contents) == 0 {
+			if firstRunThrough {
+				fmt.Println("No new keys found. You're all up to date!")
+			}
 			break
 		}
-		fmt.Println("Keys:")
 		for _, result := range result.Contents {
-			fmt.Printf("%s : %s\n", aws.StringValue(result.Key), result.LastModified)
 			err = storeKeyInDB(*result.Key)
 			if err != nil {
 				return err
 			}
 			latestID = *result.Key
 		}
+		firstRunThrough = false
 	}
+	fmt.Println("Done fetching images.")
 	return nil
 }
 
 func storeKeyInDB(keyName string) error {
+	fmt.Println("Storing info for key: ", keyName)
 	return nil
 }
