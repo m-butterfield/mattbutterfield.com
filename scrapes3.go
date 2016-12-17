@@ -15,8 +15,9 @@ const (
 	awsRegion        = "us-east-1"
 	bucketName       = "images.mattbutterfield.com"
 	dbFileName       = "app.db"
-	maxKeys          = 100
 	insertImageQuery = "INSERT INTO images (id) VALUES (?)"
+	latestIDQuery    = "SELECT id FROM images ORDER BY id DESC LIMIT 1"
+	maxKeys          = 100
 )
 
 var (
@@ -47,7 +48,7 @@ func main() {
 func getLatestID() (string, error) {
 	fmt.Println("Fetching latest ID from database...")
 	var id string
-	err := db.QueryRow("SELECT id FROM images ORDER BY created_at DESC LIMIT 1").Scan(&id)
+	err := db.QueryRow(latestIDQuery).Scan(&id)
 	if err == sql.ErrNoRows {
 		fmt.Println("No rows found in database, so fetching first key name from S3...")
 		result, err := svc.ListObjects(&s3.ListObjectsInput{
