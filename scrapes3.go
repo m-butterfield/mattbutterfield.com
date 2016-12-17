@@ -12,14 +12,15 @@ import (
 )
 
 const (
-	awsRegion  = "us-east-1"
-	bucketName = "images.mattbutterfield.com"
-	dbFileName = "app.db"
-	maxKeys    = 100
+	awsRegion        = "us-east-1"
+	bucketName       = "images.mattbutterfield.com"
+	dbFileName       = "app.db"
+	maxKeys          = 100
+	insertImageQuery = "INSERT INTO images (id) VALUES (?)"
 )
 
 var (
-	db *sql.DB
+	db  *sql.DB
 	svc *s3.S3
 )
 
@@ -95,7 +96,8 @@ func fetchImages(latestID string) error {
 	return nil
 }
 
-func storeKeyInDB(keyName string) error {
+func storeKeyInDB(keyName string) (err error) {
 	fmt.Println("Storing info for key: ", keyName)
-	return nil
+	_, err = db.Exec(insertImageQuery, keyName)
+	return
 }

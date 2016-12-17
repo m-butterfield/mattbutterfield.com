@@ -27,13 +27,6 @@ type Page struct {
 	ImageURL string
 }
 
-func serve(res http.ResponseWriter, req *http.Request) {
-	err := indexTemplate.Execute(res, getRandomPage())
-	if err != nil {
-		panic(err)
-	}
-}
-
 func main() {
 	var err error
 	db, err = sql.Open("sqlite3", dbFileName)
@@ -47,15 +40,25 @@ func main() {
 	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
 
+func serve(res http.ResponseWriter, req *http.Request) {
+	err := indexTemplate.Execute(res, getRandomPage())
+	if err != nil {
+		panic(err)
+	}
+}
+
 func getRandomPage() Page {
-	var imageID, caption string
+	var (
+		imageID string
+		caption sql.NullString
+	)
 	row := db.QueryRow(selectRandomImageQuery)
 	err := row.Scan(&imageID, &caption)
 	if err != nil {
 		panic(err)
 	}
 	return Page{
-		Caption:  caption,
+		Caption: caption.String,
 		ImageURL: imageBaseURL + imageID,
 	}
 }
