@@ -58,7 +58,7 @@ func getRandomPage() Page {
 		panic(err)
 	}
 	return Page{
-		Caption: caption.String,
+		Caption:  caption.String,
 		ImageURL: imageBaseURL + imageID,
 	}
 }
