@@ -14,7 +14,7 @@ const (
 	imageBaseURL           = "http://images.mattbutterfield.com/"
 	indexFileName          = "index.html"
 	port                   = 8000
-	selectRandomImageQuery = "SELECT id, caption FROM images ORDER BY RANDOM() LIMIT 1"
+	selectRandomImageQuery = "SELECT id, caption FROM images WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)"
 )
 
 var (
