@@ -37,6 +37,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Done")
 }
 
 func getLatestID() (id string, err error) {
@@ -46,17 +47,31 @@ func getLatestID() (id string, err error) {
 
 func fetchImages(latestID string) error {
 	svc := s3.New(session.New(&aws.Config{Region: aws.String(awsRegion)}))
-	result, err := svc.ListObjects(&s3.ListObjectsInput{
-		Bucket: aws.String(bucketName),
-		Marker: aws.String(latestID),
-		MaxKeys: aws.Int64(maxKeys),
-	})
-	if err != nil {
-		return err
+	for {
+		result, err := svc.ListObjects(&s3.ListObjectsInput{
+			Bucket:  aws.String(bucketName),
+			Marker:  aws.String(latestID),
+			MaxKeys: aws.Int64(maxKeys),
+		})
+		if err != nil {
+			return err
+		}
+		if len(result.Contents) == 0 {
+			break
+		}
+		fmt.Println("Keys:")
+		for _, result := range result.Contents {
+			fmt.Printf("%s : %s\n", aws.StringValue(result.Key), result.LastModified)
+			err = storeKeyInDB(*result.Key)
+			if err != nil {
+				return err
+			}
+			latestID = *result.Key
+		}
 	}
-	fmt.Println("Keys:")
-	for _, result := range result.Contents {
-		fmt.Printf("%s : %s\n", aws.StringValue(result.Key), result.LastModified)
-	}
+	return nil
+}
+
+func storeKeyInDB(keyName string) error {
 	return nil
 }
