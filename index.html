@@ -1,4 +1,12 @@
 <html>
-  <img src="{{ .ImageURL }}">
-  <h1>{{ .Caption }}</h1>
+  <head>
+    <style>
+      body {
+        background-image: url("{{ .ImageURL }}");
+      }
+    </style>
+  </head>
+  <body>
+      <div id="caption-div" >{{ .Caption }}</div>
+  </body>
 </html>
