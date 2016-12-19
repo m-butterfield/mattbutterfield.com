@@ -1,5 +1,5 @@
 build:
-	go build -o bin/mattbutterfield.com website.go
+	go build -o bin/website website.go
 	go build -o bin/scrapes3 scrapes3.go
 
 db:
