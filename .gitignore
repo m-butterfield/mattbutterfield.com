@@ -1,3 +1,7 @@
-.idea
+*.pyc
+
 app.db
-bin/
+
+.idea
+
+node_modules
