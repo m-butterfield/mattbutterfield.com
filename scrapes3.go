@@ -8,13 +8,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/m-butterfield/mattbutterfield.com/datastore"
 )
 
 const (
 	awsRegion        = "us-east-1"
 	bucketName       = "images.mattbutterfield.com"
-	dbFileName       = "app.db"
 	insertImageQuery = "INSERT INTO images (id) VALUES (?)"
 	latestIDQuery    = "SELECT id FROM images ORDER BY id DESC LIMIT 1"
 	maxKeys          = 100
@@ -28,7 +27,7 @@ var (
 func main() {
 	fmt.Println("Hello.")
 	var err error
-	db, err = sql.Open("sqlite3", dbFileName)
+	db, err = datastore.OpenDB()
 	if err != nil {
 		panic(err)
 	}
