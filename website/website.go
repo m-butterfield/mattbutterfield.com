@@ -1,7 +1,6 @@
 package website
 
 import (
-	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -11,25 +10,16 @@ import (
 )
 
 const (
-	port                   = 8000
-	indexFileName          = "index.html"
-	imageBaseURL           = "http://images.mattbutterfield.com/"
-	selectRandomImageQuery = "SELECT id, caption FROM images WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)"
+	indexFileName = "index.html"
+	port          = 8000
 )
 
 var (
 	indexTemplate *template.Template
-	db            *sql.DB
 )
 
-type Page struct {
-	Caption  string
-	ImageURL string
-}
-
 func Run() error {
-	var err error
-	db, err = datastore.OpenDB()
+	err := datastore.InitDB()
 	if err != nil {
 		return err
 	}
@@ -42,24 +32,12 @@ func Run() error {
 }
 
 func serve(res http.ResponseWriter, req *http.Request) {
-	err := indexTemplate.Execute(res, getRandomPage())
+	page, err := datastore.GetRandomPage()
 	if err != nil {
 		panic(err)
 	}
-}
-
-func getRandomPage() Page {
-	var (
-		imageID string
-		caption sql.NullString
-	)
-	row := db.QueryRow(selectRandomImageQuery)
-	err := row.Scan(&imageID, &caption)
+	err = indexTemplate.Execute(res, page)
 	if err != nil {
 		panic(err)
-	}
-	return Page{
-		Caption:  caption.String,
-		ImageURL: imageBaseURL + imageID,
 	}
 }

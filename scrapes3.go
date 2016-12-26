@@ -12,44 +12,32 @@ import (
 )
 
 const (
-	awsRegion        = "us-east-1"
-	bucketName       = "images.mattbutterfield.com"
-	insertImageQuery = "INSERT INTO images (id) VALUES (?)"
-	latestIDQuery    = "SELECT id FROM images ORDER BY id DESC LIMIT 1"
-	maxKeys          = 100
-)
-
-var (
-	db  *sql.DB
-	svc *s3.S3
+	awsRegion  = "us-east-1"
+	bucketName = "images.mattbutterfield.com"
+	maxKeys    = 100
 )
 
 func main() {
-	fmt.Println("Hello.")
-	var err error
-	db, err = datastore.OpenDB()
+	err := datastore.InitDB()
 	if err != nil {
 		panic(err)
 	}
-	svc = s3.New(session.New(&aws.Config{Region: aws.String(awsRegion)}))
-	latestID, err := getLatestID()
+	svc := s3.New(session.New(&aws.Config{Region: aws.String(awsRegion)}))
+	latestID, err := getLatestID(svc)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Latest id: ", latestID)
-	err = fetchImages(latestID)
+	err = fetchImages(svc, latestID)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Program completed successfully!")
 }
 
-func getLatestID() (string, error) {
-	fmt.Println("Fetching latest ID from database...")
-	var id string
-	err := db.QueryRow(latestIDQuery).Scan(&id)
+func getLatestID(svc *s3.S3) (string, error) {
+	latestID, err := datastore.GetLatestID()
 	if err == sql.ErrNoRows {
-		fmt.Println("No rows found in database, so fetching first key name from S3...")
 		result, err := svc.ListObjects(&s3.ListObjectsInput{
 			Bucket:  aws.String(bucketName),
 			MaxKeys: aws.Int64(1),
@@ -62,10 +50,10 @@ func getLatestID() (string, error) {
 		}
 		return *result.Contents[0].Key, nil
 	}
-	return id, err
+	return latestID, err
 }
 
-func fetchImages(latestID string) error {
+func fetchImages(svc *s3.S3, latestID string) error {
 	fmt.Println("Fetching new keys from S3...")
 	firstRunThrough := true
 	for {
@@ -84,7 +72,7 @@ func fetchImages(latestID string) error {
 			break
 		}
 		for _, result := range result.Contents {
-			err = storeKeyInDB(*result.Key)
+			err = datastore.SaveImage(*result.Key, "")
 			if err != nil {
 				return err
 			}
@@ -94,10 +82,4 @@ func fetchImages(latestID string) error {
 	}
 	fmt.Println("Done fetching images.")
 	return nil
-}
-
-func storeKeyInDB(keyName string) (err error) {
-	fmt.Println("Storing info for key: ", keyName)
-	_, err = db.Exec(insertImageQuery, keyName)
-	return
 }
