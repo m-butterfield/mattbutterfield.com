@@ -19,10 +19,6 @@ var (
 )
 
 func Run() error {
-	err := datastore.InitDB()
-	if err != nil {
-		return err
-	}
 	indexTemplate = template.New(indexFileName)
 	indexTemplate.ParseFiles(indexFileName)
 	http.HandleFunc("/", serve)

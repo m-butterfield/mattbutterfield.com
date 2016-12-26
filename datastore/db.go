@@ -23,17 +23,29 @@ type Page struct {
 	ImageURL string
 }
 
-func InitDB() (err error) {
+func initDB() (err error) {
 	db, err = sql.Open("sqlite3", dbFileName)
 	return
 }
 
 func GetLatestID() (id string, err error) {
+	if db == nil {
+		err := initDB()
+		if err != nil {
+			return "", err
+		}
+	}
 	err = db.QueryRow(latestIDQuery).Scan(&id)
 	return id, err
 }
 
 func GetRandomPage() (*Page, error) {
+	if db == nil {
+		err := initDB()
+		if err != nil {
+			return nil, err
+		}
+	}
 	var (
 		imageID string
 		caption sql.NullString
@@ -49,7 +61,13 @@ func GetRandomPage() (*Page, error) {
 	}, nil
 }
 
-func SaveImage(keyName string, caption string) error {
+func SaveImage(keyName string, caption *string) error {
+	if db == nil {
+		err := initDB()
+		if err != nil {
+			return err
+		}
+	}
 	_, err := db.Exec(insertImageQuery, keyName, caption)
 	return err
 }

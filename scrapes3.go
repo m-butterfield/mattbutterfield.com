@@ -18,10 +18,6 @@ const (
 )
 
 func main() {
-	err := datastore.InitDB()
-	if err != nil {
-		panic(err)
-	}
 	svc := s3.New(session.New(&aws.Config{Region: aws.String(awsRegion)}))
 	latestID, err := getLatestID(svc)
 	if err != nil {
@@ -72,7 +68,8 @@ func fetchImages(svc *s3.S3, latestID string) error {
 			break
 		}
 		for _, result := range result.Contents {
-			err = datastore.SaveImage(*result.Key, "")
+			fmt.Println("Saving image: ", result.Key)
+			err = datastore.SaveImage(*result.Key, nil)
 			if err != nil {
 				return err
 			}
