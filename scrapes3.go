@@ -68,7 +68,7 @@ func fetchImages(svc *s3.S3, latestID string) error {
 			break
 		}
 		for _, result := range result.Contents {
-			fmt.Println("Saving image: ", result.Key)
+			fmt.Println("Saving image: ", *result.Key)
 			err = datastore.SaveImage(*result.Key, nil)
 			if err != nil {
 				return err
