@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/m-butterfield/mattbutterfield.com/datastore"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -20,20 +21,27 @@ var (
 
 func Run() error {
 	indexTemplate = template.New(indexFileName)
-	indexTemplate.ParseFiles(indexFileName)
-	http.HandleFunc("/", serve)
-	fmt.Printf("Serving on port: %d\n", port)
-	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	_, err := indexTemplate.ParseFiles(indexFileName)
+	if err != nil {
+		return err
+	}
+	r := mux.NewRouter()
+	r.HandleFunc("/", home)
+	fmt.Println("Serving on port: ", port)
+	err = http.ListenAndServe(":8000", r)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func serve(res http.ResponseWriter, req *http.Request) {
+func home(w http.ResponseWriter, r *http.Request) {
 	page, err := datastore.GetRandomPage()
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	err = indexTemplate.Execute(res, page)
+	err = indexTemplate.Execute(w, page)
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
