@@ -4,7 +4,7 @@
       body {
         background-attachment: fixed;
         background-color: #2c2c2c;
-        background-image: url("{{ .URL }}");
+        background-image: url("{{ .ImageURL }}");
         background-position: center;
         background-repeat: no-repeat;
         text-align: center;
@@ -20,9 +20,9 @@
       }
     </style>
   </head>
-    <a id="get-new-image" href="/">Get new image</a>
+    <a id="get-new-image" href="{{ .NextImagePath }}">Get new image</a>
     <div id="caption-div" >
-      {{ .Caption }}
+      {{ .ImageCaption }}
     </div>
   </body>
 </html>
