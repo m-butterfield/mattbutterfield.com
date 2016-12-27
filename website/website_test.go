@@ -4,6 +4,6 @@ import (
 	"testing"
 )
 
-func TestWesite(t *testing.T) {
+func TestWebsite(t *testing.T) {
 
 }

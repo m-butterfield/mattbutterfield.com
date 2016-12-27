@@ -8,9 +8,9 @@ import (
 
 const (
 	baseSelectImageQuery = "SELECT id, caption FROM images "
-	getImageByIDQuery    = baseSelectImageQuery + "WHERE id = ? "
+	getImageByIDQuery    = baseSelectImageQuery + "WHERE id = ?"
 	getLatestImageQuery  = baseSelectImageQuery + "ORDER BY id DESC LIMIT 1"
-	getRandomImageQuery  = baseSelectImageQuery + "WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1) "
+	getRandomImageQuery  = baseSelectImageQuery + "WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)"
 	insertImageQuery     = "INSERT INTO images (id, caption) VALUES (?, ?)"
 )
 
