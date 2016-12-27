@@ -56,12 +56,52 @@ func TestGetRandomImage(t *testing.T) {
 	}
 
 	db_mock.ExpectQuery("^SELECT id, caption FROM images WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "caption"}).AddRow("1234", ""))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "caption"}).AddRow("1234", nil))
 
 	_, err = GetRandomImage(db)
 	if err != nil {
 		t.Fatal(err)
 	}
+	if err := db_mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expections: %s", err)
+	}
+}
+
+func TestSaveImage(t *testing.T) {
+	db, db_mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id, caption := "1234", "hello"
+	db_mock.ExpectExec("INSERT INTO images \\(id, caption\\) VALUES \\(\\?, \\?\\)$").WithArgs(id, caption).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	image := NewImage(id, caption)
+	err = image.SaveToDB(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := db_mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expections: %s", err)
+	}
+}
+
+func TestSaveImageNilCaption(t *testing.T) {
+	db, db_mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id := "1234"
+	db_mock.ExpectExec("INSERT INTO images \\(id, caption\\) VALUES \\(\\?, \\?\\)$").WithArgs(id, nil).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	image := NewImage(id, "")
+	err = image.SaveToDB(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := db_mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expections: %s", err)
 	}
