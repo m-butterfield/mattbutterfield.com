@@ -25,47 +25,55 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetImage(t *testing.T) {
+	defer emptyImagesTable()
 	id, caption := "1234", "hello"
-	image := NewImage(id, caption)
-	err := image.SaveToDB(test_db)
-	if err != nil {
+	if err := NewImage(id, caption).SaveToDB(test_db); err != nil {
 		t.Fatal(err)
 	}
-	image, err = GetImage(test_db, id)
-	if err != nil {
+	if image, err := GetImage(test_db, id); err != nil {
 		t.Fatal(err)
+	} else {
+		if image.ID != id {
+			t.Errorf("Unexpected image id: %s != %s", id, image.ID)
+		}
+		if image.Caption != caption {
+			t.Errorf("Unexpected image caption: %s != %s", caption, image.Caption)
+		}
 	}
-	if image.ID != id {
-		t.Errorf("Unexpected image id: %s != %s", id, image.ID)
-	}
-	if image.Caption != caption {
-		t.Errorf("Unexpected image caption: %s != %s", caption, image.Caption)
-	}
-	emptyImagesTable()
 }
 
 func TestGetLatestImage(t *testing.T) {
-	firstImage := NewImage("1234", "")
-	err := firstImage.SaveToDB(test_db)
-	if err != nil {
+	defer emptyImagesTable()
+	if err := NewImage("1234", "").SaveToDB(test_db); err != nil {
 		t.Fatal(err)
 	}
 	secondImage := NewImage("5678", "")
-	err = secondImage.SaveToDB(test_db)
-	if err != nil {
+	if err := secondImage.SaveToDB(test_db); err != nil {
 		t.Fatal(err)
 	}
-	image, err := GetLatestImage(test_db)
-	if err != nil {
+	if image, err := GetLatestImage(test_db); err != nil {
+		t.Fatal(err)
+	} else {
+		if image.ID != secondImage.ID {
+			t.Errorf("Unexpected image id: %s != %s", secondImage.ID, image.ID)
+		}
+		if image.Caption != secondImage.Caption {
+			t.Errorf("Unexpected image caption: %s != %s", secondImage.Caption, image.Caption)
+		}
+	}
+}
+
+func TestGetRandomImage(t *testing.T) {
+	defer emptyImagesTable()
+	if err := NewImage("1234", "").SaveToDB(test_db); err != nil {
 		t.Fatal(err)
 	}
-	if image.ID != secondImage.ID {
-		t.Errorf("Unexpected image id: %s != %s", secondImage.ID, image.ID)
+	if err := NewImage("5678", "").SaveToDB(test_db); err != nil {
+		t.Fatal(err)
 	}
-	if image.Caption != secondImage.Caption {
-		t.Errorf("Unexpected image caption: %s != %s", secondImage.Caption, image.Caption)
+	if image, err := GetLatestImage(test_db); err != nil || image == nil {
+		t.Fatal(err)
 	}
-	emptyImagesTable()
 }
 
 func emptyImagesTable() {
