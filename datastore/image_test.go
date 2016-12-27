@@ -34,7 +34,7 @@ func TestGetImage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if image.ID != id {
+	if image.ID == id {
 		t.Errorf("Unexpected image id: %s != %s", id, image.ID)
 	}
 	if image.Caption != caption {
