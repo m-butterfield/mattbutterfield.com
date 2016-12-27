@@ -90,5 +90,3 @@ func SaveImage(keyName string, caption *string) error {
 	_, err := db.Exec(insertImageQuery, keyName, caption)
 	return err
 }
-
-
