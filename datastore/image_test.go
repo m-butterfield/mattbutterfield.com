@@ -81,7 +81,6 @@ func TestSaveImage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	if err := db_mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expections: %s", err)
 	}
@@ -101,7 +100,6 @@ func TestSaveImageNilCaption(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	if err := db_mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expections: %s", err)
 	}
