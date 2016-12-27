@@ -3,4 +3,6 @@ language: go
 go:
   - 1.7.x
 
+install: make build
+
 script: make test
