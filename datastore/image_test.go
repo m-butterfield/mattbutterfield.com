@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	testDBFileName = "../app_test.db"
+	emptyImagesTableQuery = "DELETE FROM images"
+	testDBFileName        = "../app_test.db"
 )
 
 var (
@@ -39,5 +40,37 @@ func TestGetImage(t *testing.T) {
 	}
 	if image.Caption != caption {
 		t.Errorf("Unexpected image caption: %s != %s", caption, image.Caption)
+	}
+	emptyImagesTable()
+}
+
+func TestGetLatestImage(t *testing.T) {
+	firstImage := NewImage("1234", "")
+	err := firstImage.SaveToDB(test_db)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondImage := NewImage("5678", "")
+	err = secondImage.SaveToDB(test_db)
+	if err != nil {
+		t.Fatal(err)
+	}
+	image, err := GetLatestImage(test_db)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if image.ID != secondImage.ID {
+		t.Errorf("Unexpected image id: %s != %s", secondImage.ID, image.ID)
+	}
+	if image.Caption != secondImage.Caption {
+		t.Errorf("Unexpected image caption: %s != %s", secondImage.Caption, image.Caption)
+	}
+	emptyImagesTable()
+}
+
+func emptyImagesTable() {
+	_, err := test_db.Exec(emptyImagesTableQuery)
+	if err != nil {
+		panic(err)
 	}
 }
