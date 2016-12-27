@@ -3,6 +3,7 @@ package website
 import (
 	"fmt"
 	"html/template"
+	"net"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -12,7 +13,7 @@ import (
 
 const (
 	imageTemplateName = "website/templates/image.html"
-	port              = 8000
+	port              = "8000"
 )
 
 func Run() error {
@@ -20,7 +21,7 @@ func Run() error {
 	r.HandleFunc("/", index)
 	r.HandleFunc("/img/{id}", img)
 	fmt.Println("Serving on port: ", port)
-	err := http.ListenAndServe(":8000", r)
+	err := http.ListenAndServe(net.JoinHostPort("", port), r)
 	if err != nil {
 		return err
 	}
@@ -30,7 +31,7 @@ func Run() error {
 func index(w http.ResponseWriter, r *http.Request) {
 	image, err := datastore.GetRandomImage()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "error fetching image", http.StatusInternalServerError)
 	}
 	http.Redirect(w, r, "/img/"+image.EncodeID(), http.StatusFound)
 }
