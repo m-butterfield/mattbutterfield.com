@@ -32,7 +32,7 @@ func main() {
 }
 
 func getLatestID(svc *s3.S3) (string, error) {
-	latestID, err := datastore.GetLatestID()
+	image, err := datastore.GetLatestImage()
 	if err == sql.ErrNoRows {
 		result, err := svc.ListObjects(&s3.ListObjectsInput{
 			Bucket:  aws.String(bucketName),
@@ -46,7 +46,10 @@ func getLatestID(svc *s3.S3) (string, error) {
 		}
 		return *result.Contents[0].Key, nil
 	}
-	return latestID, err
+	if err != nil {
+		return "", err
+	}
+	return image.ID, err
 }
 
 func fetchImages(svc *s3.S3, latestID string) error {

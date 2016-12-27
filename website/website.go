@@ -11,37 +11,46 @@ import (
 )
 
 const (
-	indexFileName = "index.html"
-	port          = 8000
-)
-
-var (
-	indexTemplate *template.Template
+	imageTemplateName = "website/templates/image.html"
+	port              = 8000
 )
 
 func Run() error {
-	indexTemplate = template.New(indexFileName)
-	_, err := indexTemplate.ParseFiles(indexFileName)
-	if err != nil {
-		return err
-	}
 	r := mux.NewRouter()
-	r.HandleFunc("/", home)
+	r.HandleFunc("/", index)
+	r.HandleFunc("/img/{id}", img)
 	fmt.Println("Serving on port: ", port)
-	err = http.ListenAndServe(":8000", r)
+	err := http.ListenAndServe(":8000", r)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func home(w http.ResponseWriter, r *http.Request) {
-	page, err := datastore.GetRandomPage()
+func index(w http.ResponseWriter, r *http.Request) {
+	image, err := datastore.GetRandomImage()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	err = indexTemplate.Execute(w, page)
+	http.Redirect(w, r, "/img/"+image.EncodeID(), http.StatusFound)
+}
+
+func img(w http.ResponseWriter, r *http.Request) {
+	id, err := datastore.DecodeImageID(mux.Vars(r)["id"])
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "invalid image id", http.StatusInternalServerError)
+		return
 	}
+	image, err := datastore.GetImage(id)
+	if err != nil {
+		http.Error(w, "error fetching image", http.StatusInternalServerError)
+		return
+	}
+	tmpl, err := template.ParseFiles(imageTemplateName)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "error fetching template", http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, image)
 }
