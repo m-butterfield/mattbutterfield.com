@@ -1,6 +1,7 @@
 package website
 
 import (
+	"database/sql"
 	"encoding/base64"
 	"fmt"
 	"html/template"
@@ -60,6 +61,10 @@ func img(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	image, err := datastore.GetImage(id)
+	if err == sql.ErrNoRows {
+		http.NotFound(w, r)
+		return
+	}
 	if err != nil {
 		http.Error(w, "error fetching image", http.StatusInternalServerError)
 		return
