@@ -22,8 +22,31 @@ type Image struct {
 	Caption string
 }
 
+func NewImage(id, caption string) *Image {
+	return &Image{
+		ID:      id,
+		URL:     imageBaseURL + id,
+		Caption: caption,
+	}
+}
+
 func (I Image) EncodeID() string {
 	return base64.StdEncoding.EncodeToString([]byte(I.ID))
+}
+
+func (I Image) Save() error {
+	if db == nil {
+		err := initDB()
+		if err != nil {
+			return err
+		}
+	}
+	captionPtr := &I.Caption
+	if *captionPtr == "" {
+		captionPtr = nil
+	}
+	_, err := db.Exec(insertImageQuery, I.ID, captionPtr)
+	return err
 }
 
 func GetImage(id string) (*Image, error) {
@@ -34,14 +57,6 @@ func GetImage(id string) (*Image, error) {
 		}
 	}
 	return makeImageFromRow(db.QueryRow(getImageByIDQuery, id))
-}
-
-func DecodeImageID(encodedID string) (string, error) {
-	imageID, err := base64.StdEncoding.DecodeString(encodedID)
-	if err != nil {
-		return "", err
-	}
-	return string(imageID), nil
 }
 
 func GetLatestImage() (*Image, error) {
@@ -73,20 +88,13 @@ func makeImageFromRow(row *sql.Row) (*Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Image{
-		ID:      id,
-		URL:     imageBaseURL + id,
-		Caption: caption.String,
-	}, nil
+	return NewImage(id, caption.String), nil
 }
 
-func SaveImage(keyName string, caption *string) error {
-	if db == nil {
-		err := initDB()
-		if err != nil {
-			return err
-		}
+func DecodeImageID(encodedID string) (string, error) {
+	imageID, err := base64.StdEncoding.DecodeString(encodedID)
+	if err != nil {
+		return "", err
 	}
-	_, err := db.Exec(insertImageQuery, keyName, caption)
-	return err
+	return string(imageID), nil
 }
