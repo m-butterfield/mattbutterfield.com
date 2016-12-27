@@ -14,10 +14,15 @@ import (
 )
 
 const (
+	DBFileName        = "app.db"
 	imageBaseURL      = "http://images.mattbutterfield.com/"
 	imagePathBase     = "/img/"
 	imageTemplateName = "website/templates/image.html"
 	port              = "8000"
+)
+
+var (
+	db *sql.DB
 )
 
 type ImagePage struct {
@@ -34,12 +39,16 @@ func NewImagePage(image, nextImage *datastore.Image) *ImagePage {
 	}
 }
 
-func Run() error {
+func Run() (err error) {
+	db, err = datastore.InitDB(DBFileName)
+	if err != nil {
+		return err
+	}
 	r := mux.NewRouter()
 	r.HandleFunc("/", index)
 	r.HandleFunc(imagePathBase+"{id}", img)
 	fmt.Println("Serving on port: ", port)
-	err := http.ListenAndServe(net.JoinHostPort("", port), r)
+	err = http.ListenAndServe(net.JoinHostPort("", port), r)
 	if err != nil {
 		return err
 	}
@@ -47,7 +56,7 @@ func Run() error {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	image, err := datastore.GetRandomImage()
+	image, err := datastore.GetRandomImage(db)
 	if err != nil {
 		http.Error(w, "error fetching image", http.StatusInternalServerError)
 	}
@@ -60,7 +69,7 @@ func img(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid image id", http.StatusInternalServerError)
 		return
 	}
-	image, err := datastore.GetImage(id)
+	image, err := datastore.GetImage(db, id)
 	if err == sql.ErrNoRows {
 		http.NotFound(w, r)
 		return
@@ -69,7 +78,7 @@ func img(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error fetching image", http.StatusInternalServerError)
 		return
 	}
-	nextImage, err := datastore.GetRandomImage()
+	nextImage, err := datastore.GetRandomImage(db)
 	if err != nil {
 		http.Error(w, "error fetching next image", http.StatusInternalServerError)
 	}

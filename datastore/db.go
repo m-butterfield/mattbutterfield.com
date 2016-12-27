@@ -6,15 +6,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const (
-	dbFileName = "app.db"
-)
-
-var (
-	db *sql.DB
-)
-
-func initDB() (err error) {
-	db, err = sql.Open("sqlite3", dbFileName)
+func InitDB(dbPath string) (db *sql.DB, err error) {
+	db, err = sql.Open("sqlite3", dbPath)
 	return
 }

@@ -9,4 +9,6 @@ fmt:
 	@gofmt -l -s -w $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 test:
+	sqlite3 app_test.db ".read schema.sql"
 	go test -v ./datastore ./website
+	rm app_test.db

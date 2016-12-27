@@ -26,13 +26,7 @@ func NewImage(id, caption string) *Image {
 	}
 }
 
-func (I Image) Save() error {
-	if db == nil {
-		err := initDB()
-		if err != nil {
-			return err
-		}
-	}
+func (I Image) SaveToDB(db *sql.DB) error {
 	captionPtr := &I.Caption
 	if *captionPtr == "" {
 		captionPtr = nil
@@ -41,33 +35,15 @@ func (I Image) Save() error {
 	return err
 }
 
-func GetImage(id string) (*Image, error) {
-	if db == nil {
-		err := initDB()
-		if err != nil {
-			return nil, err
-		}
-	}
+func GetImage(db *sql.DB, id string) (*Image, error) {
 	return makeImageFromRow(db.QueryRow(getImageByIDQuery, id))
 }
 
-func GetLatestImage() (*Image, error) {
-	if db == nil {
-		err := initDB()
-		if err != nil {
-			return nil, err
-		}
-	}
+func GetLatestImage(db *sql.DB) (*Image, error) {
 	return makeImageFromRow(db.QueryRow(getLatestImageQuery))
 }
 
-func GetRandomImage() (*Image, error) {
-	if db == nil {
-		err := initDB()
-		if err != nil {
-			return nil, err
-		}
-	}
+func GetRandomImage(db *sql.DB) (*Image, error) {
 	return makeImageFromRow(db.QueryRow(getRandomImageQuery))
 }
 
