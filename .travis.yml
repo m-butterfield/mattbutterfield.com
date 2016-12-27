@@ -11,3 +11,5 @@ notifications:
   email:
     recipients:
       - matt@mattbutterfield.com
+    on_success: change
+    on_failure: always
