@@ -2,10 +2,9 @@ package datastore
 
 import (
 	"testing"
+	"time"
 
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
-	"time"
-	"fmt"
 )
 
 const (
@@ -123,14 +122,13 @@ func TestSaveImageNilLocationCaption(t *testing.T) {
 }
 
 func TestImageTimeFromID(t *testing.T) {
-	id := "20040901_001.jpg"
-	img := Image{ID: id}
+	img := Image{ID: "20040901_001.jpg"}
 	imgTime, err := img.TimeFromID()
 	if err != nil {
 		t.Error("Unexpected error: ", err)
 	}
 	expectedFormat := "20060102"
-	expectedTime, err := time.Parse(expectedFormat, id[:len(expectedFormat)])
+	expectedTime, err := time.Parse(expectedFormat, img.ID[:len(expectedFormat)])
 	if err != nil {
 		panic(err)
 	}
@@ -140,10 +138,10 @@ func TestImageTimeFromID(t *testing.T) {
 	img.ID = "blerpityblerpityboo"
 	_, err = img.TimeFromID()
 	if err == nil {
-		fmt.Errorf("Expected error when image id = %s", img.ID)
+		t.Errorf("Expected error when image id = %s", img.ID)
 	}
 	img.ID = "blah"
 	if err == nil {
-		fmt.Errorf("Expected error when image id = %s", img.ID)
+		t.Errorf("Expected error when image id = %s", img.ID)
 	}
 }

@@ -152,3 +152,17 @@ func TestImageNotFound(t *testing.T) {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 }
+
+func TestGetImageTimeStr(t *testing.T) {
+	expectedTimeStr := "September 2004"
+	img := &datastore.Image{ID: "20040901_001.jpg"}
+	timeStr := getImageTimeStr(img)
+	if timeStr != expectedTimeStr {
+		t.Errorf("Unexpected time string: %s != %s", expectedTimeStr, timeStr)
+	}
+	img.ID = "blerp"
+	timeStr = getImageTimeStr(img)
+	if timeStr != "" {
+		t.Errorf("Expected empty string from id: %s, instead got: %s", img.ID, timeStr)
+	}
+}
