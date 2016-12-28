@@ -2,9 +2,9 @@ package datastore
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 )
 
