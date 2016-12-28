@@ -54,10 +54,10 @@ func Run() error {
 }
 
 func buildRouter() *mux.Router {
-    r := mux.NewRouter()
+	r := mux.NewRouter()
 	r.HandleFunc("/", index)
 	r.HandleFunc(imagePathBase+"{id}", img)
-    return r
+	return r
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
