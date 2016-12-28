@@ -1,6 +1,7 @@
 package website
 
 import (
+	"database/sql"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -105,6 +106,49 @@ func TestImg(t *testing.T) {
 		t.Errorf("Unexpected call count for GetRandomImage(): %d", randomCalled)
 	}
 	if w.Code != http.StatusOK {
+		t.Errorf("Unexpected return code: %d", w.Code)
+	}
+}
+
+func TestInvalidID(t *testing.T) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	imageTemplateName = cwd + "/" + "templates/image.html"
+
+	r, err := http.NewRequest(http.MethodGet, imagePathBase+"MjAwO", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := httptest.NewRecorder()
+
+	testRouter.ServeHTTP(w, r)
+	if w.Code != http.StatusInternalServerError {
+		t.Errorf("Unexpected return code: %d", w.Code)
+	}
+}
+
+func TestImageNotFound(t *testing.T) {
+	getImageCalled := 0
+	imageStore = &fakeImageStore{
+		getImage: func(id string) (*datastore.Image, error) {
+			getImageCalled += 1
+			return nil, sql.ErrNoRows
+		},
+	}
+
+	r, err := http.NewRequest(http.MethodGet, imagePathBase+encodeImageID("1234"), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := httptest.NewRecorder()
+
+	testRouter.ServeHTTP(w, r)
+	if getImageCalled != 1 {
+		t.Errorf("Unexpected call count for GetImage(): %d", getImageCalled)
+	}
+	if w.Code != http.StatusNotFound {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 }
