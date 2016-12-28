@@ -3,11 +3,15 @@ language: go
 go:
   - 1.7.x
 
-before_install: make fmt 2>&1 | read; [ $? == 1 ]
+before_install:
+  - make fmt 2>&1 | read; [ $? == 1 ]
+  - make vet
 
-install: make build
+install:
+  - make build
 
-script: make test
+script:
+  - make test
 
 notifications:
   email:
