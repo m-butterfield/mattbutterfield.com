@@ -36,7 +36,6 @@ func TestIndex(t *testing.T) {
 	}
 }
 
-
 func TestImg(t *testing.T) {
 	var err error
 	var db_mock sqlmock.Sqlmock
