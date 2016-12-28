@@ -21,7 +21,7 @@ const (
 )
 
 var (
-	store             datastore.ImageStore
+	imageStore        datastore.ImageStore
 	imageTemplateName = "website/templates/image.html"
 )
 
@@ -44,7 +44,7 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	store = datastore.DBImageStore{DB: db}
+	imageStore = datastore.DBImageStore{DB: db}
 	r := mux.NewRouter()
 	r.HandleFunc("/", index)
 	r.HandleFunc(imagePathBase+"{id}", img)
@@ -57,7 +57,7 @@ func Run() error {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	image, err := store.GetRandomImage()
+	image, err := imageStore.GetRandomImage()
 	if err != nil {
 		http.Error(w, "error fetching image", http.StatusInternalServerError)
 	}
@@ -70,7 +70,7 @@ func img(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid image id", http.StatusInternalServerError)
 		return
 	}
-	image, err := store.GetImage(id)
+	image, err := imageStore.GetImage(id)
 	if err == sql.ErrNoRows {
 		http.NotFound(w, r)
 		return
@@ -79,7 +79,7 @@ func img(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error fetching image", http.StatusInternalServerError)
 		return
 	}
-	nextImage, err := store.GetRandomImage()
+	nextImage, err := imageStore.GetRandomImage()
 	if err != nil {
 		http.Error(w, "error fetching next image", http.StatusInternalServerError)
 	}
