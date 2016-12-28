@@ -14,15 +14,15 @@ import (
 )
 
 const (
-	DBFileName        = "app.db"
-	imageBaseURL      = "http://images.mattbutterfield.com/"
-	imagePathBase     = "/img/"
-	imageTemplateName = "website/templates/image.html"
-	port              = "8000"
+	DBFileName    = "app.db"
+	imageBaseURL  = "http://images.mattbutterfield.com/"
+	imagePathBase = "/img/"
+	port          = "8000"
 )
 
 var (
-	db *sql.DB
+	db                *sql.DB
+	imageTemplateName = "website/templates/image.html"
 )
 
 type ImagePage struct {
