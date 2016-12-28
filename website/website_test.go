@@ -37,7 +37,7 @@ func (store *fakeImageStore) GetRandomImage() (*datastore.Image, error) {
 }
 
 func TestIndex(t *testing.T) {
-	imageID := "1234"
+	imageID := "20040901_001.jpg"
 	randomCalled := 0
 	imageStore = &fakeImageStore{
 		getRandomImage: func() (*datastore.Image, error) {
@@ -75,7 +75,7 @@ func TestImg(t *testing.T) {
 	}
 	imageTemplateName = cwd + "/" + "templates/image.html"
 
-	imageID := "1234"
+	imageID := "20040901_001.jpg"
 	randImageID := "blerp"
 	getImageCalled, randomCalled := 0, 0
 	imageStore = &fakeImageStore{

@@ -7,11 +7,11 @@ import (
 )
 
 const (
-	baseSelectImageQuery = "SELECT id, caption FROM images "
+	baseSelectImageQuery = "SELECT id, caption, location FROM images "
 	getImageByIDQuery    = baseSelectImageQuery + "WHERE id = ?"
 	getLatestImageQuery  = baseSelectImageQuery + "ORDER BY id DESC LIMIT 1"
 	getRandomImageQuery  = baseSelectImageQuery + "WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)"
-	insertImageQuery     = "INSERT INTO images (id, caption) VALUES (?, ?)"
+	insertImageQuery     = "INSERT INTO images (id, caption, location) VALUES (?, ?, ?)"
 )
 
 type ImageStore interface {
@@ -24,6 +24,7 @@ type ImageStore interface {
 type Image struct {
 	ID      string
 	Caption string
+	Location string
 }
 
 type DBImageStore struct {
@@ -31,11 +32,14 @@ type DBImageStore struct {
 }
 
 func (store DBImageStore) SaveImage(image Image) error {
-	captionPtr := &image.Caption
+	captionPtr, locationPtr := &image.Caption, &image.Location
 	if *captionPtr == "" {
 		captionPtr = nil
 	}
-	_, err := store.DB.Exec(insertImageQuery, image.ID, captionPtr)
+	if *locationPtr == "" {
+		locationPtr = nil
+	}
+	_, err := store.DB.Exec(insertImageQuery, image.ID, captionPtr, locationPtr)
 	return err
 }
 
@@ -55,13 +59,15 @@ func makeImageFromRow(row *sql.Row) (*Image, error) {
 	var (
 		id      string
 		caption sql.NullString
+		location sql.NullString
 	)
-	err := row.Scan(&id, &caption)
+	err := row.Scan(&id, &caption, &location)
 	if err != nil {
 		return nil, err
 	}
 	return &Image{
 		ID:      id,
 		Caption: caption.String,
+		Location: location.String,
 	}, nil
 }

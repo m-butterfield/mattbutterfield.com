@@ -37,7 +37,7 @@ func main() {
 	fmt.Println("Program completed successfully!")
 }
 
-func getLatestID(store datastore.ImageStore, svc *s3.S3) (string, error) {
+func getLatestID(store datastore.DBImageStore, svc *s3.S3) (string, error) {
 	image, err := store.GetLatestImage()
 	if err == sql.ErrNoRows {
 		result, err := svc.ListObjects(&s3.ListObjectsInput{
@@ -58,7 +58,7 @@ func getLatestID(store datastore.ImageStore, svc *s3.S3) (string, error) {
 	return image.ID, err
 }
 
-func fetchImages(store datastore.ImageStore, svc *s3.S3, latestID string) error {
+func fetchImages(store datastore.DBImageStore, svc *s3.S3, latestID string) error {
 	fmt.Println("Fetching new keys from S3...")
 	firstRunThrough := true
 	for {
