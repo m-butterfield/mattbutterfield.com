@@ -10,6 +10,10 @@ import (
 	"github.com/m-butterfield/mattbutterfield.com/datastore"
 )
 
+var (
+	testRouter = buildRouter()
+)
+
 type fakeImageStore struct {
 	getImage       func(id string) (*datastore.Image, error)
 	getRandomImage func() (*datastore.Image, error)
@@ -41,12 +45,13 @@ func TestIndex(t *testing.T) {
 		},
 	}
 
-	r, err := http.NewRequest(http.MethodGet, "", nil)
+	r, err := http.NewRequest(http.MethodGet, "/", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	w := httptest.NewRecorder()
-	index(w, r)
+
+	testRouter.ServeHTTP(w, r)
 	if randomCalled != 1 {
 		t.Errorf("Unexpected call count for GetRandomImage(): %d", randomCalled)
 	}
@@ -75,6 +80,9 @@ func TestImg(t *testing.T) {
 	imageStore = &fakeImageStore{
 		getImage: func(id string) (*datastore.Image, error) {
 			getImageCalled += 1
+			if id != imageID {
+				t.Errorf("GetImage called with unexpected image id: %s", id)
+			}
 			return &datastore.Image{ID: imageID}, nil
 		},
 		getRandomImage: func() (*datastore.Image, error) {
@@ -88,7 +96,8 @@ func TestImg(t *testing.T) {
 		t.Fatal(err)
 	}
 	w := httptest.NewRecorder()
-	img(w, r)
+
+	testRouter.ServeHTTP(w, r)
 	if getImageCalled != 1 {
 		t.Errorf("Unexpected call count for GetImage(): %d", getImageCalled)
 	}

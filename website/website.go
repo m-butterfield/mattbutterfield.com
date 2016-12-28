@@ -45,15 +45,19 @@ func Run() error {
 		return err
 	}
 	imageStore = datastore.DBImageStore{DB: db}
-	r := mux.NewRouter()
-	r.HandleFunc("/", index)
-	r.HandleFunc(imagePathBase+"{id}", img)
 	fmt.Println("Serving on port: ", port)
-	err = http.ListenAndServe(net.JoinHostPort("", port), r)
+	err = http.ListenAndServe(net.JoinHostPort("", port), buildRouter())
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func buildRouter() *mux.Router {
+    r := mux.NewRouter()
+	r.HandleFunc("/", index)
+	r.HandleFunc(imagePathBase+"{id}", img)
+    return r
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
