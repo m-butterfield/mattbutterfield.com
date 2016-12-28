@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/m-butterfield/mattbutterfield.com/datastore"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
@@ -20,7 +19,7 @@ func TestIndex(t *testing.T) {
 	}
 
 	imageID := "1234"
-	db_mock.ExpectQuery(datastore.SelectRandomImageRegex).
+	db_mock.ExpectQuery(".*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption"}).AddRow(imageID, ""))
 
 	r, err := http.NewRequest(http.MethodGet, "", nil)
@@ -59,9 +58,9 @@ func TestImg(t *testing.T) {
 
 	imageID := "1234"
 	randImageID := "blerp"
-	db_mock.ExpectQuery(datastore.SelectImageByIDRegex).WithArgs(imageID).
+	db_mock.ExpectQuery(".*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption"}).AddRow(imageID, ""))
-	db_mock.ExpectQuery(datastore.SelectRandomImageRegex).
+	db_mock.ExpectQuery(".*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption"}).AddRow(randImageID, ""))
 
 	r, err := http.NewRequest(http.MethodGet, imagePathBase+encodeImageID(imageID), nil)

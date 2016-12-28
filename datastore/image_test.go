@@ -5,6 +5,12 @@ import (
 
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
+const (
+	InsertImageRegex       = "^INSERT INTO images \\(id, caption\\) VALUES \\(\\?, \\?\\)$"
+	SelectImageByIDRegex   = "^SELECT id, caption FROM images WHERE id = \\?$"
+	SelectLatestImageRegex = "^SELECT id, caption FROM images ORDER BY id DESC LIMIT 1$"
+	SelectRandomImageRegex = "^SELECT id, caption FROM images WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$"
+)
 
 func TestGetImage(t *testing.T) {
 	db, db_mock, err := sqlmock.New()
