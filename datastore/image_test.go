@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
+	"time"
+	"fmt"
 )
 
 const (
@@ -117,5 +119,31 @@ func TestSaveImageNilLocationCaption(t *testing.T) {
 	}
 	if err := db_mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expections: %s", err)
+	}
+}
+
+func TestImageTimeFromID(t *testing.T) {
+	id := "20040901_001.jpg"
+	img := Image{ID: id}
+	imgTime, err := img.TimeFromID()
+	if err != nil {
+		t.Error("Unexpected error: ", err)
+	}
+	expectedFormat := "20060102"
+	expectedTime, err := time.Parse(expectedFormat, id[:len(expectedFormat)])
+	if err != nil {
+		panic(err)
+	}
+	if *imgTime != expectedTime {
+		t.Errorf("Unexpected time returned: %v", *imgTime)
+	}
+	img.ID = "blerpityblerpityboo"
+	_, err = img.TimeFromID()
+	if err == nil {
+		fmt.Errorf("Expected error when image id = %s", img.ID)
+	}
+	img.ID = "blah"
+	if err == nil {
+		fmt.Errorf("Expected error when image id = %s", img.ID)
 	}
 }
