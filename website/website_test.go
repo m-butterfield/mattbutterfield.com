@@ -7,16 +7,16 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/m-butterfield/mattbutterfield.com/datastore"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
 func TestIndex(t *testing.T) {
-	var err error
-	var db_mock sqlmock.Sqlmock
-	db, db_mock, err = sqlmock.New()
+	db, db_mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatal(err)
 	}
+	store = datastore.DBImageStore{DB: db}
 
 	imageID := "1234"
 	db_mock.ExpectQuery(".*").
@@ -44,12 +44,11 @@ func TestIndex(t *testing.T) {
 }
 
 func TestImg(t *testing.T) {
-	var err error
-	var db_mock sqlmock.Sqlmock
-	db, db_mock, err = sqlmock.New()
+	db, db_mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatal(err)
 	}
+	store = datastore.DBImageStore{DB: db}
 	cwd, err := os.Getwd()
 	if err != nil {
 		panic(err)

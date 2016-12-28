@@ -5,6 +5,7 @@ import (
 
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
+
 const (
 	InsertImageRegex       = "^INSERT INTO images \\(id, caption\\) VALUES \\(\\?, \\?\\)$"
 	SelectImageByIDRegex   = "^SELECT id, caption FROM images WHERE id = \\?$"
@@ -22,7 +23,8 @@ func TestGetImage(t *testing.T) {
 	db_mock.ExpectQuery(SelectImageByIDRegex).WithArgs(id).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption"}).AddRow(id, caption))
 
-	image, err := GetImage(db, id)
+	store := DBImageStore{DB: db}
+	image, err := store.GetImage(id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +48,8 @@ func TestGetLatestImage(t *testing.T) {
 	db_mock.ExpectQuery(SelectLatestImageRegex).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption"}).AddRow("1234", ""))
 
-	_, err = GetLatestImage(db)
+	store := DBImageStore{DB: db}
+	_, err = store.GetLatestImage()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +67,8 @@ func TestGetRandomImage(t *testing.T) {
 	db_mock.ExpectQuery(SelectRandomImageRegex).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption"}).AddRow("1234", nil))
 
-	_, err = GetRandomImage(db)
+	store := DBImageStore{db}
+	_, err = store.GetRandomImage()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -82,8 +86,9 @@ func TestSaveImage(t *testing.T) {
 	id, caption := "1234", "hello"
 	db_mock.ExpectExec(InsertImageRegex).WithArgs(id, caption).WillReturnResult(sqlmock.NewResult(1, 1))
 
-	image := NewImage(id, caption)
-	err = image.SaveToDB(db)
+	image := Image{ID: id, Caption: caption}
+	store := DBImageStore{DB: db}
+	err = store.SaveImage(image)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -101,8 +106,9 @@ func TestSaveImageNilCaption(t *testing.T) {
 	id := "1234"
 	db_mock.ExpectExec(InsertImageRegex).WithArgs(id, nil).WillReturnResult(sqlmock.NewResult(1, 1))
 
-	image := NewImage(id, "")
-	err = image.SaveToDB(db)
+	image := Image{ID: id}
+	store := DBImageStore{DB: db}
+	err = store.SaveImage(image)
 	if err != nil {
 		t.Fatal(err)
 	}

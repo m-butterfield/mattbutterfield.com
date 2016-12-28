@@ -23,21 +23,22 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	store := datastore.DBImageStore{DB: db}
 	svc := s3.New(session.New(&aws.Config{Region: aws.String(awsRegion)}))
-	latestID, err := getLatestID(db, svc)
+	latestID, err := getLatestID(store, svc)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Latest id: ", latestID)
-	err = fetchImages(db, svc, latestID)
+	err = fetchImages(store, svc, latestID)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Program completed successfully!")
 }
 
-func getLatestID(db *sql.DB, svc *s3.S3) (string, error) {
-	image, err := datastore.GetLatestImage(db)
+func getLatestID(store datastore.ImageStore, svc *s3.S3) (string, error) {
+	image, err := store.GetLatestImage()
 	if err == sql.ErrNoRows {
 		result, err := svc.ListObjects(&s3.ListObjectsInput{
 			Bucket:  aws.String(bucketName),
@@ -57,7 +58,7 @@ func getLatestID(db *sql.DB, svc *s3.S3) (string, error) {
 	return image.ID, err
 }
 
-func fetchImages(db *sql.DB, svc *s3.S3, latestID string) error {
+func fetchImages(store datastore.ImageStore, svc *s3.S3, latestID string) error {
 	fmt.Println("Fetching new keys from S3...")
 	firstRunThrough := true
 	for {
@@ -77,8 +78,7 @@ func fetchImages(db *sql.DB, svc *s3.S3, latestID string) error {
 		}
 		for _, result := range result.Contents {
 			fmt.Println("Saving image: ", *result.Key)
-			image := datastore.NewImage(*result.Key, "")
-			err = image.SaveToDB(db)
+			err = store.SaveImage(datastore.Image{ID: *result.Key, Caption: ""})
 			if err != nil {
 				return err
 			}

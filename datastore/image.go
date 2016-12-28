@@ -14,37 +14,41 @@ const (
 	insertImageQuery     = "INSERT INTO images (id, caption) VALUES (?, ?)"
 )
 
+type ImageStore interface {
+	SaveImage(image Image) error
+	GetImage(id string) (*Image, error)
+	GetLatestImage() (*Image, error)
+	GetRandomImage() (*Image, error)
+}
+
 type Image struct {
 	ID      string
 	Caption string
 }
 
-func NewImage(id, caption string) *Image {
-	return &Image{
-		ID:      id,
-		Caption: caption,
-	}
+type DBImageStore struct {
+	DB *sql.DB
 }
 
-func (I Image) SaveToDB(db *sql.DB) error {
-	captionPtr := &I.Caption
+func (store DBImageStore) SaveImage(image Image) error {
+	captionPtr := &image.Caption
 	if *captionPtr == "" {
 		captionPtr = nil
 	}
-	_, err := db.Exec(insertImageQuery, I.ID, captionPtr)
+	_, err := store.DB.Exec(insertImageQuery, image.ID, captionPtr)
 	return err
 }
 
-func GetImage(db *sql.DB, id string) (*Image, error) {
-	return makeImageFromRow(db.QueryRow(getImageByIDQuery, id))
+func (store DBImageStore) GetImage(id string) (*Image, error) {
+	return makeImageFromRow(store.DB.QueryRow(getImageByIDQuery, id))
 }
 
-func GetLatestImage(db *sql.DB) (*Image, error) {
-	return makeImageFromRow(db.QueryRow(getLatestImageQuery))
+func (store DBImageStore) GetLatestImage() (*Image, error) {
+	return makeImageFromRow(store.DB.QueryRow(getLatestImageQuery))
 }
 
-func GetRandomImage(db *sql.DB) (*Image, error) {
-	return makeImageFromRow(db.QueryRow(getRandomImageQuery))
+func (store DBImageStore) GetRandomImage() (*Image, error) {
+	return makeImageFromRow(store.DB.QueryRow(getRandomImageQuery))
 }
 
 func makeImageFromRow(row *sql.Row) (*Image, error) {
@@ -56,5 +60,8 @@ func makeImageFromRow(row *sql.Row) (*Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewImage(id, caption.String), nil
+	return &Image{
+		ID:      id,
+		Caption: caption.String,
+	}, nil
 }
