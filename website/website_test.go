@@ -29,7 +29,7 @@ func TestIndex(t *testing.T) {
 	w := httptest.NewRecorder()
 	index(w, r)
 	if w.Code != http.StatusFound {
-		t.Errorf("Unexpected return code: %s", w.Code)
+		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 	if value, ok := w.Header()["Location"]; ok {
 		if !strings.HasSuffix(value[0], imagePathBase+encodeImageID(imageID)) {
@@ -70,7 +70,7 @@ func TestImg(t *testing.T) {
 	w := httptest.NewRecorder()
 	img(w, r)
 	if w.Code != http.StatusOK {
-		t.Errorf("Unexpected return code: %s", w.Code)
+		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 	if err := db_mock.ExpectationsWereMet(); err != nil {
 		t.Error(err)
