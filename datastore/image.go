@@ -2,7 +2,9 @@ package datastore
 
 import (
 	"database/sql"
+	"time"
 
+	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -14,6 +16,10 @@ const (
 	insertImageQuery     = "INSERT INTO images (id, caption, location) VALUES (?, ?, ?)"
 )
 
+const (
+	imageIDDateLayout = "20060102"
+)
+
 type ImageStore interface {
 	SaveImage(image Image) error
 	GetImage(id string) (*Image, error)
@@ -22,9 +28,20 @@ type ImageStore interface {
 }
 
 type Image struct {
-	ID      string
-	Caption string
+	ID       string
+	Caption  string
 	Location string
+}
+
+func (i Image) TimeFromID() (*time.Time, error) {
+	if len(i.ID) < len(imageIDDateLayout) {
+		return nil, fmt.Errorf("Unexpected id format: %s", i.ID)
+	}
+	t, err := time.Parse(imageIDDateLayout, i.ID[:len(imageIDDateLayout)])
+	if err != nil {
+		return nil, err
+	}
+	return &t, nil
 }
 
 type DBImageStore struct {
@@ -57,8 +74,8 @@ func (store DBImageStore) GetRandomImage() (*Image, error) {
 
 func makeImageFromRow(row *sql.Row) (*Image, error) {
 	var (
-		id      string
-		caption sql.NullString
+		id       string
+		caption  sql.NullString
 		location sql.NullString
 	)
 	err := row.Scan(&id, &caption, &location)
@@ -66,8 +83,8 @@ func makeImageFromRow(row *sql.Row) (*Image, error) {
 		return nil, err
 	}
 	return &Image{
-		ID:      id,
-		Caption: caption.String,
+		ID:       id,
+		Caption:  caption.String,
 		Location: location.String,
 	}, nil
 }

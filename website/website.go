@@ -14,10 +14,11 @@ import (
 )
 
 const (
-	DBFileName    = "app.db"
-	imageBaseURL  = "http://images.mattbutterfield.com/"
-	imagePathBase = "/img/"
-	port          = "8000"
+	DBFileName        = "app.db"
+	imageBaseURL      = "http://images.mattbutterfield.com/"
+	imagePathBase     = "/img/"
+	port              = "8000"
+	dateDisplayLayout = "January 2006"
 )
 
 var (
@@ -27,6 +28,8 @@ var (
 
 type ImagePage struct {
 	ImageCaption  string
+	ImageDate     string
+	ImageLocation string
 	ImageURL      string
 	NextImagePath string
 }
@@ -34,9 +37,19 @@ type ImagePage struct {
 func NewImagePage(image, nextImage *datastore.Image) *ImagePage {
 	return &ImagePage{
 		ImageCaption:  image.Caption,
+		ImageDate:     getImageTimeStr(image),
+		ImageLocation: image.Location,
 		ImageURL:      imageBaseURL + image.ID,
 		NextImagePath: imagePathBase + encodeImageID(nextImage.ID),
 	}
+}
+
+func getImageTimeStr(image *datastore.Image) string {
+	t, err := image.TimeFromID()
+	if err != nil {
+		return ""
+	}
+	return t.Format(dateDisplayLayout)
 }
 
 func Run() error {

@@ -2,24 +2,25 @@
   <head>
     <title>mattbutterfield.com</title>
     <style>
+      a {
+        color: #dedede;
+      }
       body {
         background-color: #2c2c2c;
-        text-align: center;
         color: #dedede;
         font-family: Helvetica, sans-serif;
+        text-align: center;
+      }
+      p {
+        margin-bottom: 10px;
+        margin-top: 5px;
       }
       .section-div {
-        padding-bottom: 20px;
-      }
-      a {
-        /* text-decoration: none; */
-        color: #dedede;
+        margin-bottom: 30px;
       }
     </style>
   </head>
-    <div>
-      <h1>welcome.</h1>
-    </div>
+    <h1>welcome.</h1>
     <div class="section-div">
       <a id="get-new-image" href="{{ .NextImagePath }}">get new image.</a>
     </div>
@@ -27,7 +28,9 @@
       <img src="{{ .ImageURL }}">
     </div>
     <div class="section-div" >
-      {{ .ImageCaption }}
+      <p>{{ .ImageLocation }}</p>
+      <p>{{ .ImageDate }}</p>
+      <p>{{ .ImageCaption }}</p>
     </div>
   </body>
 </html>
