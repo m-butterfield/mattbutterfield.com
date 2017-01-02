@@ -16,6 +16,7 @@ const (
 	getPreviousQuery     = baseSelectImageQuery + "WHERE id < ? ORDER BY id DESC LIMIT 1"
 	getRandomImageQuery  = baseSelectImageQuery + "WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)"
 	insertImageQuery     = "INSERT INTO images (id, caption, location) VALUES (?, ?, ?)"
+	updateImageQuery     = "UPDATE images SET location = ?, caption = ? WHERE id = ?"
 )
 
 const (
@@ -28,6 +29,7 @@ type ImageStore interface {
 	GetPrevNextImages(string) (*Image, *Image, error)
 	GetRandomImage() (*Image, error)
 	SaveImage(Image) error
+	UpdateImage(string, string, string) error
 }
 
 type Image struct {
@@ -84,6 +86,18 @@ func (store DBImageStore) SaveImage(image Image) error {
 		locationPtr = nil
 	}
 	_, err := store.DB.Exec(insertImageQuery, image.ID, captionPtr, locationPtr)
+	return err
+}
+
+func (store DBImageStore) UpdateImage(id, location, caption string) error {
+	captionPtr, locationPtr := &caption, &location
+	if *captionPtr == "" {
+		captionPtr = nil
+	}
+	if *locationPtr == "" {
+		locationPtr = nil
+	}
+	_, err := store.DB.Exec(updateImageQuery, locationPtr, captionPtr, id)
 	return err
 }
 

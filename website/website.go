@@ -93,8 +93,8 @@ func Run() error {
 func buildRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", index)
-	r.HandleFunc(imagePathBase+"{id}", img)
-	r.HandleFunc(adminPathBase+"{id}", admin)
+	r.HandleFunc(imagePathBase+"{id}", img).Methods(http.MethodGet)
+	r.HandleFunc(adminPathBase+"{id}", admin).Methods(http.MethodGet, http.MethodPost)
 	return r
 }
 
@@ -109,7 +109,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 func img(w http.ResponseWriter, r *http.Request) {
 	id, err := decodeImageID(mux.Vars(r)["id"])
 	if err != nil {
-		http.Error(w, "invalid image id", http.StatusInternalServerError)
+		http.Error(w, "invalid image id", http.StatusBadRequest)
 		return
 	}
 	image, err := imageStore.GetImage(id)
@@ -138,8 +138,12 @@ func img(w http.ResponseWriter, r *http.Request) {
 func admin(w http.ResponseWriter, r *http.Request) {
 	id, err := decodeImageID(mux.Vars(r)["id"])
 	if err != nil {
-		http.Error(w, "invalid image id", http.StatusInternalServerError)
+		http.Error(w, "invalid image id", http.StatusBadRequest)
 		return
+	}
+	if r.Method == http.MethodPost {
+		r.ParseForm()
+		imageStore.UpdateImage(id, r.PostForm.Get("location"), r.PostForm.Get("caption"))
 	}
 	image, err := imageStore.GetImage(id)
 	if err == sql.ErrNoRows {

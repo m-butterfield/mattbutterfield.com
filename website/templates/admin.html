@@ -34,12 +34,23 @@
       {{ end }}
     </div>
     <div class="section-div">
-      <img src="{{ .ImageURL }}">
+      <img src="{{ .ImageURL }}" />
     </div>
     <div class="section-div">
-      <p>{{ .ImageLocation }}</p>
       <p>{{ .ImageDate }}</p>
-      <p>{{ .ImageCaption }}</p>
+      <form method="post">
+        <p>
+          Location:<br />
+          <input type="text" name="location" value="{{ .ImageLocation }}" />
+        </p>
+        <p>
+          Caption:<br />
+          <textarea name="caption">{{ .ImageCaption }}</textarea>
+        </p>
+        <p>
+          <button type="submit">Save</button>
+        </p>
+      </form>
     </div>
   </body>
 </html>

@@ -15,6 +15,7 @@ const (
 	SelectRandomImageRegex = "^SELECT id, caption, location FROM images WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$"
 	SelectPrevImageRegex   = "^SELECT id, caption, location FROM images WHERE id \\< \\? ORDER BY id DESC LIMIT 1$"
 	SelectNextImageRegex   = "^SELECT id, caption, location FROM images WHERE id \\> \\? ORDER BY id LIMIT 1$"
+	UpdateImageRegex       = "^UPDATE images SET location = \\?, caption = \\? WHERE id = \\?$"
 )
 
 func TestGetImage(t *testing.T) {
@@ -116,6 +117,44 @@ func TestSaveImageNilLocationCaption(t *testing.T) {
 	image := Image{ID: id}
 	store := DBImageStore{DB: db}
 	err = store.SaveImage(image)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db_mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled database expectations: %s", err)
+	}
+}
+
+func TestUpdateImage(t *testing.T) {
+	db, db_mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id, caption, location := "20040901_001.jpg", "hello", "NYC"
+	db_mock.ExpectExec(UpdateImageRegex).WithArgs(location, caption, id).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	store := DBImageStore{DB: db}
+	err = store.UpdateImage(id, location, caption)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db_mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled database expectations: %s", err)
+	}
+}
+
+func TestUpdateImageNilLocationCaption(t *testing.T) {
+	db, db_mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id := "20040901_001.jpg"
+	db_mock.ExpectExec(UpdateImageRegex).WithArgs(nil, nil, id).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	store := DBImageStore{DB: db}
+	err = store.UpdateImage(id, "", "")
 	if err != nil {
 		t.Fatal(err)
 	}

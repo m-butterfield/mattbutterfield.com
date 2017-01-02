@@ -16,9 +16,10 @@ var (
 )
 
 type fakeImageStore struct {
-	getImage          func(id string) (*datastore.Image, error)
-	getPrevNextImages func(id string) (*datastore.Image, *datastore.Image, error)
+	getImage          func(string) (*datastore.Image, error)
+	getPrevNextImages func(string) (*datastore.Image, *datastore.Image, error)
 	getRandomImage    func() (*datastore.Image, error)
+	updateImage       func(string, string, string) error
 }
 
 func (store *fakeImageStore) GetImage(id string) (*datastore.Image, error) {
@@ -39,6 +40,10 @@ func (store *fakeImageStore) GetRandomImage() (*datastore.Image, error) {
 
 func (store *fakeImageStore) SaveImage(image datastore.Image) error {
 	panic("Should not call save during website view tests.")
+}
+
+func (store *fakeImageStore) UpdateImage(id, location, caption string) error {
+	return store.updateImage(id, location, caption)
 }
 
 func TestGetImageTimeStr(t *testing.T) {
@@ -143,7 +148,7 @@ func TestInvalidID(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testRouter.ServeHTTP(w, r)
-	if w.Code != http.StatusInternalServerError {
+	if w.Code != http.StatusBadRequest {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 }
@@ -255,7 +260,7 @@ func TestAdminInvalidID(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testRouter.ServeHTTP(w, r)
-	if w.Code != http.StatusInternalServerError {
+	if w.Code != http.StatusBadRequest {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 }
