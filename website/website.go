@@ -53,7 +53,7 @@ type adminPage struct {
 	NextURL     string
 }
 
-func newAdminPage(image *datastore.Image, prevImageID, nextImageID string) adminPage {
+func makeAdminPage(image *datastore.Image, prevImageID, nextImageID string) adminPage {
 	var prevURL, nextURL string
 	if prevImageID != "" {
 		prevURL = makeAdminPath(prevImageID)
@@ -173,7 +173,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 	if next != nil {
 		nextID = next.ID
 	}
-	adminPage := newAdminPage(image, previousID, nextID)
+	adminPage := makeAdminPage(image, previousID, nextID)
 	tmpl.Execute(w, adminPage)
 }
 
