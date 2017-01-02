@@ -12,16 +12,14 @@ import (
 )
 
 var (
-	testRouter = buildRouter()
+	testRouter = buildRouter(true)
 )
 
 type fakeImageStore struct {
-	getImage       func(id string) (*datastore.Image, error)
-	getRandomImage func() (*datastore.Image, error)
-}
-
-func (store *fakeImageStore) SaveImage(image datastore.Image) error {
-	panic("Should not call save during website view tests.")
+	getImage          func(string) (*datastore.Image, error)
+	getPrevNextImages func(string) (*datastore.Image, *datastore.Image, error)
+	getRandomImage    func() (*datastore.Image, error)
+	updateImage       func(string, string, string) error
 }
 
 func (store *fakeImageStore) GetImage(id string) (*datastore.Image, error) {
@@ -29,11 +27,37 @@ func (store *fakeImageStore) GetImage(id string) (*datastore.Image, error) {
 }
 
 func (store *fakeImageStore) GetLatestImage() (*datastore.Image, error) {
-	panic("should not call get latest image suring website view tests.")
+	panic("should not call get latest image during website view tests.")
+}
+
+func (store *fakeImageStore) GetPrevNextImages(id string) (*datastore.Image, *datastore.Image, error) {
+	return store.getPrevNextImages(id)
 }
 
 func (store *fakeImageStore) GetRandomImage() (*datastore.Image, error) {
 	return store.getRandomImage()
+}
+
+func (store *fakeImageStore) SaveImage(image datastore.Image) error {
+	panic("Should not call save during website view tests.")
+}
+
+func (store *fakeImageStore) UpdateImage(id, location, caption string) error {
+	return store.updateImage(id, location, caption)
+}
+
+func TestGetImageTimeStr(t *testing.T) {
+	expectedTimeStr := "September 2004"
+	img := &datastore.Image{ID: "20040901_001.jpg"}
+	timeStr := getImageTimeStr(img)
+	if timeStr != expectedTimeStr {
+		t.Errorf("Unexpected time string: %s != %s", expectedTimeStr, timeStr)
+	}
+	img.ID = "blerp"
+	timeStr = getImageTimeStr(img)
+	if timeStr != "" {
+		t.Errorf("Expected empty string from id: %s, instead got: %s", img.ID, timeStr)
+	}
 }
 
 func TestIndex(t *testing.T) {
@@ -124,7 +148,7 @@ func TestInvalidID(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testRouter.ServeHTTP(w, r)
-	if w.Code != http.StatusInternalServerError {
+	if w.Code != http.StatusBadRequest {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 }
@@ -153,16 +177,90 @@ func TestImageNotFound(t *testing.T) {
 	}
 }
 
-func TestGetImageTimeStr(t *testing.T) {
-	expectedTimeStr := "September 2004"
-	img := &datastore.Image{ID: "20040901_001.jpg"}
-	timeStr := getImageTimeStr(img)
-	if timeStr != expectedTimeStr {
-		t.Errorf("Unexpected time string: %s != %s", expectedTimeStr, timeStr)
+func TestAdmin(t *testing.T) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
 	}
-	img.ID = "blerp"
-	timeStr = getImageTimeStr(img)
-	if timeStr != "" {
-		t.Errorf("Expected empty string from id: %s, instead got: %s", img.ID, timeStr)
+	adminTemplateName = cwd + "/" + "templates/admin.html"
+
+	getImageCalled := 0
+	getPrevNextCalled := 0
+	imageID := "20040901_001.jpg"
+	imageStore = &fakeImageStore{
+		getImage: func(id string) (*datastore.Image, error) {
+			getImageCalled += 1
+			if id != imageID {
+				t.Errorf("GetImage called with unexpected image id: %s", id)
+			}
+			return &datastore.Image{ID: imageID}, nil
+		},
+		getPrevNextImages: func(id string) (*datastore.Image, *datastore.Image, error) {
+			getPrevNextCalled += 1
+			if id != imageID {
+				t.Errorf("GetPrevNextImages called with unexpected image id: %s", id)
+			}
+			return &datastore.Image{ID: imageID}, &datastore.Image{ID: imageID}, nil
+		},
+	}
+
+	r, err := http.NewRequest(http.MethodGet, adminPathBase+encodeImageID(imageID), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := httptest.NewRecorder()
+
+	testRouter.ServeHTTP(w, r)
+	if getImageCalled != 1 {
+		t.Errorf("Unexpected call count for GetImage(): %d", getImageCalled)
+	}
+	if getPrevNextCalled != 1 {
+		t.Errorf("Unexpected call count for GetPrevNextImages(): %d", getPrevNextCalled)
+	}
+	if w.Code != http.StatusOK {
+		t.Errorf("Unexpected return code: %d", w.Code)
+	}
+}
+
+func TestAdminImageNotFound(t *testing.T) {
+	getImageCalled := 0
+	imageStore = &fakeImageStore{
+		getImage: func(id string) (*datastore.Image, error) {
+			getImageCalled += 1
+			return nil, sql.ErrNoRows
+		},
+	}
+
+	r, err := http.NewRequest(http.MethodGet, adminPathBase+encodeImageID("1234"), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := httptest.NewRecorder()
+
+	testRouter.ServeHTTP(w, r)
+	if getImageCalled != 1 {
+		t.Errorf("Unexpected call count for GetImage(): %d", getImageCalled)
+	}
+	if w.Code != http.StatusNotFound {
+		t.Errorf("Unexpected return code: %d", w.Code)
+	}
+}
+
+func TestAdminInvalidID(t *testing.T) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	imageTemplateName = cwd + "/" + "templates/admin.html"
+
+	r, err := http.NewRequest(http.MethodGet, adminPathBase+"MjAwO", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := httptest.NewRecorder()
+
+	testRouter.ServeHTTP(w, r)
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 }

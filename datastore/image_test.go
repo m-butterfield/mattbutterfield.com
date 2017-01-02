@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"database/sql"
 	"testing"
 	"time"
 
@@ -12,6 +13,9 @@ const (
 	SelectImageByIDRegex   = "^SELECT id, caption, location FROM images WHERE id = \\?$"
 	SelectLatestImageRegex = "^SELECT id, caption, location FROM images ORDER BY id DESC LIMIT 1$"
 	SelectRandomImageRegex = "^SELECT id, caption, location FROM images WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$"
+	SelectPrevImageRegex   = "^SELECT id, caption, location FROM images WHERE id \\< \\? ORDER BY id DESC LIMIT 1$"
+	SelectNextImageRegex   = "^SELECT id, caption, location FROM images WHERE id \\> \\? ORDER BY id LIMIT 1$"
+	UpdateImageRegex       = "^UPDATE images SET location = \\?, caption = \\? WHERE id = \\?$"
 )
 
 func TestGetImage(t *testing.T) {
@@ -30,7 +34,7 @@ func TestGetImage(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := db_mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expections: %s", err)
+		t.Errorf("Unfulfilled database expectations: %s", err)
 	}
 	if image.ID != id {
 		t.Errorf("Unexpected image id: %s != %s", id, image.ID)
@@ -58,7 +62,7 @@ func TestGetLatestImage(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := db_mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expections: %s", err)
+		t.Errorf("Unfulfilled database expectations: %s", err)
 	}
 }
 
@@ -77,7 +81,7 @@ func TestGetRandomImage(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := db_mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expections: %s", err)
+		t.Errorf("Unfulfilled database expectations: %s", err)
 	}
 }
 
@@ -97,7 +101,7 @@ func TestSaveImage(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := db_mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expections: %s", err)
+		t.Errorf("Unfulfilled database expectations: %s", err)
 	}
 }
 
@@ -117,7 +121,45 @@ func TestSaveImageNilLocationCaption(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := db_mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expections: %s", err)
+		t.Errorf("Unfulfilled database expectations: %s", err)
+	}
+}
+
+func TestUpdateImage(t *testing.T) {
+	db, db_mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id, caption, location := "20040901_001.jpg", "hello", "NYC"
+	db_mock.ExpectExec(UpdateImageRegex).WithArgs(location, caption, id).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	store := DBImageStore{DB: db}
+	err = store.UpdateImage(id, location, caption)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db_mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled database expectations: %s", err)
+	}
+}
+
+func TestUpdateImageNilLocationCaption(t *testing.T) {
+	db, db_mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	id := "20040901_001.jpg"
+	db_mock.ExpectExec(UpdateImageRegex).WithArgs(nil, nil, id).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	store := DBImageStore{DB: db}
+	err = store.UpdateImage(id, "", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db_mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled database expectations: %s", err)
 	}
 }
 
@@ -144,4 +186,63 @@ func TestImageTimeFromID(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error when image id = %s", img.ID)
 	}
+}
+
+func TestGetNextPrevious(t *testing.T) {
+	db, db_mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	prevID, id, nextID := "20040901_001.jpg", "20040901_002.jpg", "20040901_003.jpg"
+
+	db_mock.ExpectQuery(SelectPrevImageRegex).WithArgs(id).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location"}).AddRow(prevID, nil, nil))
+	db_mock.ExpectQuery(SelectNextImageRegex).WithArgs(id).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location"}).AddRow(nextID, nil, nil))
+
+	store := DBImageStore{db}
+	prev, next, err := store.GetPrevNextImages(id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db_mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled database expectations: %s", err)
+	}
+	if prevID != prev.ID {
+		t.Errorf("Unexpected id for 'previous': %s != %s", prevID, prev.ID)
+	}
+	if nextID != next.ID {
+		t.Errorf("Unexpected id for 'next': %s != %s", nextID, next.ID)
+	}
+}
+
+func TestGetNextPreviousNoRowsPrev(t *testing.T) {
+	db, db_mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	id, nextID := "20040901_002.jpg", "20040901_003.jpg"
+
+	db_mock.ExpectQuery(SelectPrevImageRegex).WithArgs(id).
+		WillReturnError(sql.ErrNoRows)
+	db_mock.ExpectQuery(SelectNextImageRegex).WithArgs(id).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location"}).AddRow(nextID, nil, nil))
+
+	store := DBImageStore{db}
+	prev, next, err := store.GetPrevNextImages(id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db_mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled database expectations: %s", err)
+	}
+	if prev != nil {
+		t.Errorf("Unexpected return for 'previous': %s", prev.ID)
+	}
+	if nextID != next.ID {
+		t.Errorf("Unexpected id for 'next': %s != %s", nextID, next.ID)
+	}
+}
+
+func TestGetNextPreviousNoRowsNext(t *testing.T) {
 }

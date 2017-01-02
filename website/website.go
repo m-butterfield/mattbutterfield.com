@@ -14,19 +14,22 @@ import (
 )
 
 const (
+	adminPathBase     = "/admin/"
+	dateDisplayLayout = "January 2006"
 	DBFileName        = "app.db"
 	imageBaseURL      = "http://images.mattbutterfield.com/"
 	imagePathBase     = "/img/"
 	port              = "8000"
-	dateDisplayLayout = "January 2006"
+	templatePath      = "website/templates/"
 )
 
 var (
+	adminTemplateName = templatePath + "admin.html"
 	imageStore        datastore.ImageStore
-	imageTemplateName = "website/templates/image.html"
+	imageTemplateName = templatePath + "image.html"
 )
 
-type ImagePage struct {
+type imagePage struct {
 	ImageCaption  string
 	ImageDate     string
 	ImageLocation string
@@ -34,13 +37,34 @@ type ImagePage struct {
 	NextImagePath string
 }
 
-func NewImagePage(image, nextImage *datastore.Image) *ImagePage {
-	return &ImagePage{
+func makeImagePage(image *datastore.Image, nextImageID string) imagePage {
+	return imagePage{
 		ImageCaption:  image.Caption,
 		ImageDate:     getImageTimeStr(image),
 		ImageLocation: image.Location,
 		ImageURL:      imageBaseURL + image.ID,
-		NextImagePath: imagePathBase + encodeImageID(nextImage.ID),
+		NextImagePath: makeImagePath(nextImageID),
+	}
+}
+
+type adminPage struct {
+	imagePage
+	PreviousURL string
+	NextURL     string
+}
+
+func newAdminPage(image *datastore.Image, prevImageID, nextImageID string) adminPage {
+	var prevURL, nextURL string
+	if prevImageID != "" {
+		prevURL = makeAdminPath(prevImageID)
+	}
+	if nextImageID != "" {
+		nextURL = makeAdminPath(nextImageID)
+	}
+	return adminPage{
+		imagePage:   makeImagePage(image, ""),
+		PreviousURL: prevURL,
+		NextURL:     nextURL,
 	}
 }
 
@@ -52,24 +76,27 @@ func getImageTimeStr(image *datastore.Image) string {
 	return t.Format(dateDisplayLayout)
 }
 
-func Run() error {
+func Run(withAdmin bool) error {
 	db, err := datastore.InitDB(DBFileName)
 	if err != nil {
 		return err
 	}
 	imageStore = datastore.DBImageStore{DB: db}
 	fmt.Println("Serving on port: ", port)
-	err = http.ListenAndServe(net.JoinHostPort("", port), buildRouter())
+	err = http.ListenAndServe(net.JoinHostPort("", port), buildRouter(withAdmin))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func buildRouter() *mux.Router {
+func buildRouter(withAdmin bool) *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", index)
-	r.HandleFunc(imagePathBase+"{id}", img)
+	r.HandleFunc(imagePathBase+"{id}", img).Methods(http.MethodGet)
+	if withAdmin {
+		r.HandleFunc(adminPathBase+"{id}", admin).Methods(http.MethodGet, http.MethodPost)
+	}
 	return r
 }
 
@@ -84,7 +111,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 func img(w http.ResponseWriter, r *http.Request) {
 	id, err := decodeImageID(mux.Vars(r)["id"])
 	if err != nil {
-		http.Error(w, "invalid image id", http.StatusInternalServerError)
+		http.Error(w, "invalid image id", http.StatusBadRequest)
 		return
 	}
 	image, err := imageStore.GetImage(id)
@@ -106,12 +133,56 @@ func img(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error fetching template", http.StatusInternalServerError)
 		return
 	}
-	imagePage := NewImagePage(image, nextImage)
+	imagePage := makeImagePage(image, nextImage.ID)
 	tmpl.Execute(w, imagePage)
+}
+
+func admin(w http.ResponseWriter, r *http.Request) {
+	id, err := decodeImageID(mux.Vars(r)["id"])
+	if err != nil {
+		http.Error(w, "invalid image id", http.StatusBadRequest)
+		return
+	}
+	if r.Method == http.MethodPost {
+		r.ParseForm()
+		imageStore.UpdateImage(id, r.PostForm.Get("location"), r.PostForm.Get("caption"))
+	}
+	image, err := imageStore.GetImage(id)
+	if err == sql.ErrNoRows {
+		http.NotFound(w, r)
+		return
+	}
+	if err != nil {
+		http.Error(w, "error fetching image", http.StatusInternalServerError)
+		return
+	}
+	previous, next, err := imageStore.GetPrevNextImages(image.ID)
+	if err != nil {
+		http.Error(w, "error fetching previous and next images", http.StatusInternalServerError)
+	}
+	tmpl, err := template.ParseFiles(adminTemplateName)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "error fetching template", http.StatusInternalServerError)
+		return
+	}
+	var previousID, nextID string
+	if previous != nil {
+		previousID = previous.ID
+	}
+	if next != nil {
+		nextID = next.ID
+	}
+	adminPage := newAdminPage(image, previousID, nextID)
+	tmpl.Execute(w, adminPage)
 }
 
 func makeImagePath(imageID string) string {
 	return imagePathBase + encodeImageID(imageID)
+}
+
+func makeAdminPath(imageID string) string {
+	return adminPathBase + encodeImageID(imageID)
 }
 
 func decodeImageID(encodedID string) (string, error) {
