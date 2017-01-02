@@ -23,11 +23,11 @@ const (
 )
 
 type ImageStore interface {
-	SaveImage(Image) error
 	GetImage(string) (*Image, error)
 	GetLatestImage() (*Image, error)
 	GetPrevNextImages(string) (*Image, *Image, error)
 	GetRandomImage() (*Image, error)
+	SaveImage(Image) error
 }
 
 type Image struct {
@@ -51,20 +51,12 @@ type DBImageStore struct {
 	DB *sql.DB
 }
 
-func (store DBImageStore) SaveImage(image Image) error {
-	captionPtr, locationPtr := &image.Caption, &image.Location
-	if *captionPtr == "" {
-		captionPtr = nil
-	}
-	if *locationPtr == "" {
-		locationPtr = nil
-	}
-	_, err := store.DB.Exec(insertImageQuery, image.ID, captionPtr, locationPtr)
-	return err
-}
-
 func (store DBImageStore) GetImage(id string) (*Image, error) {
 	return makeImageFromRow(store.DB.QueryRow(getImageByIDQuery, id))
+}
+
+func (store DBImageStore) GetLatestImage() (*Image, error) {
+	return makeImageFromRow(store.DB.QueryRow(getLatestImageQuery))
 }
 
 func (store DBImageStore) GetPrevNextImages(id string) (*Image, *Image, error) {
@@ -79,12 +71,20 @@ func (store DBImageStore) GetPrevNextImages(id string) (*Image, *Image, error) {
 	return previous, next, nil
 }
 
-func (store DBImageStore) GetLatestImage() (*Image, error) {
-	return makeImageFromRow(store.DB.QueryRow(getLatestImageQuery))
-}
-
 func (store DBImageStore) GetRandomImage() (*Image, error) {
 	return makeImageFromRow(store.DB.QueryRow(getRandomImageQuery))
+}
+
+func (store DBImageStore) SaveImage(image Image) error {
+	captionPtr, locationPtr := &image.Caption, &image.Location
+	if *captionPtr == "" {
+		captionPtr = nil
+	}
+	if *locationPtr == "" {
+		locationPtr = nil
+	}
+	_, err := store.DB.Exec(insertImageQuery, image.ID, captionPtr, locationPtr)
+	return err
 }
 
 func makeImageFromRow(row *sql.Row) (*Image, error) {
