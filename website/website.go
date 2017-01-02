@@ -76,25 +76,27 @@ func getImageTimeStr(image *datastore.Image) string {
 	return t.Format(dateDisplayLayout)
 }
 
-func Run() error {
+func Run(withAdmin bool) error {
 	db, err := datastore.InitDB(DBFileName)
 	if err != nil {
 		return err
 	}
 	imageStore = datastore.DBImageStore{DB: db}
 	fmt.Println("Serving on port: ", port)
-	err = http.ListenAndServe(net.JoinHostPort("", port), buildRouter())
+	err = http.ListenAndServe(net.JoinHostPort("", port), buildRouter(withAdmin))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func buildRouter() *mux.Router {
+func buildRouter(withAdmin bool) *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", index)
 	r.HandleFunc(imagePathBase+"{id}", img).Methods(http.MethodGet)
-	r.HandleFunc(adminPathBase+"{id}", admin).Methods(http.MethodGet, http.MethodPost)
+	if withAdmin {
+		r.HandleFunc(adminPathBase+"{id}", admin).Methods(http.MethodGet, http.MethodPost)
+	}
 	return r
 }
 

@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	testRouter = buildRouter()
+	testRouter = buildRouter(true)
 )
 
 type fakeImageStore struct {
