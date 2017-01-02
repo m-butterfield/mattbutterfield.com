@@ -28,12 +28,30 @@ func (store *fakeImageStore) GetImage(id string) (*datastore.Image, error) {
 	return store.getImage(id)
 }
 
+func (store *fakeImageStore) GetPrevNextImages(id string) (*datastore.Image, *datastore.Image, error) {
+	panic("should not call get prev next during website view tests.")
+}
+
 func (store *fakeImageStore) GetLatestImage() (*datastore.Image, error) {
-	panic("should not call get latest image suring website view tests.")
+	panic("should not call get latest image during website view tests.")
 }
 
 func (store *fakeImageStore) GetRandomImage() (*datastore.Image, error) {
 	return store.getRandomImage()
+}
+
+func TestGetImageTimeStr(t *testing.T) {
+	expectedTimeStr := "September 2004"
+	img := &datastore.Image{ID: "20040901_001.jpg"}
+	timeStr := getImageTimeStr(img)
+	if timeStr != expectedTimeStr {
+		t.Errorf("Unexpected time string: %s != %s", expectedTimeStr, timeStr)
+	}
+	img.ID = "blerp"
+	timeStr = getImageTimeStr(img)
+	if timeStr != "" {
+		t.Errorf("Expected empty string from id: %s, instead got: %s", img.ID, timeStr)
+	}
 }
 
 func TestIndex(t *testing.T) {
@@ -150,19 +168,5 @@ func TestImageNotFound(t *testing.T) {
 	}
 	if w.Code != http.StatusNotFound {
 		t.Errorf("Unexpected return code: %d", w.Code)
-	}
-}
-
-func TestGetImageTimeStr(t *testing.T) {
-	expectedTimeStr := "September 2004"
-	img := &datastore.Image{ID: "20040901_001.jpg"}
-	timeStr := getImageTimeStr(img)
-	if timeStr != expectedTimeStr {
-		t.Errorf("Unexpected time string: %s != %s", expectedTimeStr, timeStr)
-	}
-	img.ID = "blerp"
-	timeStr = getImageTimeStr(img)
-	if timeStr != "" {
-		t.Errorf("Expected empty string from id: %s, instead got: %s", img.ID, timeStr)
 	}
 }

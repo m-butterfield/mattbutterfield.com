@@ -12,6 +12,8 @@ const (
 	baseSelectImageQuery = "SELECT id, caption, location FROM images "
 	getImageByIDQuery    = baseSelectImageQuery + "WHERE id = ?"
 	getLatestImageQuery  = baseSelectImageQuery + "ORDER BY id DESC LIMIT 1"
+	getNextQuery         = baseSelectImageQuery + "WHERE id > ? ORDER BY id LIMIT 1"
+	getPreviousQuery     = baseSelectImageQuery + "WHERE id < ? ORDER BY id DESC LIMIT 1"
 	getRandomImageQuery  = baseSelectImageQuery + "WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)"
 	insertImageQuery     = "INSERT INTO images (id, caption, location) VALUES (?, ?, ?)"
 )
@@ -21,9 +23,10 @@ const (
 )
 
 type ImageStore interface {
-	SaveImage(image Image) error
-	GetImage(id string) (*Image, error)
+	SaveImage(Image) error
+	GetImage(string) (*Image, error)
 	GetLatestImage() (*Image, error)
+	GetPrevNextImages(string) (*Image, *Image, error)
 	GetRandomImage() (*Image, error)
 }
 
@@ -62,6 +65,18 @@ func (store DBImageStore) SaveImage(image Image) error {
 
 func (store DBImageStore) GetImage(id string) (*Image, error) {
 	return makeImageFromRow(store.DB.QueryRow(getImageByIDQuery, id))
+}
+
+func (store DBImageStore) GetPrevNextImages(id string) (*Image, *Image, error) {
+	previous, err := makeImageFromRow(store.DB.QueryRow(getPreviousQuery, id))
+	if err != nil && err != sql.ErrNoRows {
+		return nil, nil, err
+	}
+	next, err := makeImageFromRow(store.DB.QueryRow(getNextQuery, id))
+	if err != nil && err != sql.ErrNoRows {
+		return nil, nil, err
+	}
+	return previous, next, nil
 }
 
 func (store DBImageStore) GetLatestImage() (*Image, error) {
