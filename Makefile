@@ -12,5 +12,5 @@ test:
 	go test -v ./datastore ./website
 
 vet:
-	@go vet $(shell find . -type f -name '*.go' -path "./")
-	@go vet ./datastore ./website
+	go vet $(shell find . -type f -name '*.go' -maxdepth 1)
+	go vet ./datastore ./website
