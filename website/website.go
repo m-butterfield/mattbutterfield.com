@@ -17,7 +17,7 @@ const (
 	adminPathBase     = "/admin/"
 	dateDisplayLayout = "January 2006"
 	DBFileName        = "app.db"
-	imageBaseURL      = "http://images.mattbutterfield.com/"
+	imageBaseURL      = "https://images.mattbutterfield.com/"
 	imagePathBase     = "/img/"
 	port              = "8000"
 	templatePath      = "website/templates/"
