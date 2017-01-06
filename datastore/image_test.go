@@ -245,4 +245,29 @@ func TestGetNextPreviousNoRowsPrev(t *testing.T) {
 }
 
 func TestGetNextPreviousNoRowsNext(t *testing.T) {
+	db, db_mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	prevID, id := "20040901_001.jpg", "20040901_002.jpg"
+
+	db_mock.ExpectQuery(SelectPrevImageRegex).WithArgs(id).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location"}).AddRow(prevID, nil, nil))
+	db_mock.ExpectQuery(SelectNextImageRegex).WithArgs(id).
+		WillReturnError(sql.ErrNoRows)
+
+	store := DBImageStore{db}
+	prev, next, err := store.GetPrevNextImages(id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db_mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("Unfulfilled database expectations: %s", err)
+	}
+	if prevID != prev.ID {
+		t.Errorf("Unexpected id for 'prev': %s != %s", prevID, prev.ID)
+	}
+	if next != nil {
+		t.Errorf("Unexpected return for 'next': %s", next.ID)
+	}
 }
