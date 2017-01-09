@@ -186,7 +186,7 @@ func makeAdminPath(imageID string) string {
 }
 
 func decodeImageID(encodedID string) (string, error) {
-	imageID, err := base64.StdEncoding.DecodeString(encodedID)
+	imageID, err := base64.URLEncoding.DecodeString(encodedID)
 	if err != nil {
 		return "", err
 	}
@@ -194,5 +194,5 @@ func decodeImageID(encodedID string) (string, error) {
 }
 
 func encodeImageID(imageID string) string {
-	return base64.StdEncoding.EncodeToString([]byte(imageID))
+	return base64.URLEncoding.EncodeToString([]byte(imageID))
 }
