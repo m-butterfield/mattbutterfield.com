@@ -17,6 +17,7 @@ const (
 	adminPathBase     = "/admin/"
 	dateDisplayLayout = "January 2006"
 	DBFileName        = "app.db"
+	homeImage         = "20150615_002.jpg"
 	imageBaseURL      = "https://images.mattbutterfield.com/"
 	imagePathBase     = "/img/"
 	port              = "8000"
@@ -101,11 +102,7 @@ func buildRouter(withAdmin bool) *mux.Router {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	image, err := imageStore.GetRandomImage()
-	if err != nil {
-		http.Error(w, "error fetching image", http.StatusInternalServerError)
-	}
-	http.Redirect(w, r, makeImagePath(image.ID), http.StatusFound)
+	http.Redirect(w, r, makeImagePath(homeImage), http.StatusFound)
 }
 
 func img(w http.ResponseWriter, r *http.Request) {
