@@ -61,15 +61,6 @@ func TestGetImageTimeStr(t *testing.T) {
 }
 
 func TestIndex(t *testing.T) {
-	imageID := "20040901_001.jpg"
-	randomCalled := 0
-	imageStore = &fakeImageStore{
-		getRandomImage: func() (*datastore.Image, error) {
-			randomCalled += 1
-			return &datastore.Image{ID: imageID}, nil
-		},
-	}
-
 	r, err := http.NewRequest(http.MethodGet, "/", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -77,14 +68,11 @@ func TestIndex(t *testing.T) {
 	w := httptest.NewRecorder()
 
 	testRouter.ServeHTTP(w, r)
-	if randomCalled != 1 {
-		t.Errorf("Unexpected call count for GetRandomImage(): %d", randomCalled)
-	}
 	if w.Code != http.StatusFound {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 	if value, ok := w.Header()["Location"]; ok {
-		if !strings.HasSuffix(value[0], imagePathBase+encodeImageID(imageID)) {
+		if !strings.HasSuffix(value[0], imagePathBase+encodeImageID(homeImage)) {
 			t.Errorf("Unexpected redirect location: %s", value)
 		}
 	} else {
