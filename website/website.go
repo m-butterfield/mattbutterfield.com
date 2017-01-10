@@ -170,8 +170,13 @@ func admin(w http.ResponseWriter, r *http.Request) {
 	if next != nil {
 		nextID = next.ID
 	}
-	adminPage := makeAdminPage(image, previousID, nextID)
-	tmpl.Execute(w, adminPage)
+	if r.Method == http.MethodPost && previousID != "" {
+		http.Redirect(w, r, makeAdminPath(previousID), http.StatusFound)
+	} else {
+		adminPage := makeAdminPage(image, previousID, nextID)
+		tmpl.Execute(w, adminPage)
+	}
+
 }
 
 func makeImagePath(imageID string) string {
