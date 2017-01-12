@@ -26,9 +26,10 @@ const (
 
 var (
 	adminTemplateName = templatePath + "admin.html"
-	imageStore        datastore.ImageStore
 	imageTemplateName = templatePath + "image.html"
 )
+
+var imageStore datastore.ImageStore
 
 type imagePage struct {
 	ImageCaption  string
