@@ -6,7 +6,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func InitDB(dbPath string) (db *sql.DB, err error) {
-	db, err = sql.Open("sqlite3", dbPath)
-	return
+func InitDB(dbPath string) (*sql.DB, error) {
+	return sql.Open("sqlite3", dbPath)
 }
