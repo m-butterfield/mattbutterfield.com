@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	baseSelectImageQuery = "SELECT id, caption, location FROM images "
+	baseSelectImageQuery = "SELECT id, caption, location, width, height FROM images "
 	getImageByIDQuery    = baseSelectImageQuery + "WHERE id = ?"
 	getLatestImageQuery  = baseSelectImageQuery + "ORDER BY id DESC LIMIT 1"
 	getNextQuery         = baseSelectImageQuery + "WHERE id > ? ORDER BY id LIMIT 1"
@@ -35,6 +35,8 @@ type Image struct {
 	ID       string
 	Caption  string
 	Location string
+	Width    int
+	Height   int
 }
 
 func (i Image) TimeFromID() (*time.Time, error) {
@@ -106,17 +108,15 @@ func (store DBImageStore) UpdateImage(id, location, caption string) error {
 
 func makeImageFromRow(row *sql.Row) (*Image, error) {
 	var (
-		id       string
 		caption  sql.NullString
 		location sql.NullString
 	)
-	err := row.Scan(&id, &caption, &location)
+	image := &Image{}
+	err := row.Scan(&image.ID, &caption, &location, &image.Width, &image.Height)
 	if err != nil {
 		return nil, err
 	}
-	return &Image{
-		ID:       id,
-		Caption:  caption.String,
-		Location: location.String,
-	}, nil
+	image.Caption = caption.String
+	image.Location = location.String
+	return image, nil
 }
