@@ -8,12 +8,13 @@ import (
 )
 
 const (
+	baseSelectImageRegex   = "^SELECT id, caption, location FROM images"
 	InsertImageRegex       = "^INSERT INTO images \\(id, caption, location\\) VALUES \\(\\?, \\?, \\?\\)$"
-	SelectImageByIDRegex   = "^SELECT id, caption, location FROM images WHERE id = \\?$"
-	SelectLatestImageRegex = "^SELECT id, caption, location FROM images ORDER BY id DESC LIMIT 1$"
-	SelectRandomImageRegex = "^SELECT id, caption, location FROM images WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$"
-	SelectPrevImageRegex   = "^SELECT id, caption, location FROM images WHERE id \\< \\? ORDER BY id DESC LIMIT 1$"
-	SelectNextImageRegex   = "^SELECT id, caption, location FROM images WHERE id \\> \\? ORDER BY id LIMIT 1$"
+	SelectImageByIDRegex   = baseSelectImageRegex + " WHERE id = \\?$"
+	SelectLatestImageRegex = baseSelectImageRegex + " ORDER BY id DESC LIMIT 1$"
+	SelectRandomImageRegex = baseSelectImageRegex + " WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$"
+	SelectPrevImageRegex   = baseSelectImageRegex + " WHERE id \\< \\? ORDER BY id DESC LIMIT 1$"
+	SelectNextImageRegex   = baseSelectImageRegex + " WHERE id \\> \\? ORDER BY id LIMIT 1$"
 	UpdateImageRegex       = "^UPDATE images SET location = \\?, caption = \\? WHERE id = \\?$"
 )
 
