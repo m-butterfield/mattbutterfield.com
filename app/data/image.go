@@ -3,9 +3,8 @@ package data
 import (
 	"database/sql"
 	"fmt"
-	"time"
-
 	_ "github.com/mattn/go-sqlite3"
+	"time"
 )
 
 const (

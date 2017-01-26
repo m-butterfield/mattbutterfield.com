@@ -2,10 +2,9 @@ package data
 
 import (
 	"database/sql"
+	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 	"testing"
 	"time"
-
-	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
 const (

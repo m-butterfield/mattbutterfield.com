@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-
 	"github.com/m-butterfield/mattbutterfield.com/app"
 )
 

@@ -4,13 +4,12 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"fmt"
-	"html/template"
-	"net"
-	"net/http"
-
 	"github.com/gorilla/mux"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	_ "github.com/mattn/go-sqlite3"
+	"html/template"
+	"net"
+	"net/http"
 )
 
 const (

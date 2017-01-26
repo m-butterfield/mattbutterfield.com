@@ -2,13 +2,12 @@ package app
 
 import (
 	"database/sql"
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
-
-	"github.com/m-butterfield/mattbutterfield.com/app/data"
 )
 
 var (
