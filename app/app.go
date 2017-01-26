@@ -1,4 +1,4 @@
-package website
+package app
 
 import (
 	"database/sql"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/m-butterfield/mattbutterfield.com/datastore"
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -21,7 +21,7 @@ const (
 	imageBaseURL      = "https://images.mattbutterfield.com/"
 	imagePathBase     = "/img/"
 	port              = "8000"
-	templatePath      = "website/templates/"
+	templatePath      = "app/templates/"
 )
 
 var (
@@ -29,7 +29,7 @@ var (
 	imageTemplateName = templatePath + "image.html"
 )
 
-var imageStore datastore.ImageStore
+var imageStore data.ImageStore
 
 type imagePage struct {
 	ImageCaption  string
@@ -39,7 +39,7 @@ type imagePage struct {
 	NextImagePath string
 }
 
-func makeImagePage(image *datastore.Image, nextImageID string) imagePage {
+func makeImagePage(image *data.Image, nextImageID string) imagePage {
 	return imagePage{
 		ImageCaption:  image.Caption,
 		ImageDate:     getImageTimeStr(image),
@@ -55,7 +55,7 @@ type adminPage struct {
 	NextURL     string
 }
 
-func makeAdminPage(image *datastore.Image, prevImageID, nextImageID string) adminPage {
+func makeAdminPage(image *data.Image, prevImageID, nextImageID string) adminPage {
 	var prevURL, nextURL string
 	if prevImageID != "" {
 		prevURL = makeAdminPath(prevImageID)
@@ -70,7 +70,7 @@ func makeAdminPage(image *datastore.Image, prevImageID, nextImageID string) admi
 	}
 }
 
-func getImageTimeStr(image *datastore.Image) string {
+func getImageTimeStr(image *data.Image) string {
 	t, err := image.TimeFromID()
 	if err != nil {
 		return ""
@@ -79,11 +79,11 @@ func getImageTimeStr(image *datastore.Image) string {
 }
 
 func Run(withAdmin bool) error {
-	db, err := datastore.InitDB(DBFileName)
+	db, err := data.InitDB(DBFileName)
 	if err != nil {
 		return err
 	}
-	imageStore = datastore.DBImageStore{DB: db}
+	imageStore = data.NewDBImageStore(db)
 	fmt.Println("Serving on port: ", port)
 	err = http.ListenAndServe(net.JoinHostPort("", port), buildRouter(withAdmin))
 	if err != nil {

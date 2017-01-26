@@ -1,6 +1,5 @@
 build:
-	go build -i -o bin/website website.go
-	go build -i -o bin/scrapes3 scrapes3.go
+	go build -o bin/server server.go
 
 db:
 	sqlite3 app.db ".read schema.sql"
@@ -9,8 +8,8 @@ fmt:
 	@gofmt -l -s -w $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 test:
-	go test -v ./datastore ./website
+	go test -v ./app/...
 
 vet:
-	go vet $(shell find . -type f -name '*.go' -maxdepth 1)
-	go vet ./datastore ./website
+	go vet -n $(shell find . -type f -name '*.go' -maxdepth 1)
+	go vet -n ./app/...

@@ -1,4 +1,4 @@
-package datastore
+package data
 
 import (
 	"database/sql"
@@ -51,6 +51,10 @@ func (i Image) TimeFromID() (*time.Time, error) {
 
 type DBImageStore struct {
 	DB *sql.DB
+}
+
+func NewDBImageStore(db *sql.DB) DBImageStore {
+	return DBImageStore{DB: db}
 }
 
 func (store DBImageStore) GetImage(id string) (*Image, error) {
