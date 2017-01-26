@@ -5,7 +5,7 @@ db:
 	sqlite3 app.db ".read schema.sql"
 
 fmt:
-	@gofmt -l -s -w $(shell find . -type f -name '*.go' -not -path "./vendor/*")
+	gofmt -l -s -w $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 test:
 	go test -v ./app/...

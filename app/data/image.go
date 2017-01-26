@@ -51,27 +51,27 @@ func (i Image) TimeFromID() (*time.Time, error) {
 }
 
 type DBImageStore struct {
-	DB *sql.DB
+	db *sql.DB
 }
 
 func NewDBImageStore(db *sql.DB) DBImageStore {
-	return DBImageStore{DB: db}
+	return DBImageStore{db: db}
 }
 
 func (store DBImageStore) GetImage(id string) (*Image, error) {
-	return makeImageFromRow(store.DB.QueryRow(getImageByIDQuery, id))
+	return makeImageFromRow(store.db.QueryRow(getImageByIDQuery, id))
 }
 
 func (store DBImageStore) GetLatestImage() (*Image, error) {
-	return makeImageFromRow(store.DB.QueryRow(getLatestImageQuery))
+	return makeImageFromRow(store.db.QueryRow(getLatestImageQuery))
 }
 
 func (store DBImageStore) GetPrevNextImages(id string) (*Image, *Image, error) {
-	previous, err := makeImageFromRow(store.DB.QueryRow(getPreviousQuery, id))
+	previous, err := makeImageFromRow(store.db.QueryRow(getPreviousQuery, id))
 	if err != nil && err != sql.ErrNoRows {
 		return nil, nil, err
 	}
-	next, err := makeImageFromRow(store.DB.QueryRow(getNextQuery, id))
+	next, err := makeImageFromRow(store.db.QueryRow(getNextQuery, id))
 	if err != nil && err != sql.ErrNoRows {
 		return nil, nil, err
 	}
@@ -79,7 +79,7 @@ func (store DBImageStore) GetPrevNextImages(id string) (*Image, *Image, error) {
 }
 
 func (store DBImageStore) GetRandomImage() (*Image, error) {
-	return makeImageFromRow(store.DB.QueryRow(getRandomImageQuery))
+	return makeImageFromRow(store.db.QueryRow(getRandomImageQuery))
 }
 
 func (store DBImageStore) SaveImage(image Image) error {
@@ -90,7 +90,7 @@ func (store DBImageStore) SaveImage(image Image) error {
 	if *locationPtr == "" {
 		locationPtr = nil
 	}
-	_, err := store.DB.Exec(insertImageQuery, image.ID, captionPtr, locationPtr)
+	_, err := store.db.Exec(insertImageQuery, image.ID, captionPtr, locationPtr)
 	return err
 }
 
@@ -102,7 +102,7 @@ func (store DBImageStore) UpdateImage(id, location, caption string) error {
 	if *locationPtr == "" {
 		locationPtr = nil
 	}
-	_, err := store.DB.Exec(updateImageQuery, locationPtr, captionPtr, id)
+	_, err := store.db.Exec(updateImageQuery, locationPtr, captionPtr, id)
 	return err
 }
 
