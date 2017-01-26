@@ -15,7 +15,7 @@ import (
 const (
 	adminPathBase     = "/admin/"
 	dateDisplayLayout = "January 2006"
-	DBFileName        = "app.db"
+	dbFileName        = "app.db"
 	homeImage         = "20150615_002.jpg"
 	imageBaseURL      = "https://images.mattbutterfield.com/"
 	imagePathBase     = "/img/"
@@ -35,6 +35,8 @@ type imagePage struct {
 	ImageDate     string
 	ImageLocation string
 	ImageURL      string
+	ImageWidth    int
+	ImageHeight   int
 	NextImagePath string
 }
 
@@ -44,6 +46,8 @@ func makeImagePage(image *data.Image, nextImageID string) imagePage {
 		ImageDate:     getImageTimeStr(image),
 		ImageLocation: image.Location,
 		ImageURL:      imageBaseURL + image.ID,
+		ImageWidth:    image.Width,
+		ImageHeight:   image.Height,
 		NextImagePath: makeImagePath(nextImageID),
 	}
 }
@@ -78,7 +82,7 @@ func getImageTimeStr(image *data.Image) string {
 }
 
 func Run(withAdmin bool) error {
-	db, err := data.InitDB(DBFileName)
+	db, err := data.InitDB(dbFileName)
 	if err != nil {
 		return err
 	}
