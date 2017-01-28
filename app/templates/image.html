@@ -12,7 +12,9 @@
         text-align: center;
         position: relative;
         margin: 0;
-        padding-bottom: 80px;
+        padding-bottom: 120px;
+        min-height: 100%;
+        font-size: 0.9em;
       }
       p {
         margin-bottom: 10px;
@@ -26,11 +28,13 @@
         right: 0;
         bottom: 0;
         left: 0;
-        padding: 15px;
       }
     </style>
   </head>
-    <h1>welcome</h1>
+  <body>
+    <p>
+      <h1>welcome</h1>
+    </p>
     <div class="section-div">
       <a href="{{ .NextImagePath }}">get random image</a>
     </div>
@@ -43,8 +47,11 @@
       <p>{{ .ImageDate }}</p>
     </div>
     <div id="footer">
-      <p>Hello.</p>
-      © {{ .Year }} Matt Butterfield
+      <p>
+        <a href="https://github.com/m-butterfield/mattbutterfield.com">view source code</a> |
+        <a href="https://spin.mattbutterfield.com/">go for a spin</a>
+      </p>
+      <p>© {{ .Year }} Matt Butterfield</p>
     </div>
   </body>
 </html>
