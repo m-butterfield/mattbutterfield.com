@@ -89,7 +89,7 @@ func TestImg(t *testing.T) {
 	imageID := "20040901_001.jpg"
 	randImageID := "blerp"
 	getImageCalled, randomCalled := 0, 0
-	imageStore = &fakeImageStore{
+	dbStore = &fakeImageStore{
 		getImage: func(id string) (*data.Image, error) {
 			getImageCalled += 1
 			if id != imageID {
@@ -142,7 +142,7 @@ func TestInvalidID(t *testing.T) {
 
 func TestImageNotFound(t *testing.T) {
 	getImageCalled := 0
-	imageStore = &fakeImageStore{
+	dbStore = &fakeImageStore{
 		getImage: func(id string) (*data.Image, error) {
 			getImageCalled += 1
 			return nil, sql.ErrNoRows
@@ -174,7 +174,7 @@ func TestAdmin(t *testing.T) {
 	getImageCalled := 0
 	getPrevNextCalled := 0
 	imageID := "20040901_001.jpg"
-	imageStore = &fakeImageStore{
+	dbStore = &fakeImageStore{
 		getImage: func(id string) (*data.Image, error) {
 			getImageCalled += 1
 			if id != imageID {
@@ -211,7 +211,7 @@ func TestAdmin(t *testing.T) {
 
 func TestAdminImageNotFound(t *testing.T) {
 	getImageCalled := 0
-	imageStore = &fakeImageStore{
+	dbStore = &fakeImageStore{
 		getImage: func(id string) (*data.Image, error) {
 			getImageCalled += 1
 			return nil, sql.ErrNoRows

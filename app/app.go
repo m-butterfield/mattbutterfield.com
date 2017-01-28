@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
-	_ "github.com/mattn/go-sqlite3"
 	"html/template"
 	"net"
 	"net/http"
@@ -29,7 +28,7 @@ var (
 	imageTemplateName = templatePath + "image.html"
 )
 
-var imageStore data.ImageStore
+var dbStore data.DBStore
 
 type imagePage struct {
 	ImageCaption  string
@@ -85,12 +84,12 @@ func getImageTimeStr(image *data.Image) string {
 }
 
 func Run(withAdmin bool) error {
-	db, err := data.InitDB(dbFileName)
+	var err error
+	dbStore, err = data.MakeDBStore(dbFileName)
 	if err != nil {
 		return err
 	}
-	imageStore = data.NewDBImageStore(db)
-	fmt.Println("Serving on port: ", port)
+	fmt.Println("Listening on port: ", port)
 	err = http.ListenAndServe(net.JoinHostPort("", port), buildRouter(withAdmin))
 	if err != nil {
 		return err
@@ -118,7 +117,7 @@ func img(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid image id", http.StatusBadRequest)
 		return
 	}
-	image, err := imageStore.GetImage(id)
+	image, err := dbStore.GetImage(id)
 	if err == sql.ErrNoRows {
 		http.NotFound(w, r)
 		return
@@ -127,7 +126,7 @@ func img(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error fetching image", http.StatusInternalServerError)
 		return
 	}
-	nextImage, err := imageStore.GetRandomImage()
+	nextImage, err := dbStore.GetRandomImage()
 	if err != nil {
 		http.Error(w, "error fetching next image", http.StatusInternalServerError)
 	}
@@ -149,9 +148,9 @@ func admin(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.Method == http.MethodPost {
 		r.ParseForm()
-		imageStore.UpdateImage(id, r.PostForm.Get("location"), r.PostForm.Get("caption"))
+		dbStore.UpdateImage(id, r.PostForm.Get("location"), r.PostForm.Get("caption"))
 	}
-	image, err := imageStore.GetImage(id)
+	image, err := dbStore.GetImage(id)
 	if err == sql.ErrNoRows {
 		http.NotFound(w, r)
 		return
@@ -160,7 +159,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error fetching image", http.StatusInternalServerError)
 		return
 	}
-	previous, next, err := imageStore.GetPrevNextImages(image.ID)
+	previous, next, err := dbStore.GetPrevNextImages(image.ID)
 	if err != nil {
 		http.Error(w, "error fetching previous and next images", http.StatusInternalServerError)
 	}
@@ -183,7 +182,6 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		adminPage := makeAdminPage(image, previousID, nextID)
 		tmpl.Execute(w, adminPage)
 	}
-
 }
 
 func makeImagePath(imageID string) string {

@@ -28,7 +28,7 @@ func TestGetImage(t *testing.T) {
 	db_mock.ExpectQuery(SelectImageByIDRegex).WithArgs(id).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height"}).AddRow(id, caption, location, width, height))
 
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	image, err := store.GetImage(id)
 	if err != nil {
 		t.Fatal(err)
@@ -62,7 +62,7 @@ func TestGetLatestImage(t *testing.T) {
 	db_mock.ExpectQuery(SelectLatestImageRegex).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height"}).AddRow("20040901_001.jpg", nil, nil, 100, 200))
 
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	_, err = store.GetLatestImage()
 	if err != nil {
 		t.Fatal(err)
@@ -81,7 +81,7 @@ func TestGetRandomImage(t *testing.T) {
 	db_mock.ExpectQuery(SelectRandomImageRegex).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height"}).AddRow("20040901_001.jpg", nil, nil, 100, 200))
 
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	_, err = store.GetRandomImage()
 	if err != nil {
 		t.Fatal(err)
@@ -101,7 +101,7 @@ func TestSaveImage(t *testing.T) {
 	db_mock.ExpectExec(InsertImageRegex).WithArgs(id, caption, location).WillReturnResult(sqlmock.NewResult(1, 1))
 
 	image := Image{ID: id, Caption: caption, Location: location}
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	err = store.SaveImage(image)
 	if err != nil {
 		t.Fatal(err)
@@ -121,7 +121,7 @@ func TestSaveImageNilLocationCaption(t *testing.T) {
 	db_mock.ExpectExec(InsertImageRegex).WithArgs(id, nil, nil).WillReturnResult(sqlmock.NewResult(1, 1))
 
 	image := Image{ID: id}
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	err = store.SaveImage(image)
 	if err != nil {
 		t.Fatal(err)
@@ -140,7 +140,7 @@ func TestUpdateImage(t *testing.T) {
 	id, caption, location := "20040901_001.jpg", "hello", "NYC"
 	db_mock.ExpectExec(UpdateImageRegex).WithArgs(location, caption, id).WillReturnResult(sqlmock.NewResult(1, 1))
 
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	err = store.UpdateImage(id, location, caption)
 	if err != nil {
 		t.Fatal(err)
@@ -159,7 +159,7 @@ func TestUpdateImageNilLocationCaption(t *testing.T) {
 	id := "20040901_001.jpg"
 	db_mock.ExpectExec(UpdateImageRegex).WithArgs(nil, nil, id).WillReturnResult(sqlmock.NewResult(1, 1))
 
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	err = store.UpdateImage(id, "", "")
 	if err != nil {
 		t.Fatal(err)
@@ -206,7 +206,7 @@ func TestGetNextPrevious(t *testing.T) {
 	db_mock.ExpectQuery(SelectNextImageRegex).WithArgs(id).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height"}).AddRow(nextID, nil, nil, 100, 200))
 
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	prev, next, err := store.GetPrevNextImages(id)
 	if err != nil {
 		t.Fatal(err)
@@ -234,7 +234,7 @@ func TestGetNextPreviousNoRowsPrev(t *testing.T) {
 	db_mock.ExpectQuery(SelectNextImageRegex).WithArgs(id).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height"}).AddRow(nextID, nil, nil, 100, 200))
 
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	prev, next, err := store.GetPrevNextImages(id)
 	if err != nil {
 		t.Fatal(err)
@@ -262,7 +262,7 @@ func TestGetNextPreviousNoRowsNext(t *testing.T) {
 	db_mock.ExpectQuery(SelectNextImageRegex).WithArgs(id).
 		WillReturnError(sql.ErrNoRows)
 
-	store := NewDBImageStore(db)
+	store := dbStore{db: db}
 	prev, next, err := store.GetPrevNextImages(id)
 	if err != nil {
 		t.Fatal(err)
