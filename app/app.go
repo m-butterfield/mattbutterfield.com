@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"net"
 	"net/http"
+	"time"
 )
 
 const (
@@ -38,6 +39,7 @@ type imagePage struct {
 	ImageWidth    int
 	ImageHeight   int
 	NextImagePath string
+	Year          string
 }
 
 func makeImagePage(image *data.Image, nextImageID string) imagePage {
@@ -49,6 +51,7 @@ func makeImagePage(image *data.Image, nextImageID string) imagePage {
 		ImageWidth:    image.Width,
 		ImageHeight:   image.Height,
 		NextImagePath: makeImagePath(nextImageID),
+		Year:          time.Now().Format("2006"),
 	}
 }
 

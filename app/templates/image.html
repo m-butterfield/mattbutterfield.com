@@ -10,6 +10,9 @@
         color: #dedede;
         font-family: Helvetica, sans-serif;
         text-align: center;
+        position: relative;
+        margin: 0;
+        padding-bottom: 80px;
       }
       p {
         margin-bottom: 10px;
@@ -17,6 +20,13 @@
       }
       .section-div {
         margin-bottom: 30px;
+      }
+      #footer {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 15px;
       }
     </style>
   </head>
@@ -31,6 +41,10 @@
       <p>{{ .ImageCaption }}</p>
       <p>{{ .ImageLocation }}</p>
       <p>{{ .ImageDate }}</p>
+    </div>
+    <div id="footer">
+      <p>Hello.</p>
+      © {{ .Year }} Matt Butterfield
     </div>
   </body>
 </html>
