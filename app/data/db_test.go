@@ -9,13 +9,13 @@ import (
 
 const (
 	baseSelectImageRegex   = "^SELECT id, caption, location, width, height FROM images "
-	InsertImageRegex       = "^INSERT INTO images \\(id, caption, location\\) VALUES \\(\\?, \\?, \\?\\)$"
-	SelectImageByIDRegex   = baseSelectImageRegex + "WHERE id = \\?$"
+	InsertImageRegex       = "^INSERT INTO images \\(id, caption, location\\) VALUES \\(\\$1, \\$2, \\$3\\)$"
+	SelectImageByIDRegex   = baseSelectImageRegex + "WHERE id = \\$1$"
 	SelectLatestImageRegex = baseSelectImageRegex + "ORDER BY id DESC LIMIT 1$"
 	SelectRandomImageRegex = baseSelectImageRegex + "WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$"
-	SelectPrevImageRegex   = baseSelectImageRegex + "WHERE id \\< \\? ORDER BY id DESC LIMIT 1$"
-	SelectNextImageRegex   = baseSelectImageRegex + "WHERE id \\> \\? ORDER BY id LIMIT 1$"
-	UpdateImageRegex       = "^UPDATE images SET location = \\?, caption = \\? WHERE id = \\?$"
+	SelectPrevImageRegex   = baseSelectImageRegex + "WHERE id \\< \\$1 ORDER BY id DESC LIMIT 1$"
+	SelectNextImageRegex   = baseSelectImageRegex + "WHERE id \\> \\$1 ORDER BY id LIMIT 1$"
+	UpdateImageRegex       = "^UPDATE images SET location = \\$1, caption = \\$2 WHERE id = \\$3$"
 )
 
 func TestGetImage(t *testing.T) {
