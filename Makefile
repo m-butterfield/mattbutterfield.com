@@ -2,14 +2,16 @@ build:
 	go build -o bin/server server.go
 
 db:
-	sqlite3 app.db ".read schema.sql"
+	createdb mattbutterfield && psql -d mattbutterfield -f schema.sql
+
+run:
+	DB_SOCKET="host=localhost dbname=mattbutterfield" go run server.go
 
 fmt:
-	@gofmt -l -s -w $(shell find . -type f -name '*.go' -not -path "./vendor/*")
+	go fmt ./...
 
 test:
 	go test -v ./app/...
 
 vet:
-	go vet -n $(shell find . -type f -name '*.go' -maxdepth 1)
-	go vet -n ./app/...
+	go vet ./...

@@ -9,13 +9,13 @@ import (
 	"html/template"
 	"net"
 	"net/http"
+	"os"
 	"time"
 )
 
 const (
 	adminPathBase     = "/admin/"
 	dateDisplayLayout = "January 2006"
-	dbFileName        = "app.db"
 	homeImage         = "20150615_002.jpg"
 	imageBaseURL      = "https://images.mattbutterfield.com/"
 	imagePathBase     = "/img/"
@@ -85,7 +85,7 @@ func getImageTimeStr(image *data.Image) string {
 
 func Run(withAdmin bool) error {
 	var err error
-	dbStore, err = data.MakeDBStore(dbFileName)
+	dbStore, err = data.MakeDBStore(os.Getenv("DB_SOCKET"))
 	if err != nil {
 		return err
 	}
@@ -123,6 +123,7 @@ func img(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, "error fetching image", http.StatusInternalServerError)
 		return
 	}

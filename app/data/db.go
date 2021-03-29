@@ -3,19 +3,19 @@ package data
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/jackc/pgx/v4/stdlib"
 	"time"
 )
 
 const (
 	baseSelectImageQuery  = "SELECT id, caption, location, width, height FROM images "
-	getImageByIDQuery     = baseSelectImageQuery + "WHERE id = ?"
+	getImageByIDQuery     = baseSelectImageQuery + "WHERE id = $1"
 	getLatestImageQuery   = baseSelectImageQuery + "ORDER BY id DESC LIMIT 1"
-	getNextImageQuery     = baseSelectImageQuery + "WHERE id > ? ORDER BY id LIMIT 1"
-	getPreviousImageQuery = baseSelectImageQuery + "WHERE id < ? ORDER BY id DESC LIMIT 1"
+	getNextImageQuery     = baseSelectImageQuery + "WHERE id > $1 ORDER BY id LIMIT 1"
+	getPreviousImageQuery = baseSelectImageQuery + "WHERE id < $1 ORDER BY id DESC LIMIT 1"
 	getRandomImageQuery   = baseSelectImageQuery + "WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)"
-	insertImageQuery      = "INSERT INTO images (id, caption, location) VALUES (?, ?, ?)"
-	updateImageQuery      = "UPDATE images SET location = ?, caption = ? WHERE id = ?"
+	insertImageQuery      = "INSERT INTO images (id, caption, location) VALUES ($1, $2, $3)"
+	updateImageQuery      = "UPDATE images SET location = $1, caption = $2 WHERE id = $3"
 )
 
 const (
@@ -55,7 +55,7 @@ type dbStore struct {
 }
 
 func MakeDBStore(dbPath string) (DBStore, error) {
-	db, err := sql.Open("sqlite3", dbPath)
+	db, err := sql.Open("pgx", dbPath)
 	if err != nil {
 		return nil, err
 	}
