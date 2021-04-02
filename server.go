@@ -1,15 +1,12 @@
 package main
 
 import (
-	"flag"
 	"github.com/m-butterfield/mattbutterfield.com/app"
+	"net/http"
 )
 
 func main() {
-	withAdmin := flag.Bool("admin", false, "Run with admin routes")
-	flag.Parse()
-	err := app.Run(*withAdmin)
-	if err != nil {
+	if err := app.Run(http.ListenAndServe, "8000"); err != nil {
 		panic(err)
 	}
 }
