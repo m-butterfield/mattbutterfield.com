@@ -1,77 +1,27 @@
-<html>
-  <head>
-    <title>mattbutterfield.com</title>
-    <link rel="shortcut icon" type="image/jpg" href="https://images.mattbutterfield.com/favicon.ico"/>
-    <style>
-      a {
-        color: #dedede;
-      }
-      body {
-        background-color: #2c2c2c;
-        color: #dedede;
-        font-family: Helvetica, sans-serif;
-        font-size: medium;
-        display: grid;
-        grid-template-columns: minmax(1.2rem, 1fr) minmax(auto, 80ch) minmax(1.2rem, 1fr);
-        position: relative;
-        margin: 0;
-        padding-bottom: 120px;
-        min-height: 100%;
-      }
-      .blog-post p {
-        margin-bottom: 30px;
-        margin-top: 15px;
-        line-height: 2;
-        grid-column: 2;
-      }
-      img {
-        grid-column: 1 / 4;
-        justify-self: center;
-      }
-      .section-div {
-        grid-column: 2;
-        margin-top: 15px;
-        margin-bottom: 30px;
-      }
-      #footer {
-        position: absolute;
-        grid-column: 2;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="section-div">
-      <h3>mattbutterfield.com</h3>
-      <a href="/">home</a> | <a href="/blog">blog</a>
-    </div>
-    <img src="{{ .ImageURL }}" width="{{ .ImageWidth }}" height="{{ .ImageHeight }}" />
-    <div class="section-div blog-post">
-      <h2>Migrating My Personal Website and Projects from an AWS EC2 Server to Google Cloud Run - Part 1</h2>
-      <em>2021-03-28</em>
-      <h3>Introduction</h3>
-      <p>Hello and welcome to my freshly redeployed and refactored website, which is now running on GCP using Cloud Run. For many years before this, my website and random small projects were hosted on AWS using a single EC2 t2.micro instance. All the apps, written in various languages, ran directly on the server, along with SQLite and Postgres for databases. I used Letsencrypt and Nginx for serving everything with HTTPS. My domain names were handled by Route53, and I used S3 for serving images and some files.</p>
-      <p>This all worked well for some time. In fact, I hadn’t even restarted the EC2 server in over 4 years:</p>
-      <pre style="margin-bottom: 35px;">12:03:31 up 1560 days, 12:56,  1 user,  load average: 0.00, 0.00, 0.00</pre>
-      <p>Running everything this way had advantages. It was a great way to learn how to set everything up from scratch on my own, and I felt like I had a lot of control over everything. I liked that I could just SSH into my server and everything was right there for me to play around with.</p>
-      <p>On the other hand, it felt precarious. If I lost the server, I would have to build it up from scratch again. There was no clear way to scale anything up if I needed to handle more traffic. If I wanted to deploy something in a new language or framework, I had to install everything on the server and hope it was going to work the same way as on my local computer. Upgrades, backups, etc… were not in place or happening regularly. I also had to periodically run some things manually to get HTTPS working correctly on S3 with a custom domain. For my email address, I had to use <a href="https://simplyian.com/2015/01/07/Hacking-GMail-to-use-custom-domains-for-free/">Mailgun for email forwarding</a> which was ok but not ideal.</p>
-      <h3>Exploring Google Cloud</h3>
-      <p>In a search for a better solution, the first project I deployed outside of my EC2 server was <a href="https://github.com/m-butterfield/orangered">Orangered</a>, an automated, customizable Reddit newsletter. For this I chose Google Cloud and Kubernetes. I was pretty familiar with this already from from work, and enjoyed all the benefits of containerization and the flexibility that you get from Kubernetes. Unfortunately, the cost can be a real issue. Once my free trial period ran out, I realized I’d be spending way more than I expected, easily getting into triple digits monthly for a simple app with less than 100 users. On top of that, Kubernetes just felt way too complicated for working on small projects. I needed a simpler solution but didn’t have time to keep maintaining the project so I just shut it down.</p>
-      <h3>Cloud Run</h3>
-      <p>Since then, Google released Cloud Run, and I decided to check it out a few weeks ago to deploy a new project: <a href="https://passapi.app">PassApi</a>. I bought the domain name on Google Domains, containerized my app, and had it running within minutes. It also looked like I could stay in the free tier if I was ok with some performance hits. I’d have to pay for Cloud SQL, but I realized I could get by with one small instance that runs the databases for all my apps. All traffic to Cloud Run services is HTTPS by default, so that was another thing I didn’t have to worry about. Scaling an app or the database can be done easily and even automatically, same with backups.</p>
-      <h3>Email</h3>
-      <h3>Migrating</h3>
-      <p>This was sounding like an ideal setup. My EC2 instance was old, running Ubuntu 16.04, and it was time to replace it with something else. I had more ideas I wanted to launch, and I wanted to be able to launch them without spending days configuring and testing things. I decided I would make one project in Google Cloud, with one Cloud SQL Postgres instance, migrate everything there and to Cloud Run, and email forwarding from Mailgun to Google Domains. Everything in one place. Ahhh…isn’t that nice.</p>
-      <h3>Cost</h3>
-      <h3>Things I miss & Conclusion</h3>
-      <p>Speed</p>
-    </div>
-    <div id="footer">
-        <a target="_blank" href="https://github.com/m-butterfield/mattbutterfield.com">view source code</a> |
-        <a target="_blank" href="https://spin.mattbutterfield.com/">go for a spin</a>
-      <p>© {{ .Year }} Matt Butterfield</p>
-    </div>
-  </body>
-</html>
+{{ template "base" . }}
+{{ define "main" }}
+<div class="section-div blog-post">
+  <h2>Migrating My Personal Web Projects from AWS to GCP - Part 1</h2>
+  <em>2021-03-28</em>
+  <p>Hello and welcome to my freshly refactored and redeployed website! For many years, my personal website and side projects were hosted on AWS. All of my web apps, written in various languages, including their databases, ran directly on a single EC2 instance. My complete setup was:</p>
+  <ul>
+    <li>EC2 - A single instance running multiple webapps and databases.</li>
+    <li>Route53 for handling my domains and DNS.</li>
+    <li>S3 + CloudFront for serving static assets, mostly images.</li>
+    <li>Mailgun - I had to branch out of the AWS ecosystem to get email working the way I wanted.</li>
+  </ul>
+  <p>This all worked well for some time. In fact, I hadn’t even restarted the EC2 server in over 4 years:</p>
+  <pre style="margin-bottom: 35px; font-size: large">12:03:31 up 1560 days, 12:56,  1 user,  load average: 0.00, 0.00, 0.00</pre>
+  <p>Running everything this way had advantages. It was a great way to learn how to set everything up from scratch on my own, and I felt like I had a lot of control over everything. I liked that I could just SSH into my server and everything was right there for me to play around with.</p>
+  <p>On the other hand, it felt precarious. If I lost the server, I would have to build it up from scratch again. There was no clear way to scale anything up if I needed to handle more traffic. If I wanted to deploy something in a new language or framework, I had to install everything on the server and hope it was going to work the same way as on my local computer. Upgrades, backups, etc… were not in place or happening regularly. I also had to periodically run some things manually to get HTTPS working correctly on S3 with a custom domain. For my email address, I had to use <a href="https://simplyian.com/2015/01/07/Hacking-GMail-to-use-custom-domains-for-free/">Mailgun for email forwarding</a> which was ok but not ideal.</p>
+  <h3>Exploring Google Cloud Platform</h3>
+  <p>In a search for a better solution, I deployed my next <a href="https://github.com/m-butterfield/orangered">project</a> using GCP and Kubernetes. I enjoyed all the benefits of containerization and the flexibility that you get from Kubernetes. Unfortunately, the cost can be a real issue. Once my free trial period ran out, I realized I’d be spending way more than I expected, easily getting into triple digits monthly for a simple app with less than 100 users. On top of that, Kubernetes just felt way too complicated for working on small projects. I needed a simpler solution.</p>
+  <h3>Cloud Run</h3>
+  <p>Since then, Google released Cloud Run, and I decided to check it out a few weeks ago to deploy a new project: <a href="https://passapi.app">PassApi</a>. I bought the domain name on Google Domains, containerized my app, and had it running within minutes. It also looked like I could stay in the free tier if I was ok with some performance hits. I’d have to pay for Cloud SQL, but I realized I could get by with one small instance that runs the databases for all my apps. All traffic to Cloud Run services is HTTPS by default, so that was another thing I didn’t have to worry about. Scaling an app or the database can be done easily and even automatically, same with backups.</p>
+  <h3>Email</h3>
+  <p>Moving my domain name to Google Domains resulted in a simpler email setup than I had before since email forwarding is built in, and sending email from that account using an alias is also <a href="https://support.google.com/domains/answer/9437157">easy</a>.</p>
+  <h3>Moving forward</h3>
+  <p>This was sounding like an ideal setup. My EC2 instance was old, running Ubuntu 16.04, and it was time to replace it with something else. I had more ideas I wanted to launch, and I wanted to be able to launch them without spending days configuring and testing things. I decided I would make one project in Google Cloud, with one Cloud SQL Postgres instance, migrate everything there and to Cloud Run, and email forwarding from Mailgun to Google Domains. Everything in one place. Ahhh…isn’t that nice.</p>
+  <p>So that's where I am now. I've moved my domain and the app to Cloud Run. Images are still served on S3, so the next post will be about migrating those to Cloud Storage. Stay tuned!</p>
+</div>
+{{ end }}

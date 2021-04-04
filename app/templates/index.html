@@ -1,63 +1,9 @@
-<html>
-  <head>
-    <title>mattbutterfield.com</title>
-    <link rel="shortcut icon" type="image/jpg" href="https://images.mattbutterfield.com/favicon.ico"/>
-    <style>
-      a {
-        color: #dedede;
-      }
-      body {
-        background-color: #2c2c2c;
-        color: #dedede;
-        font-family: Helvetica, sans-serif;
-        font-size: medium;
-        display: grid;
-        grid-template-columns: minmax(1.2rem, 1fr) minmax(auto, 80ch) minmax(1.2rem, 1fr);
-        position: relative;
-        margin: 0;
-        padding-bottom: 120px;
-        min-height: 100%;
-      }
-      .blog-post p {
-        margin-bottom: 30px;
-        margin-top: 15px;
-        line-height: 2;
-        grid-column: 2;
-      }
-      img {
-        grid-column: 1 / 4;
-        justify-self: center;
-      }
-      .section-div {
-        grid-column: 2;
-        margin-top: 15px;
-        margin-bottom: 30px;
-      }
-      #footer {
-        position: absolute;
-        grid-column: 2;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="section-div">
-      <h3>mattbutterfield.com</h3>
-      <a href="/">home</a> | <a href="/blog">blog</a>
-    </div>
-    <img src="{{ .ImageURL }}" width="{{ .ImageWidth }}" height="{{ .ImageHeight }}" />
-    <div class="section-div">
-      <p>{{ .ImageCaption }}</p>
-      <p>{{ .ImageLocation }}</p>
-      <p>{{ .ImageDate }}</p>
-      <a href="{{ .NextImagePath }}">get random image</a>
-    </div>
-    <div id="footer">
-      <a target="_blank" href="https://github.com/m-butterfield/mattbutterfield.com">view source code</a> |
-      <a target="_blank" href="https://spin.mattbutterfield.com/">go for a spin</a>
-      <p>© {{ .Year }} Matt Butterfield</p>
-    </div>
-  </body>
-</html>
+{{ template "base" . }}
+{{ define "main" }}
+<div class="section-div">
+  <p>{{ .ImageCaption }}</p>
+  <p>{{ .ImageLocation }}</p>
+  <p>{{ .ImageDate }}</p>
+  <a href="{{ .NextImagePath }}">get random image</a>
+</div>
+{{ end }}

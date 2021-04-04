@@ -24,7 +24,7 @@ func BlogEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var tmpl *template.Template
-	if tmpl, err = template.ParseFiles(entryPath); err != nil {
+	if tmpl, err = template.ParseFiles([]string{entryPath, baseTemplatePath}...); err != nil {
 		internalError(err, w)
 		return
 	}

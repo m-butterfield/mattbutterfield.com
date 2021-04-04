@@ -17,9 +17,10 @@ const (
 )
 
 var (
-	_, b, _, _   = runtime.Caller(0)
-	basePath     = filepath.Join(filepath.Dir(b), "../..")
-	templatePath = basePath + "/app/templates/"
+	_, b, _, _       = runtime.Caller(0)
+	basePath         = filepath.Join(filepath.Dir(b), "../..")
+	templatePath     = basePath + "/app/templates/"
+	baseTemplatePath = templatePath + "base.html"
 )
 
 var db data.Store
