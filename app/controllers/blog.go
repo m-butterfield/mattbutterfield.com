@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-var blogTemplatePath = []string{templatePath + "blog/index.html", baseTemplatePath}
+var blogTemplatePath = []string{templatePath + "blog/index.gohtml", baseTemplatePath}
 
 func Blog(w http.ResponseWriter, _ *http.Request) {
 	image, err := db.GetRandomImage()

@@ -16,7 +16,7 @@ func TestBlogEntry(t *testing.T) {
 		},
 	}
 
-	r, err := http.NewRequest(http.MethodGet, "/blog/2021-03-28-migrating-to-gcp-1", nil)
+	r, err := http.NewRequest(http.MethodGet, "/blog/2021-04-05-migrating-to-gcp", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -20,7 +20,7 @@ var (
 	_, b, _, _       = runtime.Caller(0)
 	basePath         = filepath.Join(filepath.Dir(b), "../..")
 	templatePath     = basePath + "/app/templates/"
-	baseTemplatePath = templatePath + "base.html"
+	baseTemplatePath = templatePath + "base.gohtml"
 )
 
 var db data.Store

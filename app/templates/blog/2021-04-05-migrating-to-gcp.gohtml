@@ -1,0 +1,30 @@
+{{ template "base" . }}
+{{ define "main" }}
+<div class="section-div blog-post">
+  <h2>Migrating My Personal Web Projects from AWS EC2 to GCP Cloud Run</h2>
+  <em>2021-04-05</em>
+  <p>Hello and welcome to my freshly refactored and redeployed website! For many years, my personal website and side projects were hosted on AWS. All of my web apps, written in various languages, including their databases, ran directly on a single EC2 instance. My complete setup was:</p>
+  <ul>
+    <li>EC2 - A single instance running multiple webapps, databases, and Nginx + Letsencrypt.</li>
+    <li>Route53 for handling my domains and DNS.</li>
+    <li>S3 + CloudFront for serving static files.</li>
+    <li>Mailgun - I had to branch out of the AWS ecosystem to get <a target="_blank" href="https://simplyian.com/2015/01/07/Hacking-GMail-to-use-custom-domains-for-free/">email working the way I wanted</a>.</li>
+  </ul>
+  <p>This all worked well for some time. In fact, I hadn’t even restarted the EC2 server in over 4 years:</p>
+  <pre style="margin-bottom: 35px; font-size: large">12:03:31 up 1560 days, 12:56,  1 user,  load average: 0.00, 0.00, 0.00</pre>
+  <p>I really liked that I could just SSH into my server and everything was right there for me to play around with. I felt like I had a lot of control over everything.</p>
+  <p>On the other hand, there were some pretty glaring issues. I didn’t have a clear plan for upgrades, backups, deploying new things, or handling more traffic. I wanted something better but was unsure of the best approach.</p>
+  <h3>Containers, Kubernetes, GCP, and Cloud Run.</h3>
+  <p>A lot has happened since I finished my AWS setup. Containers have become almost the default way to deploy things, and for good reason. Likewise, Kubernetes has become almost the default way to deploy containers, and it works great too. But for running a personal website and some other small webapps, Kubernetes is overkill, too expensive and complicated.</p>
+  <p>When Cloud Run was released on GCP, it was advertised as "Container to production in seconds." I decided to try it a few weeks ago to deploy a web app. I bought a domain name, spun up a Cloud SQL database, and set up Cloud Run to run my app at the new domain. The whole thing was up and running in under an hour. I was impressed.</p>
+  <p>Since then I have migrated everything, including this website, to Cloud Run and GCP. This has taken care of a lot of the issues I had before, and simplified some things quite a bit. HTTPS and email are set up for me. The databases are scalable and backed up automatically. With Cloud Run, I can containerize and run any app, map it to a domain, and scale it if needed. My complete setup now is:</p>
+  <ul>
+    <li>Cloud Run - Handles running my apps as containers, and maps them to my domains. Everything is HTTPS by default.</li>
+    <li>Google Domains - Makes a lot of things easier if you're using GCP. Also email forwarding and <a href="https://support.google.com/domains/answer/9437157" target="_blank">sending as an alias</a> is built in, I was able to use that and delete my Mailgun account.</li>
+    <li>Cloud SQL - One instance running Postgres with multiple databases for the apps running on Cloud Run.</li>
+    <li>Cloud Storage - For serving static files. Serving HTTPS from Cloud Storage at my domain is also easier than S3 (<a href="https://cloud.google.com/load-balancing/docs/https/ext-load-balancer-backend-buckets" target="_blank">using a load balancer</a>).</li>
+  </ul>
+  <p>One major thing to consider here is the cost. Cloud Run has a free tier, but if you just spin up an entirely new GCP project for each application you want to launch, including new Cloud SQL instances, it's going to get expensive very quickly. To mitigate this, I have only one GCP project, with one Cloud SQL instance to run the databases for my website and whatever other experiments I want to launch. My AWS setup cost only around $10 a month. GCP will probably be more expensive than that but hopefully not by much.</p>
+  <p>So that's it for now. I don't know if I'll stick with this setup for years to come like I did with AWS, but it seems pretty nice so far. Stay tuned for updates!</p>
+</div>
+{{ end }}

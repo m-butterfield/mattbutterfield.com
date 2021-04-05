@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var homeTemplatePath = []string{templatePath + "index.html", baseTemplatePath}
+var homeTemplatePath = []string{templatePath + "index.gohtml", baseTemplatePath}
 
 type homePage struct {
 	imageInfo

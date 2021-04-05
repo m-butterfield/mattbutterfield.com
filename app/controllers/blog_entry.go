@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var blogEntryTemplateBase = templatePath + "blog/%s.html"
+var blogEntryTemplateBase = templatePath + "blog/%s.gohtml"
 
 func BlogEntry(w http.ResponseWriter, r *http.Request) {
 	image, err := db.GetRandomImage()

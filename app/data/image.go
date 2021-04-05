@@ -3,7 +3,6 @@ package data
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/jackc/pgx/v4/stdlib"
 	"time"
 )
 
