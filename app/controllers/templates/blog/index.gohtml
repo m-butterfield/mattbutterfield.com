@@ -1,8 +1,13 @@
 {{ template "base" . }}
+{{ define "head" }}{{ end }}
 {{ define "main" }}
+{{ template "image" . }}
 <div class="section-div">
   <h1>blog</h1>
   <ul>
+    <li>
+      <a href="/blog/2021-05-02-adding-video-chat"><em>2021-05-02</em> - Building video chat into my personal website</a>
+    </li>
     <li>
       <a href="/blog/2021-04-05-migrating-to-gcp"><em>2021-04-05</em> - Migrating My Personal Web Projects from AWS EC2 to GCP Cloud Run</a>
     </li>

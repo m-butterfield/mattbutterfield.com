@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"cloud.google.com/go/pubsub"
+	"context"
+	"embed"
 	"encoding/base64"
-	"fmt"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"log"
 	"net/http"
-	"path/filepath"
-	"runtime"
 	"time"
 )
 
@@ -17,13 +18,22 @@ const (
 )
 
 var (
-	_, b, _, _       = runtime.Caller(0)
-	basePath         = filepath.Join(filepath.Dir(b), "../..")
-	templatePath     = basePath + "/app/templates/"
-	baseTemplatePath = templatePath + "base.gohtml"
-)
+	//go:embed templates
+	templatesFS embed.FS
+	//go:embed css
+	cssFS embed.FS
+	//go:embed js
+	jsFS embed.FS
 
-var db data.Store
+	templatePath      = "templates/"
+	baseTemplatePaths = []string{
+		templatePath + "image.gohtml",
+		templatePath + "base.gohtml",
+	}
+
+	db     data.Store
+	pubSub *pubsub.Client
+)
 
 func Initialize() error {
 	store, err := data.Connect()
@@ -31,11 +41,15 @@ func Initialize() error {
 		return err
 	}
 	db = store
+	pubSub, err = pubsub.NewClient(context.Background(), "mattbutterfield")
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func internalError(err error, w http.ResponseWriter) {
-	fmt.Println(err)
+	log.Println(err)
 	http.Error(w, "internal error", http.StatusInternalServerError)
 }
 

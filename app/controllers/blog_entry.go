@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"html/template"
+	"io/fs"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -19,12 +19,15 @@ func BlogEntry(w http.ResponseWriter, r *http.Request) {
 	}
 	entryName := strings.TrimSuffix(mux.Vars(r)["entryName"], "/")
 	entryPath := fmt.Sprintf(blogEntryTemplateBase, entryName)
-	if _, err := os.Stat(entryPath); os.IsNotExist(err) {
+	if list, err := fs.Glob(templatesFS, entryPath); err != nil {
+		internalError(err, w)
+		return
+	} else if len(list) == 0 {
 		http.NotFound(w, r)
 		return
 	}
 	var tmpl *template.Template
-	if tmpl, err = template.ParseFiles([]string{entryPath, baseTemplatePath}...); err != nil {
+	if tmpl, err = template.ParseFS(templatesFS, append([]string{entryPath}, baseTemplatePaths...)...); err != nil {
 		internalError(err, w)
 		return
 	}

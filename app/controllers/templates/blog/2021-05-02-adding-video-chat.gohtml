@@ -1,0 +1,239 @@
+{{ template "base" . }}
+{{ define "head" }}
+<link rel="stylesheet" href="/css/a11y-dark.css">
+{{ end }}
+{{ define "main" }}
+{{ template "image" . }}
+<div class="section-div blog-post">
+  <h2>Building video chat into my personal website using WebRTC, Websockets, and Golang on GCP.</h2>
+  <em>2021-05-02</em>
+  <p>Recently I've become more and more interested in how <a target="_blank" href="https://en.wikipedia.org/wiki/WebRTC">WebRTC</a> works, so a few weeks ago I decided to add a page to my website where I could set up peer to peer video chats. There are plenty of libraries and services out there to make this extremely easy, but knowing that WebRTC is now well supported natively across browsers and devices, I wanted try doing everything myself with minimal dependencies. It turned out to be a fun project to set up. It was also hard to find simple examples and explanations of this, so I hope to provide that here.</p>
+  <h3>Frontend</h3>
+  <p>I was able to do everything I needed on the frontend with vanilla Javascript and HTML. The only HTML that is necessary are some <code>&lt;video&gt;</code> elements to display local and remote video streams:</p>
+  <pre>
+    <code class="html">
+&lt;video id="local_video" autoplay controls muted playsinline&gt;&lt;/video&gt;
+&lt;video id="remote_video" autoplay controls playsinline&gt;&lt;/video&gt;
+    </code>
+  </pre>
+  <p>I needed to identify who the current user is and who they want to to talk to. I don't have users or cookies or anything like that on my website, so I'm just using url query parameters and generating a unique link for each 'user'. Below, peer1 will be able to visit the first link to talk to peer2 and vice versa:</p>
+  <pre>
+     <code class="plaintext">
+https://mattbutterfield.com/video?userID=peer1&peerID=peer2
+https://mattbutterfield.com/video?userID=peer2&peerID=peer1
+     </code>
+  </pre>
+  <p>On to the Javascript!</p>
+  <p>A peer to peer connection is the goal here, but in order to do that, I need some way for the two users to communicate initially to let each other know where they are on the web and what kind of data they are sending to each other. I'll explain the backend implementation later, but this websocket will allow that initial communication to happen via my backend server:</p>
+  <pre>
+    <code class="javascript">
+let ws = new WebSocket("wss://" + window.location.host + '/video/connections' + window.location.search);
+    </code>
+  </pre>
+  <p>This initial communication consists of messages that are created and handled by a <code>RTCPeerConnection</code> object:</p>
+  <pre>
+    <code class="javascript">
+let peerConnection = new RTCPeerConnection({"iceServers": [{"urls": "stun:stun.l.google.com:19302"}]});
+    </code>
+  </pre>
+  <p>Take a look at <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Connectivity">this</a> if you want to get a better idea of what is actually going on with the connection that will be set up and the format of the messages being exchanged. There are three types of messages we care about: offers, answers, and ICE candidates. Offer and answer messages mostly contain information about the media stream, and ICE candidate messages are about how to establish the actual peer connection across the web.</p>
+  <p><code>navigator.mediaDevices.getUserMedia()</code> will request access to the current user's camera and microphone, creating a media <code>stream</code> which is displayed locally, then used with <code>peerConnection</code> to create the 'offer' message and send it to the peer with the <code>ws</code> connection:</p>
+  <pre>
+    <code class="javascript">
+navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
+  let element = document.getElementById('local_video');
+  element.srcObject = stream;
+  element.play().then(() => {
+    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+    peerConnection.onnegotiationneeded = () => {
+      peerConnection.createOffer().then(offer => {
+        return peerConnection.setLocalDescription(offer);
+      }).then(() => {
+        ws.send(JSON.stringify(peerConnection.localDescription));
+      });
+    }
+  });
+});
+    </code>
+  </pre>
+  <p>In the meantime, a bit more configuration on <code>peerConnection</code> is necessary to set up how to display the stream received from the peer, and how send the ICE candidate messages to the peer through the websocket:</p>
+  <pre>
+    <code class="javascript">
+peerConnection.ontrack = evt => {
+  let element = document.getElementById('remote_video');
+  element.srcObject = evt.streams[0];
+  element.play();
+};
+
+peerConnection.onicecandidate = evt => {
+  if (evt.candidate) {
+    ws.send(JSON.stringify({type: 'candidate', ice: evt.candidate}));
+  }
+}
+    </code>
+  </pre>
+  <p>That takes care of sending the offers, answers and ICE candidates, now the websocket and peerConnection need to be able to receive them and take the appropriate actions:</p>
+  <pre>
+    <code class="javascript">
+ws.onmessage = (evt) => {
+  const message = JSON.parse(evt.data);
+  switch (message.type) {
+    case 'offer': {
+      peerConnection.setRemoteDescription(message).then(() => {
+        return peerConnection.createAnswer()
+      }).then(answer => {
+        return peerConnection.setLocalDescription(answer)
+      }).then(() => {
+        ws.send(JSON.stringify(peerConnection.localDescription));
+      });
+      break;
+    }
+    case 'answer': {
+      peerConnection.setRemoteDescription(message);
+      break;
+    }
+    case 'candidate': {
+      peerConnection.addIceCandidate(new RTCIceCandidate(message.ice));
+      break;
+    }
+  }
+};
+    </code>
+  </pre>
+  <p>That's the entire frontend. It weighs in at around ~50 lines of vanilla JS.</p>
+  <h3>Backend</h3>
+  <p>On the backend, I needed some way to handle multiple active websocket connections and pass messages between them. My website is written in Go, and my first implementation held all the active websocket connections in memory in a <code>map</code>. When a message came in from one peer, I could look up the other peer's websocket connection in the map and pass on the message.</p>
+  <p>This worked when running the app locally, but because my website is deployed on GCP Cloud Run with multiple running instances, I couldn't rely on both peers' websockets being connected to the same instance and in the same memory. A simple shared <code>map</code> was not viable, so I looked for something else.</p>
+  <p>For passing messages around on the backend, the first thing that came to mind on GCP was <a target="_blank" href="https://cloud.google.com/pubsub/docs/overview">Pub/Sub</a>, and it turned out to be a nice solution. First, I set up a client:</p>
+  <pre>
+    <code class="go">
+import "cloud.google.com/go/pubsub"
+
+var pubSub *pubsub.Client
+
+func Initialize() error {
+    pubSub, err = pubsub.NewClient(context.Background(), "mattbutterfield")
+    if err != nil {
+        return err
+    }
+    return nil
+}
+    </code>
+  </pre>
+  <p><code>VideoConnections</code> handles websocket connections and does the following:</p>
+  <ul>
+    <li>Detects who the current user is and who they want to connect to based on the url query parameters.</li>
+    <li>Finds or creates a shared Pub/Sub topic that both peers' instances of this handler can publish and subscribe to.</li>
+    <li>Starts <code>wsLoop</code> and <code>pubSubLoop</code>, described below.</li>
+  </ul>
+  <pre>
+    <code class="go">
+func VideoConnections(w http.ResponseWriter, r *http.Request) {
+    ws, err := websocket.Accept(w, r, nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer closeWS(ws)
+    userID := strings.ToLower(r.URL.Query().Get("userID"))
+    peerID := strings.ToLower(r.URL.Query().Get("peerID"))
+
+    peers := []string{userID, peerID}
+    sort.Strings(peers)
+    topicName := fmt.Sprintf("video-%s-%s", peers[0], peers[1])
+    topic := pubSub.Topic(topicName)
+    topic.EnableMessageOrdering = true
+
+    ctx := context.Background()
+    exists, err := topic.Exists(ctx)
+    if err != nil {
+        log.Fatal(err)
+    }
+    if !exists {
+        log.Printf("Topic %s doesn't exist - creating it", topicName)
+        _, err = pubSub.CreateTopic(ctx, topicName)
+        if err != nil {
+            log.Fatal(err)
+        }
+    }
+
+    cctx, cancelFunc := context.WithCancel(ctx)
+    go wsLoop(ctx, cancelFunc, ws, topic, userID)
+    pubSubLoop(cctx, ctx, ws, topic, userID)
+}
+    </code>
+  </pre>
+  <p><code>wsLoop</code> listens for new messages coming to the websocket and publishes them to the Pub/Sub topic with an ordering key, to ensure everything arrives in the order it was sent:</p>
+  <pre>
+    <code class="go">
+func wsLoop(ctx context.Context, cancelFunc context.CancelFunc, ws *websocket.Conn, topic *pubsub.Topic, userID string) {
+    log.Printf("Starting wsLoop for %s...", userID)
+    orderingKey := fmt.Sprintf("%s-%s", userID, topic.ID())
+    for {
+        if _, message, err := ws.Read(ctx); err != nil {
+            log.Printf("Error reading message %s", err)
+            break
+        } else {
+            log.Printf("Received message to websocket: ")
+            msg := &pubsub.Message{
+                Data:        message,
+                Attributes:  map[string]string{"sender": userID},
+                OrderingKey: orderingKey,
+            }
+            if _, err = topic.Publish(ctx, msg).Get(ctx); err != nil {
+                log.Printf("Could not publish message: %s", err)
+                return
+            }
+        }
+    }
+    cancelFunc()
+    log.Printf("Shutting down wsLoop for %s...", userID)
+}
+    </code>
+  </pre>
+  <p>Finally, <code>pubSubLoop</code> listens for new messages published to the Pub/Sub topic and writes them to the websocket:</p>
+  <pre>
+    <code class="go">
+func pubSubLoop(cctx, ctx context.Context, ws *websocket.Conn, topic *pubsub.Topic, userID string) {
+    log.Printf("Starting pubSubLoop for %s...", userID)
+    subscriptionName := fmt.Sprintf("%s-%s", userID, topic.ID())
+    sub := pubSub.Subscription(subscriptionName)
+    if exists, err := sub.Exists(ctx); err != nil {
+        log.Printf("Error checking if sub exists: %s", err)
+        return
+    } else if !exists {
+        log.Printf("Creating subscription: %s", subscriptionName)
+        if _, err = pubSub.CreateSubscription(
+            context.Background(),
+            subscriptionName,
+            pubsub.SubscriptionConfig{
+                Topic:                 topic,
+                EnableMessageOrdering: true,
+            },
+        ); err != nil {
+            log.Printf("Error creating subscription: %s", err)
+            return
+        }
+    }
+    if err := sub.Receive(cctx, func(c context.Context, m *pubsub.Message) {
+        m.Ack()
+        if m.Attributes["sender"] == userID {
+            log.Println("skipping message from self")
+            return
+        }
+        log.Printf("Received message to pubSub: ")
+        if err := ws.Write(ctx, websocket.MessageText, m.Data); err != nil {
+            log.Printf("Error writing message to %s: %s", userID, err)
+            return
+        }
+    }); err != nil {
+        log.Printf("Error setting up subscription Receive: %s", err)
+    }
+    log.Printf("Shutting down pubSubLoop for %s...", userID)
+}
+    </code>
+  </pre>
+  <p>And with that, I have a working solution. I've tested it on various computers and mobile browsers, on different networks across some distances. The peer to peer connection is usually crystal clear. It feels better than the mainstream video conferencing tools, which is quite satisfying. It was good to dive in to some technical areas that I hadn't explored before and come out with something that I understand and works well.</p>
+</div>
+<script src="/js/highlight.pack.js"></script>
+<script type="text/javascript">hljs.highlightAll();</script>
+{{ end }}

@@ -1,0 +1,22 @@
+{{ define "base" }}
+<html lang="en">
+  <head>
+    <title>mattbutterfield.com</title>
+    <link rel="shortcut icon" type="image/jpg" href="https://images.mattbutterfield.com/favicon.ico"/>
+    {{ template "head" . }}
+    <link rel="stylesheet" href="/css/app.css">
+  </head>
+  <body>
+    <div class="section-div">
+      <h3>mattbutterfield.com</h3>
+      <a href="/">home</a> | <a href="/blog">blog</a>
+    </div>
+    {{ template "main" . }}
+    <div id="footer">
+      <a target="_blank" href="https://github.com/m-butterfield/mattbutterfield.com">view source code</a> |
+      <a target="_blank" href="https://spin.mattbutterfield.com/">go for a spin</a>
+      <p>© {{ .Year }} Matt Butterfield</p>
+    </div>
+  </body>
+</html>
+{{ end }}
