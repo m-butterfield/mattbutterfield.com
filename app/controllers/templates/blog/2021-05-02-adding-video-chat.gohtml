@@ -7,7 +7,7 @@
 <div class="section-div blog-post">
   <h2>Building video chat into my personal website using WebRTC, Websockets, and Golang on GCP.</h2>
   <em>2021-05-02</em>
-  <p>Recently I've become more and more interested in how <a target="_blank" href="https://en.wikipedia.org/wiki/WebRTC">WebRTC</a> works, so a few weeks ago I decided to add a page to my website where I could set up peer to peer video chats. There are plenty of libraries and services out there to make this extremely easy, but knowing that WebRTC is now well supported natively across browsers and devices, I wanted try doing everything myself with minimal dependencies. It turned out to be a fun project to set up. It was also hard to find simple examples and explanations of this, so I hope to provide that here.</p>
+  <p>Recently I've become more and more interested in how <a target="_blank" href="https://en.wikipedia.org/wiki/WebRTC">WebRTC</a> works, so a few weeks ago I decided to add a page to my website where I could set up peer-to-peer video chats. There are plenty of libraries and services out there to make this extremely easy, but knowing that WebRTC is now well supported natively across browsers and devices, I wanted try doing everything myself with minimal dependencies. It turned out to be a fun project to set up. It was also hard to find simple examples and explanations of this, so I hope to provide that here.</p>
   <h3>Frontend</h3>
   <p>I was able to do everything I needed on the frontend with vanilla Javascript and HTML. The only HTML that is necessary are some <code>&lt;video&gt;</code> elements to display local and remote video streams:</p>
   <pre>
@@ -24,7 +24,7 @@ https://mattbutterfield.com/video?userID=peer2&peerID=peer1
      </code>
   </pre>
   <p>On to the Javascript!</p>
-  <p>A peer to peer connection is the goal here, but in order to do that, I need some way for the two users to communicate initially to let each other know where they are on the web and what kind of data they are sending to each other. I'll explain the backend implementation later, but this websocket will allow that initial communication to happen via my backend server:</p>
+  <p>A peer-to-peer connection is the goal here, but in order to do that, I need some way for the two users to communicate initially to let each other know where they are on the web and what kind of data they are sending to each other. I'll explain the backend implementation later, but this websocket will allow that initial communication to happen via my backend server:</p>
   <pre>
     <code class="javascript">
 let ws = new WebSocket("wss://" + window.location.host + '/video/connections' + window.location.search);
@@ -36,7 +36,7 @@ let ws = new WebSocket("wss://" + window.location.host + '/video/connections' + 
 let peerConnection = new RTCPeerConnection({"iceServers": [{"urls": "stun:stun.l.google.com:19302"}]});
     </code>
   </pre>
-  <p>Take a look at <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Connectivity">this</a> if you want to get a better idea of what is actually going on with the connection that will be set up and the format of the messages being exchanged. There are three types of messages we care about: offers, answers, and ICE candidates. Offer and answer messages mostly contain information about the media stream, and ICE candidate messages are about how to establish the actual peer connection across the web.</p>
+  <p>Take a look at <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Connectivity">this</a> if you want to get a better idea of what is actually going on with the connection that will be set up and the format of the messages being exchanged. There are three types of messages we care about: offers, answers, and ICE (Interactive Connectivity Establishment) candidates. Offer and answer messages mostly contain information about the media stream, and ICE candidate messages are about how to establish the actual peer connection across the web.</p>
   <p><code>navigator.mediaDevices.getUserMedia()</code> will request access to the current user's camera and microphone, creating a media <code>stream</code> which is displayed locally, then used with <code>peerConnection</code> to create the 'offer' message and send it to the peer with the <code>ws</code> connection:</p>
   <pre>
     <code class="javascript">
@@ -232,7 +232,7 @@ func pubSubLoop(cctx, ctx context.Context, ws *websocket.Conn, topic *pubsub.Top
 }
     </code>
   </pre>
-  <p>And with that, I have a working solution. I've tested it on various computers and mobile browsers, on different networks across some distances. The peer to peer connection is usually crystal clear. It feels better than the mainstream video conferencing tools, which is quite satisfying. It was good to dive in to some technical areas that I hadn't explored before and come out with something that I understand and works well.</p>
+  <p>And with that, I have a working solution. I've tested it on various computers and mobile browsers, on different networks across some distances. The peer-to-peer connection is usually crystal clear. It feels better than the mainstream video conferencing tools, which is quite satisfying. It was good to dive in to some technical areas that I hadn't explored before and come out with something that I understand and works well.</p>
 </div>
 <script src="/js/highlight.pack.js"></script>
 <script type="text/javascript">hljs.highlightAll();</script>
