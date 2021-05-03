@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var homeTemplatePath = []string{templatePath + "index.gohtml", baseTemplatePath}
+var homeTemplatePath = append([]string{templatePath + "index.gohtml"}, baseTemplatePaths...)
 
 type homePage struct {
 	imageInfo
@@ -64,7 +64,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		internalError(err, w)
 		return
 	}
-	tmpl, err := template.ParseFiles(homeTemplatePath...)
+	tmpl, err := template.ParseFS(templatesFS, homeTemplatePath...)
 	if err != nil {
 		internalError(err, w)
 		return

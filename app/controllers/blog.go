@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-var blogTemplatePath = []string{templatePath + "blog/index.gohtml", baseTemplatePath}
+var blogTemplatePath = append([]string{templatePath + "blog/index.gohtml"}, baseTemplatePaths...)
 
 func Blog(w http.ResponseWriter, _ *http.Request) {
 	image, err := db.GetRandomImage()
@@ -14,7 +14,7 @@ func Blog(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 	var tmpl *template.Template
-	if tmpl, err = template.ParseFiles(blogTemplatePath...); err != nil {
+	if tmpl, err = template.ParseFS(templatesFS, blogTemplatePath...); err != nil {
 		internalError(err, w)
 		return
 	}
