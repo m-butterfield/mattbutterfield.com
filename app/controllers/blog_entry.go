@@ -19,7 +19,7 @@ func BlogEntry(w http.ResponseWriter, r *http.Request) {
 	}
 	entryName := strings.TrimSuffix(mux.Vars(r)["entryName"], "/")
 	entryPath := fmt.Sprintf(blogEntryTemplateBase, entryName)
-	if list, err := fs.Glob(templatesFS, entryPath); err != nil {
+	if list, err := fs.Glob(ffs, entryPath); err != nil {
 		internalError(err, w)
 		return
 	} else if len(list) == 0 {
@@ -27,7 +27,7 @@ func BlogEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var tmpl *template.Template
-	if tmpl, err = template.ParseFS(templatesFS, append([]string{entryPath}, baseTemplatePaths...)...); err != nil {
+	if tmpl, err = template.ParseFS(ffs, append([]string{entryPath}, baseTemplatePaths...)...); err != nil {
 		internalError(err, w)
 		return
 	}

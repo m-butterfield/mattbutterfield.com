@@ -7,8 +7,8 @@ import (
 
 func Router() *mux.Router {
 	r := mux.NewRouter()
-	r.PathPrefix("/css/").Handler(http.FileServer(http.FS(cssFS)))
-	r.PathPrefix("/js/").Handler(http.FileServer(http.FS(jsFS)))
+	r.PathPrefix("/css/").Handler(http.FileServer(http.FS(ffs)))
+	r.PathPrefix("/js/").Handler(http.FileServer(http.FS(ffs)))
 	r.HandleFunc("/", Index).Methods(http.MethodGet)
 	r.HandleFunc("/img/{id:.*\\/?}", Home).Methods(http.MethodGet)
 	r.HandleFunc("/{blog:blog\\/?}", Blog).Methods(http.MethodGet)

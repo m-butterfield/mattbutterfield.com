@@ -9,7 +9,7 @@ import (
 var videoTemplatePath = append([]string{templatePath + "video.gohtml"}, baseTemplatePaths...)
 
 func Video(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(templatesFS, videoTemplatePath...)
+	tmpl, err := template.ParseFS(ffs, videoTemplatePath...)
 	if err != nil {
 		internalError(err, w)
 		return

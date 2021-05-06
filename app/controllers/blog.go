@@ -14,7 +14,7 @@ func Blog(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 	var tmpl *template.Template
-	if tmpl, err = template.ParseFS(templatesFS, blogTemplatePath...); err != nil {
+	if tmpl, err = template.ParseFS(ffs, blogTemplatePath...); err != nil {
 		internalError(err, w)
 		return
 	}

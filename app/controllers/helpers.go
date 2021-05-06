@@ -5,9 +5,13 @@ import (
 	"context"
 	"embed"
 	"encoding/base64"
+	"errors"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"io/fs"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -17,13 +21,17 @@ const (
 	imageBaseURL      = "https://images.mattbutterfield.com/"
 )
 
+type flexFS struct{}
+
 var (
 	//go:embed templates
-	templatesFS embed.FS
+	templatesEmbedFS embed.FS
 	//go:embed css
-	cssFS embed.FS
+	cssEmbedFS embed.FS
 	//go:embed js
-	jsFS embed.FS
+	jsEmbedFS embed.FS
+
+	ffs = &flexFS{}
 
 	templatePath      = "templates/"
 	baseTemplatePaths = []string{
@@ -34,6 +42,22 @@ var (
 	db     data.Store
 	pubSub *pubsub.Client
 )
+
+func (f *flexFS) Open(name string) (fs.File, error) {
+	if os.Getenv("USE_LOCAL_FS") != "" {
+		return os.Open("./app/controllers/" + name)
+	}
+	if strings.HasPrefix(name, "js/") {
+		return jsEmbedFS.Open(name)
+	}
+	if strings.HasPrefix(name, "css/") {
+		return cssEmbedFS.Open(name)
+	}
+	if strings.HasPrefix(name, "templates/") {
+		return templatesEmbedFS.Open(name)
+	}
+	return nil, errors.New("could not find file")
+}
 
 func Initialize() error {
 	store, err := data.Connect()

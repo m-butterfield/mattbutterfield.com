@@ -64,7 +64,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		internalError(err, w)
 		return
 	}
-	tmpl, err := template.ParseFS(templatesFS, homeTemplatePath...)
+	tmpl, err := template.ParseFS(ffs, homeTemplatePath...)
 	if err != nil {
 		internalError(err, w)
 		return
