@@ -1,0 +1,21 @@
+{{ template "base" . }}
+{{ define "head" }}{{ end }}
+{{ define "main" }}
+<div class="section-div">
+  <h1>music</h1>
+  {{ range $i, $song := .Songs }}
+    <div class="song">
+      <img class="song-img" src="https://files.mattbutterfield.com/music/{{ $song.ID }}.jpg">
+      <div>
+        <audio controls id="{{ $song.ID }}" data-next="{{ getDataNext $.Songs $i }}">
+          <source src="https://files.mattbutterfield.com/music/{{ $song.ID }}.ogg" type="audio/ogg">
+        </audio>
+        <p><strong>{{ $song.ID }}</strong></p>
+        <p><em>{{ $song.CreatedAt.Format "2006 Jan 02" }}</em></p>
+        <p>{{ $song.Description }}</p>
+      </div>
+    </div>
+  {{ end }}
+</div>
+<script type="text/javascript" src="/js/music.js"></script>
+{{ end }}

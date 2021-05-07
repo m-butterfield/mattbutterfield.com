@@ -13,6 +13,7 @@ func Router() *mux.Router {
 	r.HandleFunc("/img/{id:.*\\/?}", Home).Methods(http.MethodGet)
 	r.HandleFunc("/{blog:blog\\/?}", Blog).Methods(http.MethodGet)
 	r.HandleFunc("/blog/{entryName:.*\\/?}", BlogEntry).Methods(http.MethodGet)
+	r.HandleFunc("/{music:music\\/?}", Music).Methods(http.MethodGet)
 	r.HandleFunc("/{video:video\\/?}", Video).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/video/{connections:connections\\/?}", VideoConnections).Methods(http.MethodGet)
 	return r
