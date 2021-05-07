@@ -15,6 +15,8 @@ func Router() *mux.Router {
 	r.HandleFunc("/blog/{entryName:.*\\/?}", BlogEntry).Methods(http.MethodGet)
 	r.HandleFunc("/{music:music\\/?}", Music).Methods(http.MethodGet)
 	r.HandleFunc("/{video:video\\/?}", Video).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/{multivideo:multivideo\\/?}", MultiVideo).Methods(http.MethodGet, http.MethodPost)
 	r.HandleFunc("/video/{connections:connections\\/?}", VideoConnections).Methods(http.MethodGet)
+	r.HandleFunc("/multivideo/{connections:connections\\/?}", MultiVideoConnections).Methods(http.MethodGet)
 	return r
 }

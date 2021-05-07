@@ -1,0 +1,37 @@
+{{ template "base" . }}
+{{ define "head" }}
+<link rel="stylesheet" href="/css/a11y-dark.css">
+{{ end }}
+{{ define "main" }}
+{{ template "image" . }}
+<div class="section-div blog-post">
+  <h2>Building a multi-peer chat system.</h2>
+  <em>2021-06-06</em>
+  <p>Last month, I wrote about building a simple peer-to-peer video chat system using WebRTC. The biggest limitation of peer-to-peer video chat is the limited bandwidth. To solve this, I am building a server side system that can be deployed to handle most of the bandwidth, so each peer only has to send their video to one place.</p>
+  <h3>Frontend</h3>
+  <p>For the frontend, I'm again keeping things as simple as possible using only vanilla JavaScript and HTML. Here is the bare minimum HTML required to start with, which will show the current user's video:</p>
+  <pre>
+    <code class="html">
+&lt;div class=&quot;section-div&quot; id=&quot;videos-div&quot;&gt;
+  &lt;div&gt;
+    &lt;p&gt;You:&lt;/p&gt;
+    &lt;video id=&quot;local-video&quot; autoplay controls muted playsinline style=&quot;width: 650px; margin-bottom: 50px;&quot;&gt;&lt;/video&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+    </code>
+  </pre>
+  <p>More HTML will be added by JavaScript as more users join. First, we need to declare some variables:</p>
+  <pre>
+    <code class="javascript">
+let firstOffer = true,
+    iceCandidates = [],
+    streamsPeers = {},
+    peerConnection = new RTCPeerConnection({"iceServers": [{"urls": "stun:stun.l.google.com:19302"}]}),
+    ws = new WebSocket("wss://" + window.location.host + '/multivideo/connections' + window.location.search);
+    </code>
+  </pre>
+  <p></p>
+</div>
+<script src="/js/highlight.pack.js"></script>
+<script type="text/javascript">hljs.highlightAll();</script>
+{{ end }}
