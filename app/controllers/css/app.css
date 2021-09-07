@@ -2,18 +2,22 @@ a {
   color: #dedede;
 }
 
-body {
+html, body {
+  height: 100%;
   background-color: #2c2c2c;
   color: #dedede;
   font-family: Helvetica, sans-serif;
   font-size: medium;
+  word-wrap: break-word;
+}
+
+#body-div {
   display: grid;
   grid-template-columns: minmax(1rem, 1fr) minmax(0, 650px) minmax(1rem, 1fr);
   position: relative;
   margin: 0;
   padding-bottom: 120px;
   min-height: 100%;
-  word-wrap: break-word;
 }
 
 .blog-post p, ul {
@@ -21,6 +25,27 @@ body {
   margin-top: 15px;
   line-height: 2;
   grid-column: 2;
+}
+
+.song {
+  margin: 15px auto 30px;
+  line-height: 1;
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+audio {
+  width: 100%;
+}
+
+.song img {
+  grid-column: auto;
+  width: 200px;
+  max-height: 200px;
+  max-width: 100%;
 }
 
 img, video {
@@ -39,14 +64,13 @@ img, video {
 #footer {
   position: absolute;
   grid-column: 2;
-  right: 0;
   bottom: 0;
-  left: 0;
 }
 
 code {
   font-size: large;
   padding: 0 !important;
+  overflow: visible !important;
 }
 
 .hljs {

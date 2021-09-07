@@ -9,6 +9,7 @@ import (
 type Store interface {
 	GetImage(string) (*Image, error)
 	GetRandomImage() (*Image, error)
+	GetSongs() ([]*Song, error)
 }
 
 type dbStore struct {
