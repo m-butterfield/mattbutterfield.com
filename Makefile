@@ -2,7 +2,7 @@ build:
 	go build -o bin/server server.go
 
 db:
-	createdb mattbutterfield && psql -d mattbutterfield -f schema.sql
+	createdb mattbutterfield
 
 run:
 	DB_SOCKET="host=localhost dbname=mattbutterfield" USE_LOCAL_FS=true go run server.go
