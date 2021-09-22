@@ -1,0 +1,22 @@
+{{ template "base" . }}
+{{ define "head" }}
+<link rel="stylesheet" href="/css/a11y-dark.css">
+{{ end }}
+{{ define "main" }}
+{{ template "image" . }}
+<div class="section-div blog-post">
+  <h2>I added a music section to my website.</h2>
+  <em>2021-09-21</em>
+  <p>There is now a <a target="_blank" href="/music">music</a> section.</p>
+  <h3>Technical Details...</h3>
+  <p>Here is the implementation:</p>
+  <pre>
+    <code class="html">
+&lt;audio controls&gt;&lt;/audio&gt;
+    </code>
+  </pre>
+  <p>Isn't that nice?</p>
+</div>
+<script src="/js/highlight.pack.js"></script>
+<script type="text/javascript">hljs.highlightAll();</script>
+{{ end }}
