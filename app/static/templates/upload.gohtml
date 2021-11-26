@@ -1,0 +1,11 @@
+{{ template "base" . }}
+{{ define "head" }}{{ end }}
+{{ define "main" }}
+<div class="section-div">
+  <p><label for="audio-file">audio file: </label><input type="file" id="audio-file"></p>
+  <p><label for="song-name">name: </label><input type="text" id="song-name"></p>
+  <p><label for="description">description: </label><input type="text" id="description"></p>
+  <p><button type="submit" id="upload-button">save</button></p>
+</div>
+<script type="text/javascript" src="/js/upload.js"></script>
+{{ end }}

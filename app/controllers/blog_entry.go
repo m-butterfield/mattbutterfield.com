@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -19,6 +20,7 @@ func BlogEntry(w http.ResponseWriter, r *http.Request) {
 	}
 	entryName := strings.TrimSuffix(mux.Vars(r)["entryName"], "/")
 	entryPath := fmt.Sprintf(blogEntryTemplateBase, entryName)
+	ffs := &static.FlexFS{}
 	if list, err := fs.Glob(ffs, entryPath); err != nil {
 		internalError(err, w)
 		return

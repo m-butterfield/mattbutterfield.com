@@ -3,15 +3,11 @@ package controllers
 import (
 	"cloud.google.com/go/pubsub"
 	"context"
-	"embed"
 	"encoding/base64"
-	"errors"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -19,45 +15,19 @@ const (
 	dateDisplayLayout = "January 2006"
 	homeImage         = "20150615_002.jpg"
 	imageBaseURL      = "https://images.mattbutterfield.com/"
+	templatePath      = "templates/"
 )
 
-type flexFS struct{}
-
 var (
-	//go:embed templates
-	templatesEmbedFS embed.FS
-	//go:embed css
-	cssEmbedFS embed.FS
-	//go:embed js
-	jsEmbedFS embed.FS
-
-	ffs = &flexFS{}
-
-	templatePath      = "templates/"
 	baseTemplatePaths = []string{
 		templatePath + "image.gohtml",
 		templatePath + "base.gohtml",
 	}
 
-	db     data.Store
-	pubSub *pubsub.Client
+	authArray []byte
+	db        data.Store
+	pubSub    *pubsub.Client
 )
-
-func (f *flexFS) Open(name string) (fs.File, error) {
-	if os.Getenv("USE_LOCAL_FS") != "" {
-		return os.Open("./app/controllers/" + name)
-	}
-	if strings.HasPrefix(name, "js/") {
-		return jsEmbedFS.Open(name)
-	}
-	if strings.HasPrefix(name, "css/") {
-		return cssEmbedFS.Open(name)
-	}
-	if strings.HasPrefix(name, "templates/") {
-		return templatesEmbedFS.Open(name)
-	}
-	return nil, errors.New("could not find file")
-}
 
 func Initialize() error {
 	store, err := data.Connect()
@@ -68,6 +38,10 @@ func Initialize() error {
 	pubSub, err = pubsub.NewClient(context.Background(), "mattbutterfield")
 	if err != nil {
 		return err
+	}
+	authArray = []byte(os.Getenv("AUTH_TOKEN"))
+	if len(authArray) == 0 {
+		log.Fatal("No value set for AUTH_TOKEN")
 	}
 	return nil
 }

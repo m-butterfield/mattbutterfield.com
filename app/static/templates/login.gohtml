@@ -1,0 +1,15 @@
+{{ template "base" . }}
+{{ define "head" }}{{ end }}
+{{ define "main" }}
+<div class="section-div">
+  {{ if .LoggedIn }}
+  you're logged in
+  {{ else }}
+  <form method="post">
+    <label for="auth">auth:</label>
+    <input id="auth" name="auth" required>
+    <input type="submit" value="login">
+  </form>
+  {{ end }}
+</div>
+{{ end }}
