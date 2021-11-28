@@ -12,14 +12,18 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			if cookie, err := r.Cookie("auth"); err != nil {
 				if err == http.ErrNoCookie {
 					redirectToLogin(w, r)
+					return
 				} else {
 					internalError(err, w)
+					return
 				}
 			} else {
 				if subtle.ConstantTimeCompare([]byte(cookie.Value), authArray) == 1 {
 					next.ServeHTTP(w, r)
+					return
 				} else {
 					redirectToLogin(w, r)
+					return
 				}
 			}
 		} else {

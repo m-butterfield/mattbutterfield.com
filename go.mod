@@ -3,11 +3,14 @@ module github.com/m-butterfield/mattbutterfield.com
 go 1.17
 
 require (
+	cloud.google.com/go/cloudtasks v1.0.0
 	cloud.google.com/go/pubsub v1.17.1
 	cloud.google.com/go/storage v1.18.2
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.14.0
+	github.com/rs/zerolog v1.15.0
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
+	google.golang.org/genproto v0.0.0-20211019152133-63b7e35f4404
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 	nhooyr.io/websocket v1.8.7
 )
@@ -36,7 +39,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/api v0.58.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20211019152133-63b7e35f4404 // indirect
 	google.golang.org/grpc v1.40.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )
