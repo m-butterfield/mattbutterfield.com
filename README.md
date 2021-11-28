@@ -51,12 +51,9 @@ To run the container locally:
 
 ## Deployment
 
+The deploy script `bin/deploy` will build the docker container, push it to GCR and deploy it to Cloud Run.
+
 Connecting to the Cloud SQL instance will get you into a `psql` shell where you can edit the schema and data as needed:
 
     gcloud sql connect mattbutterfield --user=mattbutterfield --database=mattbutterfield --quiet
 
-To push the docker container, run:
-
-    docker push gcr.io/mattbutterfield/mattbutterfield.com
-
-After the container is pushed, simply edit and deploy a new version of the app on Cloud Run with the new container.

@@ -1,3 +1,3 @@
-bin/
+bin/server
 node_modules/
 dump.sql
