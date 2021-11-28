@@ -9,7 +9,7 @@ run:
 
 fmt:
 	go fmt ./...
-	npx eslint app/controllers/js/ --fix
+	npx eslint app/static/js/ --fix
 
 test:
 	dropdb --if-exists mattbutterfield_test && createdb mattbutterfield_test && psql -d mattbutterfield_test -f schema.sql

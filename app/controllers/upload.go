@@ -7,10 +7,10 @@ import (
 	"time"
 )
 
-var videoTemplatePath = append([]string{templatePath + "video.gohtml"}, baseTemplatePaths...)
+var uploadTemplatePath = append([]string{templatePath + "upload.gohtml"}, baseTemplatePaths...)
 
-func Video(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(&static.FlexFS{}, videoTemplatePath...)
+func Upload(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFS(&static.FlexFS{}, uploadTemplatePath...)
 	if err != nil {
 		internalError(err, w)
 		return

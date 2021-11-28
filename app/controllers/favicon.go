@@ -5,5 +5,5 @@ import (
 )
 
 func Favicon(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "dont call this yet", http.StatusInternalServerError)
+	http.Redirect(w, r, "https://images.mattbutterfield.com/favicon.ico", http.StatusMovedPermanently)
 }

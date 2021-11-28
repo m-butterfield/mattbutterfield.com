@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"html/template"
 	"net/http"
 	"time"
@@ -22,7 +23,7 @@ func Music(w http.ResponseWriter, _ *http.Request) {
 			}
 			return songs[i+1].ID
 		},
-	}).ParseFS(ffs, musicTemplatePath...); err != nil {
+	}).ParseFS(&static.FlexFS{}, musicTemplatePath...); err != nil {
 		internalError(err, w)
 		return
 	} else if err = tmpl.Execute(w, struct {

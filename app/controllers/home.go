@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/gorilla/mux"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"html/template"
 	"net/http"
 	"strings"
@@ -64,7 +65,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		internalError(err, w)
 		return
 	}
-	tmpl, err := template.ParseFS(ffs, homeTemplatePath...)
+	tmpl, err := template.ParseFS(&static.FlexFS{}, homeTemplatePath...)
 	if err != nil {
 		internalError(err, w)
 		return
