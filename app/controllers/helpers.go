@@ -4,7 +4,9 @@ import (
 	"cloud.google.com/go/pubsub"
 	"context"
 	"encoding/base64"
+	"errors"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"log"
 	"net/http"
 	"os"
@@ -24,9 +26,10 @@ var (
 		templatePath + "base.gohtml",
 	}
 
-	authArray []byte
-	db        data.Store
-	pubSub    *pubsub.Client
+	authArray   []byte
+	db          data.Store
+	pubSub      *pubsub.Client
+	taskCreator lib.TaskCreator
 )
 
 func Initialize() error {
@@ -41,8 +44,9 @@ func Initialize() error {
 	}
 	authArray = []byte(os.Getenv("AUTH_TOKEN"))
 	if len(authArray) == 0 {
-		log.Fatal("No value set for AUTH_TOKEN")
+		return errors.New("no value set for AUTH_TOKEN")
 	}
+	taskCreator, err = lib.NewTaskCreator()
 	return nil
 }
 

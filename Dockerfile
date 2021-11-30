@@ -3,7 +3,8 @@ WORKDIR /go/src/github.com/m-butterfield/mattbutterfield.com
 COPY go.* ./
 RUN go mod download
 ADD . /go/src/github.com/m-butterfield/mattbutterfield.com
-RUN go build -o bin/server server.go
+RUN go build -o bin/server cmd/server.go
+RUN go build -o bin/worker cmd/worker.go
 
 FROM alpine:latest
 WORKDIR /root

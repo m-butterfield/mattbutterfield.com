@@ -51,7 +51,7 @@ To run the container locally:
 
 ## Deployment
 
-The deploy script `bin/deploy` will build the docker container, push it to GCR and deploy it to Cloud Run.
+Running `make deploy` will build the docker container, push it to GCR and deploy it to Cloud Run.
 
 Connecting to the Cloud SQL instance will get you into a `psql` shell where you can edit the schema and data as needed:
 

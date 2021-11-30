@@ -2,21 +2,24 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
+	"log"
 	"net/http"
 )
 
-type saveSongRequest struct {
-	FileName    string `json:"fileName"`
-	SongName    string `json:"songName"`
-	Description string `json:"description"`
-}
-
 func SaveSong(w http.ResponseWriter, r *http.Request) {
-	body := &saveSongRequest{}
+	body := &lib.SaveSongRequest{}
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		internalError(err, w)
 		return
+	}
+
+	if task, err := taskCreator.CreateTask("save_song", "save-song-uploads", body); err != nil {
+		internalError(err, w)
+		return
+	} else {
+		log.Println("Created task: " + task.Name)
 	}
 	w.WriteHeader(201)
 }

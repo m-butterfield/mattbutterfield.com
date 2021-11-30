@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-docker build -t gcr.io/mattbutterfield/mattbutterfield.com .
-docker push gcr.io/mattbutterfield/mattbutterfield.com
-gcloud run deploy mattbutterfield \
-  --project=mattbutterfield \
-  --region=us-central1 \
-  --platform=managed \
-  --image=gcr.io/mattbutterfield/mattbutterfield.com
