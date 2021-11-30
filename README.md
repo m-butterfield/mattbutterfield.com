@@ -41,7 +41,7 @@ The pubsub emulator can optionally be started for testing video chat locally:
 
 To build the docker container:
 
-    docker build -t gcr.io/mattbutterfield/mattbutterfield.com .
+    make docker-build
 
 To run the container locally:
 

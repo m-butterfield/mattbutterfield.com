@@ -7,8 +7,6 @@ import (
 	"errors"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"log"
-	"net/http"
 	"os"
 	"time"
 )
@@ -48,11 +46,6 @@ func Initialize() error {
 	}
 	taskCreator, err = lib.NewTaskCreator()
 	return nil
-}
-
-func internalError(err error, w http.ResponseWriter) {
-	log.Println(err)
-	http.Error(w, "internal error", http.StatusInternalServerError)
 }
 
 type imageInfo struct {

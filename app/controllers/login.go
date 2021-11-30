@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"crypto/subtle"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"html/template"
 	"net/http"
@@ -41,7 +42,7 @@ func isUserLoggedIn(r *http.Request) bool {
 func renderLoginPage(w http.ResponseWriter, loggedIn bool) {
 	tmpl, err := template.ParseFS(&static.FlexFS{}, loginTemplatePath...)
 	if err != nil {
-		internalError(err, w)
+		lib.InternalError(err, w)
 		return
 	}
 	if err = tmpl.Execute(w, struct {
@@ -51,7 +52,7 @@ func renderLoginPage(w http.ResponseWriter, loggedIn bool) {
 		Year:     time.Now().Format("2006"),
 		LoggedIn: loggedIn,
 	}); err != nil {
-		internalError(err, w)
+		lib.InternalError(err, w)
 		return
 	}
 }

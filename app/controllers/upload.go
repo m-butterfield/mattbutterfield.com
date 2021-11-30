@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"html/template"
 	"net/http"
@@ -12,11 +13,11 @@ var uploadTemplatePath = append([]string{templatePath + "upload.gohtml"}, baseTe
 func Upload(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFS(&static.FlexFS{}, uploadTemplatePath...)
 	if err != nil {
-		internalError(err, w)
+		lib.InternalError(err, w)
 		return
 	}
 	if err = tmpl.Execute(w, struct{ Year string }{Year: time.Now().Format("2006")}); err != nil {
-		internalError(err, w)
+		lib.InternalError(err, w)
 		return
 	}
 }

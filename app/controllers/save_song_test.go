@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -25,7 +25,7 @@ func TestSaveSong(t *testing.T) {
 	authArray = []byte("1234")
 	taskCalled := false
 	taskCreator = &testTaskCreator{
-		createTask: func(taskName, queueID string, body interface{}) (*taskspb.Task, error) {
+		createTask: func(taskName, queueID string, body interface{}) (*tasks.Task, error) {
 			taskCalled = true
 			if taskName != "save_song" {
 				t.Error("Unexpected task name")
@@ -36,7 +36,7 @@ func TestSaveSong(t *testing.T) {
 			if *body.(*lib.SaveSongRequest) != *expectedBody {
 				t.Error("Unexpected task body")
 			}
-			return &taskspb.Task{}, nil
+			return &tasks.Task{}, nil
 		},
 	}
 

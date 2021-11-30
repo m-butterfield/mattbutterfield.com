@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/gorilla/mux"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"html/template"
 	"net/http"
@@ -57,17 +58,17 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		internalError(err, w)
+		lib.InternalError(err, w)
 		return
 	}
 	nextImage, err := db.GetRandomImage()
 	if err != nil {
-		internalError(err, w)
+		lib.InternalError(err, w)
 		return
 	}
 	tmpl, err := template.ParseFS(&static.FlexFS{}, homeTemplatePath...)
 	if err != nil {
-		internalError(err, w)
+		lib.InternalError(err, w)
 		return
 	}
 	imagePage := makeHomePage(image, nextImage.ID)
