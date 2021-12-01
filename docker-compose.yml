@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  server:
+    build:
+      context: ./
+      target: server
+    image: "gcr.io/mattbutterfield/mattbutterfield.com"
+  worker:
+    build:
+      context: ./
+      target: worker
+    image: "gcr.io/mattbutterfield/mattbutterfield.com-worker"

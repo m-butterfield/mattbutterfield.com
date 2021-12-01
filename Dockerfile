@@ -1,14 +1,27 @@
-FROM golang:1.17.3-alpine AS builder
-RUN apk add gcc musl-dev lame-dev
+# Bases for building and running the app
+FROM golang:1.17.3-alpine AS builder-base
 WORKDIR /go/src/github.com/m-butterfield/mattbutterfield.com
 COPY go.* ./
 RUN go mod download
 ADD . /go/src/github.com/m-butterfield/mattbutterfield.com
+
+FROM alpine:latest AS runner-base
+WORKDIR /root
+
+# Run build
+FROM builder-base AS server-builder
 RUN go build -o bin/server cmd/server.go
+
+FROM builder-base AS worker-builder
+RUN apk add gcc musl-dev lame-dev
 RUN go build -o bin/worker cmd/worker.go
 
-FROM alpine:latest
-RUN apk add lame
-WORKDIR /root
-COPY --from=builder /go/src/github.com/m-butterfield/mattbutterfield.com/bin/ ./bin/
+# Copy the built executable to the runner
+FROM runner-base AS server
+COPY --from=server-builder /go/src/github.com/m-butterfield/mattbutterfield.com/bin/ ./bin/
 CMD ["bin/server"]
+
+FROM runner-base AS worker
+RUN apk add lame
+COPY --from=worker-builder /go/src/github.com/m-butterfield/mattbutterfield.com/bin/ ./bin/
+CMD ["bin/worker"]

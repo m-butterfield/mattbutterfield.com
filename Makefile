@@ -10,18 +10,19 @@ deploy-web: docker-build docker-push
 	  --region=us-central1 \
 	  --platform=managed \
 	  --image=gcr.io/mattbutterfield/mattbutterfield.com
+
 deploy-worker: docker-build docker-push
 	gcloud run deploy mattbutterfield-worker \
 	  --project=mattbutterfield \
 	  --region=us-central1 \
 	  --platform=managed \
-	  --image=gcr.io/mattbutterfield/mattbutterfield.com
+	  --image=gcr.io/mattbutterfield/mattbutterfield.com-worker
 
 docker-build:
-	docker build -t gcr.io/mattbutterfield/mattbutterfield.com .
+	docker-compose build
 
 docker-push:
-	docker push gcr.io/mattbutterfield/mattbutterfield.com
+	docker-compose push
 
 db:
 	createdb mattbutterfield
