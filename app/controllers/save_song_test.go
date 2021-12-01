@@ -12,9 +12,10 @@ import (
 
 func TestSaveSong(t *testing.T) {
 	expectedBody := &lib.SaveSongRequest{
-		FileName:    "test.wav?123456",
-		SongName:    "test song!",
-		Description: "test description",
+		AudioFileName: "test.wav?123456",
+		ImageFileName: "test.jpg?123456",
+		SongName:      "test song!",
+		Description:   "test description",
 	}
 	body, err := json.Marshal(expectedBody)
 	r, err := http.NewRequest(http.MethodPost, "/admin/save_song", bytes.NewReader(body))

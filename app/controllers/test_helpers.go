@@ -11,6 +11,7 @@ type testStore struct {
 	getImage       func(string) (*data.Image, error)
 	getRandomImage func() (*data.Image, error)
 	getSongs       func() ([]*data.Song, error)
+	saveSong       func(string, string) error
 }
 
 func (s *testStore) GetImage(id string) (*data.Image, error) {
@@ -23,6 +24,10 @@ func (s *testStore) GetRandomImage() (*data.Image, error) {
 
 func (s *testStore) GetSongs() ([]*data.Song, error) {
 	return s.getSongs()
+}
+
+func (s *testStore) SaveSong(string, string) error {
+	panic("do not call this from controllers")
 }
 
 type testTaskCreator struct {

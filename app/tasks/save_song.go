@@ -35,13 +35,13 @@ func SaveSong(w http.ResponseWriter, r *http.Request) {
 	}(client)
 	bucket := client.Bucket(lib.FilesBucket)
 
-	upload := bucket.Object(lib.UploadsPrefix + body.FileName)
+	audioUpload := bucket.Object(lib.UploadsPrefix + body.AudioFileName)
 	wavFile := bucket.Object(musicPrefix + body.SongName + ".wav")
-	if _, err := wavFile.CopierFrom(upload).Run(ctx); err != nil {
+	if _, err := wavFile.CopierFrom(audioUpload).Run(ctx); err != nil {
 		lib.InternalError(err, w)
 		return
 	}
-	if err := upload.Delete(ctx); err != nil {
+	if err := audioUpload.Delete(ctx); err != nil {
 		lib.InternalError(err, w)
 		return
 	}
@@ -74,8 +74,28 @@ func SaveSong(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	acl := mp3File.ACL()
-	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+	mp3Acl := mp3File.ACL()
+	if err := mp3Acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+		lib.InternalError(err, w)
+		return
+	}
+
+	imageUpload := bucket.Object(lib.UploadsPrefix + body.ImageFileName)
+	imageFile := bucket.Object(musicPrefix + body.SongName + ".jpg")
+	if _, err := imageFile.CopierFrom(imageUpload).Run(ctx); err != nil {
+		lib.InternalError(err, w)
+		return
+	}
+	imageAcl := imageFile.ACL()
+	if err := imageAcl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+		lib.InternalError(err, w)
+		return
+	}
+	if err = imageUpload.Delete(ctx); err != nil {
+		lib.InternalError(err, w)
+		return
+	}
+	if err = db.SaveSong(body.SongName, body.Description); err != nil {
 		lib.InternalError(err, w)
 		return
 	}

@@ -10,6 +10,7 @@ type Store interface {
 	GetImage(string) (*Image, error)
 	GetRandomImage() (*Image, error)
 	GetSongs() ([]*Song, error)
+	SaveSong(string, string) error
 }
 
 type dbStore struct {
