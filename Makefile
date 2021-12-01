@@ -2,12 +2,15 @@ build:
 	go build -o bin/server cmd/server.go
 	go build -o bin/worker cmd/worker.go
 
-deploy: docker-build docker-push
+deploy: deploy-web deploy-worker
+
+deploy-web: docker-build docker-push
 	gcloud run deploy mattbutterfield \
 	  --project=mattbutterfield \
 	  --region=us-central1 \
 	  --platform=managed \
 	  --image=gcr.io/mattbutterfield/mattbutterfield.com
+deploy-worker: docker-build docker-push
 	gcloud run deploy mattbutterfield-worker \
 	  --project=mattbutterfield \
 	  --region=us-central1 \

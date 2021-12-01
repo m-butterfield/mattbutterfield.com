@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
 )
 
 var testRouter = Router()
@@ -26,9 +26,9 @@ func (s *testStore) GetSongs() ([]*data.Song, error) {
 }
 
 type testTaskCreator struct {
-	createTask func(string, string, interface{}) (*taskspb.Task, error)
+	createTask func(string, string, interface{}) (*tasks.Task, error)
 }
 
-func (t *testTaskCreator) CreateTask(taskName, queueID string, body interface{}) (*taskspb.Task, error) {
+func (t *testTaskCreator) CreateTask(taskName, queueID string, body interface{}) (*tasks.Task, error) {
 	return t.createTask(taskName, queueID, body)
 }

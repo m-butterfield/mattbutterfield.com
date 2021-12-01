@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"golang.org/x/oauth2/google"
 	"log"
 	"net/http"
@@ -29,7 +30,7 @@ func SignedUploadURL(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fileName := "uploads/" + body.FileName
+	fileName := lib.UploadsPrefix + body.FileName
 	contentType := body.ContentType
 
 	conf, err := google.JWTConfigFromJSON(uploaderServiceAccount())
@@ -47,7 +48,7 @@ func SignedUploadURL(w http.ResponseWriter, r *http.Request) {
 		Expires:        time.Now().UTC().Add(15 * time.Minute),
 	}
 
-	u, err := storage.SignedURL("files.mattbutterfield.com", fileName, opts)
+	u, err := storage.SignedURL(lib.FilesBucket, fileName, opts)
 	if err != nil {
 		if _, err = fmt.Fprintf(w, err.Error()); err != nil {
 			log.Fatal("error:", err)

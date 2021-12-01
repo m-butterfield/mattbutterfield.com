@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"crypto/subtle"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"net/http"
 	"strings"
 )
@@ -14,7 +15,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 					redirectToLogin(w, r)
 					return
 				} else {
-					internalError(err, w)
+					lib.InternalError(err, w)
 					return
 				}
 			} else {

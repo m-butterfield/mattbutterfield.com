@@ -1,13 +1,13 @@
 package lib
 
 import (
-	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
+	"cloud.google.com/go/cloudtasks/apiv2"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/rs/zerolog/log"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"os"
 )
 
@@ -23,7 +23,7 @@ type SaveSongRequest struct {
 }
 
 type TaskCreator interface {
-	CreateTask(string, string, interface{}) (*taskspb.Task, error)
+	CreateTask(string, string, interface{}) (*tasks.Task, error)
 }
 
 func NewTaskCreator() (TaskCreator, error) {
@@ -46,7 +46,7 @@ type taskCreator struct {
 	serviceAccountEmail string
 }
 
-func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*taskspb.Task, error) {
+func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*tasks.Task, error) {
 	url := t.workerBaseURL + taskName
 	ctx := context.Background()
 	client, err := cloudtasks.NewClient(ctx)
@@ -60,15 +60,15 @@ func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*t
 		}
 	}(client)
 
-	req := &taskspb.CreateTaskRequest{
+	req := &tasks.CreateTaskRequest{
 		Parent: fmt.Sprintf("projects/%s/locations/%s/queues/%s", projectID, locationID, queueID),
-		Task: &taskspb.Task{
-			MessageType: &taskspb.Task_HttpRequest{
-				HttpRequest: &taskspb.HttpRequest{
-					HttpMethod: taskspb.HttpMethod_POST,
+		Task: &tasks.Task{
+			MessageType: &tasks.Task_HttpRequest{
+				HttpRequest: &tasks.HttpRequest{
+					HttpMethod: tasks.HttpMethod_POST,
 					Url:        url,
-					AuthorizationHeader: &taskspb.HttpRequest_OidcToken{
-						OidcToken: &taskspb.OidcToken{
+					AuthorizationHeader: &tasks.HttpRequest_OidcToken{
+						OidcToken: &tasks.OidcToken{
 							ServiceAccountEmail: t.serviceAccountEmail,
 						},
 					},

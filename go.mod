@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.14.0
 	github.com/rs/zerolog v1.15.0
+	github.com/viert/go-lame v0.0.0-20201108052322-bb552596b11d
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	google.golang.org/genproto v0.0.0-20211019152133-63b7e35f4404
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
