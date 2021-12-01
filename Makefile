@@ -1,28 +1,37 @@
+deployservercommand := gcloud run deploy mattbutterfield --project=mattbutterfield --region=us-central1 --platform=managed --image=gcr.io/mattbutterfield/mattbutterfield.com
+deployworkercommand := gcloud run deploy mattbutterfield-worker --project=mattbutterfield --region=us-central1 --platform=managed --image=gcr.io/mattbutterfield/mattbutterfield.com-worker
+
 build:
 	go build -o bin/server cmd/server.go
 	go build -o bin/worker cmd/worker.go
 
-deploy: deploy-web deploy-worker
+deploy: docker-build docker-push
+	$(deployservercommand)
+	$(deployworkercommand)
 
-deploy-web: docker-build docker-push
-	gcloud run deploy mattbutterfield \
-	  --project=mattbutterfield \
-	  --region=us-central1 \
-	  --platform=managed \
-	  --image=gcr.io/mattbutterfield/mattbutterfield.com
+deploy-server: docker-build-server docker-push-server
+	$(deployserverommand)
 
-deploy-worker: docker-build docker-push
-	gcloud run deploy mattbutterfield-worker \
-	  --project=mattbutterfield \
-	  --region=us-central1 \
-	  --platform=managed \
-	  --image=gcr.io/mattbutterfield/mattbutterfield.com-worker
+deploy-worker: docker-build-worker docker-push-worker
+	$(deployworkercommand)
 
 docker-build:
 	docker-compose build
 
+docker-build-server:
+	docker-compose build server
+
+docker-build-worker:
+	docker-compose build worker
+
 docker-push:
 	docker-compose push
+
+docker-push-server:
+	docker-compose push server
+
+docker-push-worker:
+	docker-compose push worker
 
 db:
 	createdb mattbutterfield
