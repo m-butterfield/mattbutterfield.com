@@ -74,6 +74,12 @@ func copyAndConvertAudio(ctx context.Context, bucket *storage.BucketHandle, file
 
 	enc := lame.NewEncoder(writer)
 	defer enc.Close()
+	if err = enc.SetVBR(lame.VBROff); err != nil {
+		return err
+	}
+	if err = enc.SetVBRMeanBitrateKbps(256); err != nil {
+		return err
+	}
 
 	if _, err = bufio.NewReader(reader).WriteTo(enc); err != nil {
 		return err
