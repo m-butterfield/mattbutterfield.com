@@ -1,5 +1,6 @@
-deployservercommand := gcloud run deploy mattbutterfield --project=mattbutterfield --region=us-central1 --platform=managed --image=gcr.io/mattbutterfield/mattbutterfield.com
-deployworkercommand := gcloud run deploy mattbutterfield-worker --project=mattbutterfield --region=us-central1 --platform=managed --image=gcr.io/mattbutterfield/mattbutterfield.com-worker
+cloudrunbasecommand := gcloud run deploy --project=mattbutterfield --region=us-central1 --platform=managed
+deployservercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com mattbutterfield
+deployworkercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com-worker mattbutterfield-worker
 
 build:
 	go build -o bin/server cmd/server.go

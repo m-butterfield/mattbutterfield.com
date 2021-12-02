@@ -1,5 +1,3 @@
-document.querySelector("#upload-button").addEventListener("click", submit);
-
 const songName = document.querySelector("#song-name"),
   description = document.querySelector("#description"),
   uploadButton = document.querySelector("#upload-button");

@@ -35,21 +35,32 @@ func SaveSong(w http.ResponseWriter, r *http.Request) {
 	}(client)
 	bucket := client.Bucket(lib.FilesBucket)
 
-	audioUpload := bucket.Object(lib.UploadsPrefix + body.AudioFileName)
-	wavFile := bucket.Object(musicPrefix + body.SongName + ".wav")
-	if _, err := wavFile.CopierFrom(audioUpload).Run(ctx); err != nil {
-		lib.InternalError(err, w)
-		return
-	}
-	if err := audioUpload.Delete(ctx); err != nil {
+	if err = copyAndConvertAudio(ctx, bucket, body.AudioFileName, body.SongName); err != nil {
 		lib.InternalError(err, w)
 		return
 	}
 
-	reader, err := wavFile.NewReader(ctx)
-	if err != nil {
+	if err = copyImageUpload(ctx, bucket, body.ImageFileName, body.SongName); err != nil {
 		lib.InternalError(err, w)
 		return
+	}
+
+	if err = db.SaveSong(body.SongName, body.Description); err != nil {
+		lib.InternalError(err, w)
+		return
+	}
+}
+
+func copyAndConvertAudio(ctx context.Context, bucket *storage.BucketHandle, fileName, songName string) error {
+	audioUpload := bucket.Object(lib.UploadsPrefix + fileName)
+	wavFile := bucket.Object(musicPrefix + songName + ".wav")
+	if _, err := wavFile.CopierFrom(audioUpload).Run(ctx); err != nil {
+		return err
+	}
+
+	reader, err := wavFile.NewReader(ctx)
+	if err != nil {
+		return err
 	}
 	defer func(reader *storage.Reader) {
 		if err := reader.Close(); err != nil {
@@ -57,7 +68,7 @@ func SaveSong(w http.ResponseWriter, r *http.Request) {
 		}
 	}(reader)
 
-	mp3File := bucket.Object(musicPrefix + body.SongName + ".mp3")
+	mp3File := bucket.Object(musicPrefix + songName + ".mp3")
 	writer := mp3File.NewWriter(ctx)
 	writer.ContentType = "audio/mpeg"
 
@@ -65,38 +76,36 @@ func SaveSong(w http.ResponseWriter, r *http.Request) {
 	defer enc.Close()
 
 	if _, err = bufio.NewReader(reader).WriteTo(enc); err != nil {
-		lib.InternalError(err, w)
-		return
+		return err
 	}
 
-	if err := writer.Close(); err != nil {
-		lib.InternalError(err, w)
-		return
+	if err = writer.Close(); err != nil {
+		return err
 	}
-
-	mp3Acl := mp3File.ACL()
-	if err := mp3Acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-		lib.InternalError(err, w)
-		return
+	if err = deleteUploadAndMakePublic(ctx, audioUpload, mp3File.ACL()); err != nil {
+		return err
 	}
+	return nil
+}
 
-	imageUpload := bucket.Object(lib.UploadsPrefix + body.ImageFileName)
-	imageFile := bucket.Object(musicPrefix + body.SongName + ".jpg")
+func copyImageUpload(ctx context.Context, bucket *storage.BucketHandle, fileName, songName string) error {
+	imageUpload := bucket.Object(lib.UploadsPrefix + fileName)
+	imageFile := bucket.Object(musicPrefix + songName + ".jpg")
 	if _, err := imageFile.CopierFrom(imageUpload).Run(ctx); err != nil {
-		lib.InternalError(err, w)
-		return
+		return err
 	}
-	imageAcl := imageFile.ACL()
-	if err := imageAcl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
-		lib.InternalError(err, w)
-		return
+	if err := deleteUploadAndMakePublic(ctx, imageUpload, imageFile.ACL()); err != nil {
+		return err
 	}
-	if err = imageUpload.Delete(ctx); err != nil {
-		lib.InternalError(err, w)
-		return
+	return nil
+}
+
+func deleteUploadAndMakePublic(ctx context.Context, upload *storage.ObjectHandle, acl *storage.ACLHandle) error {
+	if err := upload.Delete(ctx); err != nil {
+		return err
 	}
-	if err = db.SaveSong(body.SongName, body.Description); err != nil {
-		lib.InternalError(err, w)
-		return
+	if err := acl.Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+		return err
 	}
+	return nil
 }
