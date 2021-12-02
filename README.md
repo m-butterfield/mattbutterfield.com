@@ -37,13 +37,13 @@ The pubsub emulator can optionally be started for testing video chat locally:
 
     gcloud beta emulators pubsub start --project=mattbutterfield
 
-### Building the Docker Container
+### Building the Docker Images
 
-To build the docker container:
+To build the docker images:
 
     make docker-build
 
-To run the container locally:
+To run the server image locally:
 
     docker run -e DB_SOCKET=host=host.docker.internal\ dbname=mattbutterfield\ user=matthewbutterfield \
            -e PUBSUB_EMULATOR_HOST=host.docker.internal:8085 \
@@ -52,7 +52,7 @@ To run the container locally:
 
 ## Deployment
 
-Running `make deploy` will build the docker container, push it to GCR and deploy it to Cloud Run.
+Running `make deploy` will build the docker images, push them to GCR and deploy them as Cloud Run services.
 
 Connecting to the Cloud SQL instance will get you into a `psql` shell where you can edit the schema and data as needed:
 

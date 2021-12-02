@@ -11,10 +11,6 @@ import (
 	"net/http"
 )
 
-const (
-	musicPrefix = "music/"
-)
-
 func SaveSong(w http.ResponseWriter, r *http.Request) {
 	body := &lib.SaveSongRequest{}
 	err := json.NewDecoder(r.Body).Decode(body)
@@ -45,7 +41,7 @@ func SaveSong(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = db.SaveSong(body.SongName, body.Description); err != nil {
+	if err = db.SaveSong(body.SongName, body.Description, body.CreatedDate.Time); err != nil {
 		lib.InternalError(err, w)
 		return
 	}
@@ -53,7 +49,7 @@ func SaveSong(w http.ResponseWriter, r *http.Request) {
 
 func copyAndConvertAudio(ctx context.Context, bucket *storage.BucketHandle, fileName, songName string) error {
 	audioUpload := bucket.Object(lib.UploadsPrefix + fileName)
-	wavFile := bucket.Object(musicPrefix + songName + ".wav")
+	wavFile := bucket.Object(lib.MusicPrefix + songName + ".wav")
 	if _, err := wavFile.CopierFrom(audioUpload).Run(ctx); err != nil {
 		return err
 	}
@@ -68,7 +64,7 @@ func copyAndConvertAudio(ctx context.Context, bucket *storage.BucketHandle, file
 		}
 	}(reader)
 
-	mp3File := bucket.Object(musicPrefix + songName + ".mp3")
+	mp3File := bucket.Object(lib.MusicPrefix + songName + ".mp3")
 	writer := mp3File.NewWriter(ctx)
 	writer.ContentType = "audio/mpeg"
 
@@ -96,7 +92,7 @@ func copyAndConvertAudio(ctx context.Context, bucket *storage.BucketHandle, file
 
 func copyImageUpload(ctx context.Context, bucket *storage.BucketHandle, fileName, songName string) error {
 	imageUpload := bucket.Object(lib.UploadsPrefix + fileName)
-	imageFile := bucket.Object(musicPrefix + songName + ".jpg")
+	imageFile := bucket.Object(lib.MusicPrefix + songName + ".jpg")
 	if _, err := imageFile.CopierFrom(imageUpload).Run(ctx); err != nil {
 		return err
 	}

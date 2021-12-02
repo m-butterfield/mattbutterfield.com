@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	"time"
 )
 
 var testRouter = Router()
@@ -11,7 +12,8 @@ type testStore struct {
 	getImage       func(string) (*data.Image, error)
 	getRandomImage func() (*data.Image, error)
 	getSongs       func() ([]*data.Song, error)
-	saveSong       func(string, string) error
+	saveSong       func(string, string, time.Time) error
+	saveImage      func(string, string, string, int, int, time.Time) error
 }
 
 func (s *testStore) GetImage(id string) (*data.Image, error) {
@@ -26,7 +28,11 @@ func (s *testStore) GetSongs() ([]*data.Song, error) {
 	return s.getSongs()
 }
 
-func (s *testStore) SaveSong(string, string) error {
+func (s *testStore) SaveSong(string, string, time.Time) error {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) SaveImage(string, string, string, int, int, time.Time) error {
 	panic("do not call this from controllers")
 }
 

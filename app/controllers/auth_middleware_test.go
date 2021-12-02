@@ -7,7 +7,7 @@ import (
 )
 
 func TestAuthMiddlewareRedirectsToLogin(t *testing.T) {
-	r, err := http.NewRequest(http.MethodGet, "/admin/upload", nil)
+	r, err := http.NewRequest(http.MethodGet, "/admin", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -17,13 +17,13 @@ func TestAuthMiddlewareRedirectsToLogin(t *testing.T) {
 	if w.Code != http.StatusFound {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
-	if w.Header()["Location"][0] != "/login?next=/admin/upload" {
+	if w.Header()["Location"][0] != "/login?next=/admin" {
 		t.Errorf("Unexpected redirect location header")
 	}
 }
 
 func TestAuthMiddlewareAllowsValidAuth(t *testing.T) {
-	r, err := http.NewRequest(http.MethodGet, "/admin/upload", nil)
+	r, err := http.NewRequest(http.MethodGet, "/admin", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func TestAuthMiddlewareAllowsValidAuth(t *testing.T) {
 }
 
 func TestAuthMiddlewareRedirectsInvalidAuth(t *testing.T) {
-	r, err := http.NewRequest(http.MethodGet, "/admin/upload", nil)
+	r, err := http.NewRequest(http.MethodGet, "/admin", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

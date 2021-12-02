@@ -9,18 +9,45 @@ import (
 	"github.com/rs/zerolog/log"
 	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"os"
+	"strings"
+	"time"
 )
 
 const (
-	projectID  = "mattbutterfield"
-	locationID = "us-central1"
+	locationID            = "us-central1"
+	createdDateJSONFormat = "2006-01-02"
 )
 
 type SaveSongRequest struct {
-	AudioFileName string `json:"audioFileName"`
-	ImageFileName string `json:"imageFileName"`
-	SongName      string `json:"songName"`
-	Description   string `json:"description"`
+	AudioFileName string          `json:"audioFileName"`
+	ImageFileName string          `json:"imageFileName"`
+	CreatedDate   CreatedDateJSON `json:"createdDate"`
+	SongName      string          `json:"songName"`
+	Description   string          `json:"description"`
+}
+
+type SaveImageRequest struct {
+	ImageFileName string          `json:"imageFileName"`
+	CreatedDate   CreatedDateJSON `json:"createdDate"`
+	Location      string          `json:"location"`
+	Caption       string          `json:"caption"`
+}
+
+type CreatedDateJSON struct {
+	time.Time
+}
+
+func (j *CreatedDateJSON) UnmarshalJSON(b []byte) error {
+	t, err := time.Parse(createdDateJSONFormat, strings.Trim(string(b), "\""))
+	if err != nil {
+		return err
+	}
+	j.Time = t
+	return nil
+}
+
+func (j *CreatedDateJSON) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("\"%s\"", j.Format(createdDateJSONFormat))), nil
 }
 
 type TaskCreator interface {
@@ -62,7 +89,7 @@ func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*t
 	}(client)
 
 	req := &tasks.CreateTaskRequest{
-		Parent: fmt.Sprintf("projects/%s/locations/%s/queues/%s", projectID, locationID, queueID),
+		Parent: fmt.Sprintf("projects/%s/locations/%s/queues/%s", ProjectID, locationID, queueID),
 		Task: &tasks.Task{
 			MessageType: &tasks.Task_HttpRequest{
 				HttpRequest: &tasks.HttpRequest{

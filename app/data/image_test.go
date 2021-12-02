@@ -8,8 +8,9 @@ import (
 
 const (
 	baseSelectImageRegex   = "^SELECT id, caption, location, width, height, date FROM images "
-	SelectImageByIDRegex   = baseSelectImageRegex + "WHERE id = \\$1$"
-	SelectRandomImageRegex = baseSelectImageRegex + "WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$"
+	selectImageByIDRegex   = baseSelectImageRegex + "WHERE id = \\$1$"
+	selectRandomImageRegex = baseSelectImageRegex + "WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$"
+	saveImageRegex         = "^INSERT INTO images \\(id, caption, location, width, height, date\\) VALUES \\(\\$1, \\$2, \\$3, \\$4, \\$5, \\$6\\)"
 )
 
 func TestGetImage(t *testing.T) {
@@ -20,7 +21,7 @@ func TestGetImage(t *testing.T) {
 	store := &dbStore{db: db}
 
 	id, caption, location, width, height, date := "ab23ce7b39649ad4380349578829d5786a9f29bcfca17bc786f2869351fc339b.jpg", "hello", "NYC", 100, 200, time.Now()
-	dbMock.ExpectQuery(SelectImageByIDRegex).WithArgs(id).
+	dbMock.ExpectQuery(selectImageByIDRegex).WithArgs(id).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height", "date"}).AddRow(id, caption, location, width, height, date))
 
 	image, err := store.GetImage(id)
@@ -55,7 +56,7 @@ func TestGetRandomImage(t *testing.T) {
 	}
 	store := &dbStore{db: db}
 
-	dbMock.ExpectQuery(SelectRandomImageRegex).
+	dbMock.ExpectQuery(selectRandomImageRegex).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height", "date"}).AddRow("ab23ce7b39649ad4380349578829d5786a9f29bcfca17bc786f2869351fc339b.jpg", nil, nil, 100, 200, time.Now()))
 
 	_, err = store.GetRandomImage()
@@ -65,5 +66,24 @@ func TestGetRandomImage(t *testing.T) {
 	err = dbMock.ExpectationsWereMet()
 	if err != nil {
 		t.Errorf("Unfulfilled database expectations: %s", err)
+	}
+}
+
+func TestSaveImage(t *testing.T) {
+	db, dbMock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	store := &dbStore{db: db}
+	now := time.Now()
+	id := "ab23ce7b39649ad4380349578829d5786a9f29bcfca17bc786f2869351fc339b.jpg"
+	caption := "test caption"
+	location := "NYC"
+	width, height := 100, 200
+	dbMock.ExpectPrepare(saveImageRegex).ExpectExec().WithArgs(id, caption, location, width, height, now).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	err = store.SaveImage(id, caption, location, width, height, now)
+	if err != nil {
+		t.Fatal(err)
 	}
 }

@@ -34,7 +34,7 @@ func Initialize() error {
 		return err
 	}
 	db = store
-	pubSub, err = pubsub.NewClient(context.Background(), "mattbutterfield")
+	pubSub, err = pubsub.NewClient(context.Background(), lib.ProjectID)
 	if err != nil {
 		return err
 	}
