@@ -47,6 +47,7 @@ To run the container locally:
 
     docker run -e DB_SOCKET=host=host.docker.internal\ dbname=mattbutterfield\ user=matthewbutterfield \
            -e PUBSUB_EMULATOR_HOST=host.docker.internal:8085 \
+           -e AUTH_TOKEN=1234 \
            -dp 8000:8000 gcr.io/mattbutterfield/mattbutterfield.com
 
 ## Deployment
@@ -55,5 +56,5 @@ Running `make deploy` will build the docker container, push it to GCR and deploy
 
 Connecting to the Cloud SQL instance will get you into a `psql` shell where you can edit the schema and data as needed:
 
-    gcloud sql connect mattbutterfield --user=mattbutterfield --database=mattbutterfield --quiet
+    gcloud beta sql connect mattbutterfield --user=mattbutterfield --database=mattbutterfield --quiet
 

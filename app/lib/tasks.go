@@ -17,9 +17,10 @@ const (
 )
 
 type SaveSongRequest struct {
-	FileName    string `json:"fileName"`
-	SongName    string `json:"songName"`
-	Description string `json:"description"`
+	AudioFileName string `json:"audioFileName"`
+	ImageFileName string `json:"imageFileName"`
+	SongName      string `json:"songName"`
+	Description   string `json:"description"`
 }
 
 type TaskCreator interface {
