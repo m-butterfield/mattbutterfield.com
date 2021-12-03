@@ -13,8 +13,6 @@ import (
 
 const (
 	dateDisplayLayout = "January 2006"
-	homeImage         = "20150615_002.jpg"
-	imageBaseURL      = "https://images.mattbutterfield.com/"
 	templatePath      = "templates/"
 )
 
@@ -54,21 +52,36 @@ type imageInfo struct {
 	ImageHeight int
 }
 
-func getImageInfo(image *data.Image) imageInfo {
-	return imageInfo{
-		ImageURL:    imageBaseURL + image.ID,
+func getImageInfo(image *data.Image) *imageInfo {
+	return &imageInfo{
+		ImageURL:    lib.ImagesBaseURL + image.ID,
 		ImageWidth:  image.Width,
 		ImageHeight: image.Height,
 	}
 }
 
-type singleImagePage struct {
-	imageInfo
-	Year string
+type basePage struct {
+	ImagesBaseURL string
+	Year          string
 }
 
-func makeSingleImagePage(image *data.Image) singleImagePage {
-	return singleImagePage{imageInfo: getImageInfo(image), Year: time.Now().Format("2006")}
+type singleImagePage struct {
+	*basePage
+	*imageInfo
+}
+
+func makeSingleImagePage(image *data.Image) *singleImagePage {
+	return &singleImagePage{
+		basePage:  makeBasePage(),
+		imageInfo: getImageInfo(image),
+	}
+}
+
+func makeBasePage() *basePage {
+	return &basePage{
+		ImagesBaseURL: lib.ImagesBaseURL,
+		Year:          time.Now().Format("2006"),
+	}
 }
 
 func makeImagePath(imageID string) string {

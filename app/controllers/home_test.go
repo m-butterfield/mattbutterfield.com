@@ -3,13 +3,14 @@ package controllers
 import (
 	"database/sql"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestHome(t *testing.T) {
-	imageID := "20040901_001.jpg"
+	imageID := lib.HomeImage
 	randImageID := "blerp"
 	getImageCalled, randomCalled := 0, 0
 	db = &testStore{

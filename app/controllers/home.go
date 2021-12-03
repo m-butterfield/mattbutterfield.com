@@ -15,35 +15,27 @@ import (
 var homeTemplatePath = append([]string{templatePath + "index.gohtml"}, baseTemplatePaths...)
 
 type homePage struct {
-	imageInfo
+	*basePage
+	*imageInfo
 	ImageCaption  string
 	ImageDate     string
 	ImageLocation string
 	NextImagePath string
-	Year          string
 }
 
 func makeHomePage(image *data.Image, nextImageID string) homePage {
 	return homePage{
-		imageInfo: imageInfo{
-			ImageURL:    imageBaseURL + image.ID,
-			ImageWidth:  image.Width,
-			ImageHeight: image.Height,
-		},
+		basePage:      makeBasePage(),
+		imageInfo:     getImageInfo(image),
 		ImageCaption:  image.Caption,
-		ImageDate:     getImageTimeStr(image),
+		ImageDate:     getImageTimeStr(image.Date),
 		ImageLocation: image.Location,
 		NextImagePath: makeImagePath(nextImageID),
-		Year:          time.Now().Format("2006"),
 	}
 }
 
-func getImageTimeStr(image *data.Image) string {
-	t, err := image.TimeFromID()
-	if err != nil {
-		return ""
-	}
-	return t.Format(dateDisplayLayout)
+func getImageTimeStr(date time.Time) string {
+	return date.Format(dateDisplayLayout)
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {

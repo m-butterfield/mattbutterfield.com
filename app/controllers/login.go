@@ -6,7 +6,6 @@ import (
 	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"html/template"
 	"net/http"
-	"time"
 )
 
 var loginTemplatePath = append([]string{templatePath + "login.gohtml"}, baseTemplatePaths...)
@@ -46,10 +45,10 @@ func renderLoginPage(w http.ResponseWriter, loggedIn bool) {
 		return
 	}
 	if err = tmpl.Execute(w, struct {
-		Year     string
+		*basePage
 		LoggedIn bool
 	}{
-		Year:     time.Now().Format("2006"),
+		basePage: makeBasePage(),
 		LoggedIn: loggedIn,
 	}); err != nil {
 		lib.InternalError(err, w)
