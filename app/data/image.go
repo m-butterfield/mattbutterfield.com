@@ -2,18 +2,13 @@ package data
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 )
 
 const (
-	baseSelectImageQuery = "SELECT id, caption, location, width, height FROM images "
+	baseSelectImageQuery = "SELECT id, caption, location, width, height, date FROM images "
 	getImageByIDQuery    = baseSelectImageQuery + "WHERE id = $1"
 	getRandomImageQuery  = baseSelectImageQuery + "WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)"
-)
-
-const (
-	imageIDDateLayout = "20060102"
 )
 
 type Image struct {
@@ -22,17 +17,7 @@ type Image struct {
 	Location string
 	Width    int
 	Height   int
-}
-
-func (i Image) TimeFromID() (*time.Time, error) {
-	if len(i.ID) < len(imageIDDateLayout) {
-		return nil, fmt.Errorf("unexpected id format: %s", i.ID)
-	}
-	t, err := time.Parse(imageIDDateLayout, i.ID[:len(imageIDDateLayout)])
-	if err != nil {
-		return nil, err
-	}
-	return &t, nil
+	Date     time.Time
 }
 
 func (s *dbStore) GetImage(id string) (*Image, error) {
@@ -49,7 +34,7 @@ func makeImageFromRow(row *sql.Row) (*Image, error) {
 		location sql.NullString
 	)
 	image := &Image{}
-	if err := row.Scan(&image.ID, &caption, &location, &image.Width, &image.Height); err != nil {
+	if err := row.Scan(&image.ID, &caption, &location, &image.Width, &image.Height, &image.Date); err != nil {
 		return nil, err
 	}
 	image.Caption = caption.String

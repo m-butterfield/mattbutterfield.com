@@ -1,9 +1,10 @@
 CREATE TABLE images (
-  id character varying(255) PRIMARY KEY,
+  id character varying(128) PRIMARY KEY,
   caption text,
   location text,
   width integer NOT NULL,
-  height integer NOT NULL
+  height integer NOT NULL,
+  date date NOT NULL
 );
 
 CREATE TABLE songs (

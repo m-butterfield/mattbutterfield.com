@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,7 +13,7 @@ func TestBlogEntry(t *testing.T) {
 	db = &testStore{
 		getRandomImage: func() (*data.Image, error) {
 			getRandomImageCalled += 1
-			return &data.Image{ID: "20040901_001.jpg"}, nil
+			return &data.Image{ID: lib.HomeImage}, nil
 		},
 	}
 

@@ -6,7 +6,6 @@ import (
 	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"html/template"
 	"net/http"
-	"time"
 )
 
 var musicTemplatePath = append([]string{templatePath + "music/index.gohtml"}, baseTemplatePaths...)
@@ -28,11 +27,13 @@ func Music(w http.ResponseWriter, _ *http.Request) {
 		lib.InternalError(err, w)
 		return
 	} else if err = tmpl.Execute(w, struct {
-		Songs []*data.Song
-		Year  string
+		*basePage
+		MusicBaseURL string
+		Songs        []*data.Song
 	}{
-		Songs: songs,
-		Year:  time.Now().Format("2006"),
+		basePage:     makeBasePage(),
+		MusicBaseURL: lib.MusicBaseURL,
+		Songs:        songs,
 	}); err != nil {
 		lib.InternalError(err, w)
 		return
