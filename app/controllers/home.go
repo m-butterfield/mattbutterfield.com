@@ -9,7 +9,6 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
-	"time"
 )
 
 var homeTemplatePath = append([]string{templatePath + "index.gohtml"}, baseTemplatePaths...)
@@ -28,14 +27,10 @@ func makeHomePage(image *data.Image, nextImageID string) homePage {
 		basePage:      makeBasePage(),
 		imageInfo:     getImageInfo(image),
 		ImageCaption:  image.Caption,
-		ImageDate:     getImageTimeStr(image.Date),
+		ImageDate:     image.Date.Format(dateDisplayLayout),
 		ImageLocation: image.Location,
 		NextImagePath: makeImagePath(nextImageID),
 	}
-}
-
-func getImageTimeStr(date time.Time) string {
-	return date.Format(dateDisplayLayout)
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
