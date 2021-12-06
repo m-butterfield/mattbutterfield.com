@@ -27,8 +27,11 @@ func Router() *mux.Router {
 
 	r.HandleFunc("/{music:music\\/?}", Music).Methods(http.MethodGet)
 
-	r.HandleFunc("/admin/{upload:upload\\/?}", Upload).Methods(http.MethodGet)
+	r.HandleFunc("/{admin:admin\\/?}", Admin).Methods(http.MethodGet)
+	r.HandleFunc("/admin/{upload_music:upload_music\\/?}", UploadMusic).Methods(http.MethodGet)
+	r.HandleFunc("/admin/{upload_image:upload_image\\/?}", UploadImage).Methods(http.MethodGet)
 	r.HandleFunc("/admin/{signed_upload_url:signed_upload_url\\/?}", SignedUploadURL).Methods(http.MethodPost)
-	r.HandleFunc("/admin/{save_song\\/?}", SaveSong).Methods(http.MethodPost)
+	r.HandleFunc("/admin/{save_song:save_song\\/?}", SaveSong).Methods(http.MethodPost)
+	r.HandleFunc("/admin/{song_image:save_image\\/?}", SaveImage).Methods(http.MethodPost)
 	return r
 }

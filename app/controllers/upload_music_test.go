@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func TestUpload(t *testing.T) {
-	r, err := http.NewRequest(http.MethodGet, "/admin/upload", nil)
+func TestUploadMusic(t *testing.T) {
+	r, err := http.NewRequest(http.MethodGet, "/admin/upload_music", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

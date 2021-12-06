@@ -1,0 +1,30 @@
+{{ template "base" . }}
+{{ define "head" }}{{ end }}
+{{ define "main" }}
+<div class="section-div">
+  <p>
+    <label for="audio-file">audio file (wav): </label>
+    <input class="upload-form-element" type="file" id="audio-file" accept="audio/wav">
+  </p>
+  <p>
+    <label for="image-file">image file (640x640 jpg): </label>
+    <input class="upload-form-element" type="file" id="image-file" accept="image/jpeg">
+  </p>
+  <p>
+    <label for="created-date">date created: </label>
+    <input class="upload-form-element" type="date" id="created-date">
+  </p>
+  <p>
+    <label for="song-name">name: </label>
+    <input class="upload-form-element" type="text" id="song-name">
+  </p>
+  <p>
+    <label for="description">description: </label>
+    <input class="upload-form-element" type="text" id="description">
+  </p>
+  <p>
+    <button class="upload-form-element" type="submit" id="upload-button">save</button>
+  </p>
+</div>
+<script type="module" src="/js/admin/upload_music.js"></script>
+{{ end }}

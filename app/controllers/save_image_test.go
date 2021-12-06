@@ -11,16 +11,15 @@ import (
 	"time"
 )
 
-func TestSaveSong(t *testing.T) {
-	expectedBody := &lib.SaveSongRequest{
-		AudioFileName: "test.wav?123456",
+func TestSaveImage(t *testing.T) {
+	expectedBody := &lib.SaveImageRequest{
 		ImageFileName: "test.jpg?123456",
 		CreatedDate:   lib.CreatedDateJSON{Time: time.Date(2021, time.December, 1, 0, 0, 0, 0, time.UTC)},
-		SongName:      "test song!",
-		Description:   "test description",
+		Location:      "NYC",
+		Caption:       "Central Park",
 	}
 	body, err := json.Marshal(expectedBody)
-	r, err := http.NewRequest(http.MethodPost, "/admin/save_song", bytes.NewReader(body))
+	r, err := http.NewRequest(http.MethodPost, "/admin/save_image", bytes.NewReader(body))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,13 +29,13 @@ func TestSaveSong(t *testing.T) {
 	taskCreator = &testTaskCreator{
 		createTask: func(taskName, queueID string, body interface{}) (*tasks.Task, error) {
 			taskCalled = true
-			if taskName != "save_song" {
-				t.Error("Unexpected task name")
+			if taskName != "save_image" {
+				t.Error("Unexpected task name: ", taskName)
 			}
-			if queueID != "save-song-uploads" {
+			if queueID != "save-image-uploads" {
 				t.Error("Unexpected queueID")
 			}
-			if *body.(*lib.SaveSongRequest) != *expectedBody {
+			if *body.(*lib.SaveImageRequest) != *expectedBody {
 				t.Error("Unexpected task body")
 			}
 			return &tasks.Task{}, nil
@@ -51,5 +50,9 @@ func TestSaveSong(t *testing.T) {
 	}
 	if !taskCalled {
 		t.Errorf("create task never called")
+	}
+	result := &saveImageResult{}
+	if err = json.NewDecoder(w.Result().Body).Decode(result); err != nil {
+		t.Error("Error decoding result", err)
 	}
 }

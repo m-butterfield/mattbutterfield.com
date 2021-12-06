@@ -1,0 +1,29 @@
+{{ template "base" . }}
+{{ define "head" }}{{ end }}
+{{ define "main" }}
+<div class="section-div">
+  <p>
+    <label for="image-file">image file: </label>
+    <input class="upload-form-element" type="file" id="image-file" accept="image/jpeg">
+  </p>
+  <p>
+    <small>(jpg - ~750ish px wide if horizontal)</small>
+  </p>
+  <p>
+    <label for="created-date">date taken: </label>
+    <input class="upload-form-element" type="date" id="created-date">
+  </p>
+  <p>
+    <label for="location">location: </label>
+    <input class="upload-form-element" type="text" id="location">
+  </p>
+  <p>
+    <label for="caption">caption: </label>
+    <textarea class="upload-form-element" id="caption" style="vertical-align: top;"></textarea>
+  </p>
+  <p>
+    <button class="upload-form-element" type="submit" id="upload-button">save</button>
+  </p>
+</div>
+<script type="module" src="/js/admin/upload_image.js"></script>
+{{ end }}

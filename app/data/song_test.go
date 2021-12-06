@@ -9,7 +9,7 @@ import (
 const (
 	baseSelectSongRegex = "^SELECT id, description, created_at FROM songs "
 	getSongsRegex       = baseSelectSongRegex + " ORDER BY created_at DESC"
-	saveSongsRegex      = "^INSERT INTO songs VALUES \\(\\$1, \\$2, CURRENT_TIMESTAMP\\)"
+	saveSongRegex       = "^INSERT INTO songs VALUES \\(\\$1, \\$2, \\$3\\)"
 )
 
 func TestGetSongs(t *testing.T) {
@@ -52,9 +52,10 @@ func TestSaveSong(t *testing.T) {
 		t.Fatal(err)
 	}
 	store := &dbStore{db: db}
-	dbMock.ExpectPrepare(saveSongsRegex).ExpectExec().WithArgs("testID", "testDescription").
+	now := time.Now()
+	dbMock.ExpectPrepare(saveSongRegex).ExpectExec().WithArgs("testID", "testDescription", now).
 		WillReturnResult(sqlmock.NewResult(1, 1))
-	err = store.SaveSong("testID", "testDescription")
+	err = store.SaveSong("testID", "testDescription", now)
 	if err != nil {
 		t.Fatal(err)
 	}
