@@ -1,14 +1,13 @@
 cloudrunbasecommand := gcloud run deploy --project=mattbutterfield --region=us-central1 --platform=managed
-deployservercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com mattbutterfield
-deployworkercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com-worker mattbutterfield-worker
+gobuild := go build
 
 build:
-	go build -o bin/server cmd/server.go
-	go build -o bin/worker cmd/worker.go
+	$(gobuild) -o bin/server cmd/server.go
+	$(gobuild) -o bin/worker cmd/worker.go
 
 deploy: docker-build docker-push
-	$(deployservercommand)
-	$(deployworkercommand)
+	$(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com mattbutterfield
+	$(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com-worker mattbutterfield-worker
 
 deploy-server: docker-build-server docker-push-server
 	$(deployserverommand)
@@ -41,9 +40,14 @@ fmt:
 	go fmt ./...
 	npx eslint app/static/js/ --fix
 
-run:
+run-server:
 	DB_SOCKET="host=localhost dbname=mattbutterfield" USE_LOCAL_FS=true go run cmd/server.go
 
 test:
 	dropdb --if-exists mattbutterfield_test && createdb mattbutterfield_test && psql -d mattbutterfield_test -f schema.sql
 	DB_SOCKET="host=localhost dbname=mattbutterfield_test" go test -v ./app/...
+
+update-deps:
+	go get -u ./app/...
+	go mod tidy
+	npm upgrade
