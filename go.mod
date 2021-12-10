@@ -9,7 +9,6 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/rs/zerolog v1.26.0
-	github.com/sendgrid/sendgrid-go v3.10.3+incompatible
 	github.com/viert/go-lame v0.0.0-20201108052322-bb552596b11d
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa
@@ -38,7 +37,6 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
 	github.com/jackc/pgtype v1.9.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
-	github.com/sendgrid/rest v2.6.5+incompatible // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/crypto v0.0.0-20211202192323-5770296d904e // indirect
 	golang.org/x/net v0.0.0-20211208012354-db4efeb81f4b // indirect
