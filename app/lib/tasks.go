@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"os"
 	"strings"
 	"time"
@@ -91,6 +92,7 @@ func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*t
 	req := &tasks.CreateTaskRequest{
 		Parent: fmt.Sprintf("projects/%s/locations/%s/queues/%s", ProjectID, locationID, queueID),
 		Task: &tasks.Task{
+			DispatchDeadline: durationpb.New(30 * time.Minute),
 			MessageType: &tasks.Task_HttpRequest{
 				HttpRequest: &tasks.HttpRequest{
 					HttpMethod: tasks.HttpMethod_POST,
