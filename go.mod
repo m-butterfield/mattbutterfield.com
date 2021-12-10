@@ -12,6 +12,7 @@ require (
 	github.com/viert/go-lame v0.0.0-20201108052322-bb552596b11d
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa
+	google.golang.org/protobuf v1.27.1
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 	nhooyr.io/websocket v1.8.7
 )
@@ -47,5 +48,4 @@ require (
 	google.golang.org/api v0.62.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.42.0 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
 )

@@ -1,0 +1,148 @@
+{{ template "base" . }}
+{{ define "head" }}
+<link rel="stylesheet" href="/css/a11y-dark.css">
+{{ end }}
+{{ define "main" }}
+{{ template "image" . }}
+<div class="section-div blog-post">
+  <h2>Running asynchronous tasks with Cloud Run, Go, and Cloud Tasks.</h2>
+  <em>2021-12-11</em>
+  <p>It's been a few months since I decided to start using <a target="_blank" href="https://cloud.google.com/run">Cloud Run</a> to host my personal web projects. For the most part it's been great, but I've had a hard time deciding how to handle asynchronous tasks and longer running processes. The <a target="_blank" href="https://cloud.google.com/run/docs/triggering/using-tasks">official recommendation</a> is to use Cloud Tasks, but as someone who isn't used to working with this kind of managed infrastructure, I had a hard time embracing it at first. Once I set it up though, I found it to be quite nice, so I decided to share my setup here as a simple example.</p>
+  <h3>The scenario</h3>
+  <p>My first use case is file uploads. The actual files get uploaded directly from the browser to Cloud Storage thanks to a <a target="_blank" href="https://github.com/m-butterfield/mattbutterfield.com/blob/11a034f9a2320ebd1222ccce0bfe4286645ff3b2/app/controllers/signed_upload_url.go">signed upload url</a> and some simple <a target="_blank" href="https://github.com/m-butterfield/mattbutterfield.com/blob/11a034f9a2320ebd1222ccce0bfe4286645ff3b2/app/static/js/admin/upload_music.js">Javascript</a>. Once the upload finishes, the browser makes a POST request to my server with some metadata about the file that was uploaded. At this point I want some extra processing to happen on the file that could take a while, so it needs to happen outside of a normal HTTP request.</p>
+  <p>What I'm used to doing is pushing a task message to a Redis queue managed by something like Sidekiq or RabbitMQ, but instead we'll use Cloud Tasks as our queue, and set up a separate Cloud Run service to process the tasks.</p>
+  <h3>Creating the task handler service</h3>
+  <p>Let's look at some code. Below is a Go HTTP handler that parses a JSON request and then performs some operations that could take some time.</p>
+  <pre>
+    <code class="go">
+type SaveSongRequest struct {
+	AudioFileName string `json:"audioFileName"`
+	CreatedDate   string `json:"createdDate"`
+	SongName      string `json:"songName"`
+	Description   string `json:"description"`
+}
+
+func SaveSong(w http.ResponseWriter, r *http.Request) {
+	body := &SaveSongRequest{}
+	err := json.NewDecoder(r.Body).Decode(body)
+	if err != nil {
+		handleError(err, w)
+		return
+	}
+	client, err := storage.NewClient()
+	if err != nil {
+		handleError(err, w)
+		return
+	}
+	bucket := client.Bucket(lib.FilesBucket)
+
+	// ⚠️ time consuming operation
+	err = convertAudio(bucket, body.AudioFileName)
+	if err != nil {
+		handleError(err, w)
+		return
+	}
+
+	// etc...
+}
+    </code>
+  </pre>
+  <p>This is exactly the kind of HTTP handler I am trying to avoid writing for my web application, but this will be triggered by Cloud Tasks instead of a user's web browser, so this is actually our asynchronous worker code and not a regular endpoint to be called by users.</p>
+  <p>Why is it even an HTTP handler? Because the only way to trigger Cloud Run is through an HTTP request. Luckily, Cloud Tasks can use HTTP as a <a target="_blank" href="https://cloud.google.com/tasks/docs/creating-http-target-tasks">target</a> for handling tasks sent to its queues.</p>
+  <p>This all works well together. You can just add the handler to your favorite router:</p>
+  <pre>
+    <code class="go">
+r := mux.NewRouter()
+r.HandleFunc("/save_song", SaveSong).Methods(http.MethodPost)
+err := http.ListenAndServe(net.JoinHostPort("", "8000"), r)
+    </code>
+  </pre>
+  <p>...and this can now be run and deployed just like any other Go Cloud Run service - importantly with <strong>"Allow all traffic"</strong> selected for Ingress (Cloud Task HTTP targets must have a public IP), and <strong>"Require authentication. Manage authorized users with Cloud IAM."</strong> also selected. This will require us to specify a service account when creating the task.</p>
+  <h3>Creating the tasks</h3>
+  <p>There is minimal setup required for Cloud Tasks. After enabling the API in the web console, you can create a queue with the <code>gcloud</code> CLI tool, for example:</p>
+  <pre>
+    <code>gcloud tasks queues create save-song-uploads</code>
+  </pre>
+  <p>Now that we have a queue and a task handler, we can enqueue a task from the HTTP handler that gets called by the user's web browser after the file upload is complete:</p>
+  <pre>
+    <code class="go">
+import (
+	"cloud.google.com/go/cloudtasks/apiv2"
+	"context"
+	"encoding/json"
+	"fmt"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
+	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	"log"
+	"net/http"
+)
+
+const (
+	// URL of the task worker cloud run service
+	workerURL  = "https://mattbutterfield-worker-12345.a.run.app/"
+	projectID  = "sample-project"
+	locationID = "us-central1"
+)
+
+func WebSaveSong(w http.ResponseWriter, r *http.Request) {
+	body := &SaveSongRequest{}
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		handleError(err, w)
+		return
+	}
+
+	task, err := createTask("save_song", "save-song-uploads", body)
+	if err != nil {
+		handleError(err, w)
+		return
+	} else {
+		log.Println("Created task: " + task.Name)
+	}
+	w.WriteHeader(201)
+}
+
+func createTask(name, queue string, body SaveSongRequest) (*tasks.Task, error) {
+	ctx := context.Background()
+	client, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	httpReq := &tasks.HttpRequest{
+		HttpMethod: tasks.HttpMethod_POST,
+		Url:        workerURL + name,
+		AuthorizationHeader: &tasks.HttpRequest_OidcToken{
+			OidcToken: &tasks.OidcToken{
+				ServiceAccountEmail: t.serviceAccountEmail,
+			},
+		},
+	}
+
+	req := &tasks.CreateTaskRequest{
+		Parent: fmt.Sprintf("projects/%s/locations/%s/queues/%s",
+			projectID, locationID, queue),
+		Task: &tasks.Task{
+			MessageType: &tasks.Task_HttpRequest{
+				HttpRequest: httpReq,
+			},
+		},
+	}
+
+	if message, err := json.Marshal(body); err != nil {
+		return nil, err
+	} else {
+		req.Task.GetHttpRequest().Body = message
+	}
+
+	return client.CreateTask(ctx, req)
+}
+    </code>
+  </pre>
+  <p>Now we have a full backend asynchronous queue/worker system with all the benefits that come with Cloud Run. One limitation to note is timeouts. HTTP tasks have a maximum duration of 30 minutes (10 minutes by default), but this should be plenty of time for most use cases.</p>
+  <p>I'm sure I'll need some cron-like functionality soon, and it looks like <a target="_blank" href="https://cloud.google.com/scheduler">Cloud Scheduler</a> will allow me to use my worker service for that as well. That's all for now!</p>
+</div>
+<script src="/js/highlight.pack.js"></script>
+<script type="text/javascript">hljs.highlightAll();</script>
+{{ end }}
