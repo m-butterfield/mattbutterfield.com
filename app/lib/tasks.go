@@ -113,10 +113,5 @@ func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*t
 		req.Task.GetHttpRequest().Body = message
 	}
 
-	createdTask, err := client.CreateTask(ctx, req)
-	if err != nil {
-		return nil, fmt.Errorf("cloudtasks.CreateTask: %v", err)
-	}
-
-	return createdTask, nil
+	return client.CreateTask(ctx, req)
 }

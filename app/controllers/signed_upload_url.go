@@ -48,14 +48,14 @@ func SignedUploadURL(w http.ResponseWriter, r *http.Request) {
 		Expires:        time.Now().UTC().Add(15 * time.Minute),
 	}
 
-	u, err := storage.SignedURL(lib.FilesBucket, fileName, opts)
+	url, err := storage.SignedURL(lib.FilesBucket, fileName, opts)
 	if err != nil {
 		if _, err = fmt.Fprintf(w, err.Error()); err != nil {
 			log.Fatal("error:", err)
 		}
 		return
 	}
-	result, err := json.Marshal(&signedUploadURLResponse{URL: u})
+	result, err := json.Marshal(&signedUploadURLResponse{URL: url})
 	if err != nil {
 		log.Fatal("error: ", err)
 	}

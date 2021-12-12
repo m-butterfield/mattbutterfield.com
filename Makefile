@@ -1,4 +1,6 @@
 cloudrunbasecommand := gcloud run deploy --project=mattbutterfield --region=us-central1 --platform=managed
+deployservercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com mattbutterfield
+deployworkercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com-worker mattbutterfield-worker
 gobuild := go build
 
 build:
@@ -6,11 +8,11 @@ build:
 	$(gobuild) -o bin/worker cmd/worker.go
 
 deploy: docker-build docker-push
-	$(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com mattbutterfield
-	$(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com-worker mattbutterfield-worker
+	$(deployservercommand)
+	$(deployworkercommand)
 
 deploy-server: docker-build-server docker-push-server
-	$(deployserverommand)
+	$(deployservercommand)
 
 deploy-worker: docker-build-worker docker-push-worker
 	$(deployworkercommand)
