@@ -1,21 +1,21 @@
 cloudrunbasecommand := gcloud run deploy --project=mattbutterfield --region=us-central1 --platform=managed
-deployservercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com mattbutterfield
-deployworkercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com-worker mattbutterfield-worker
 gobuild := go build
 
-build:
-	$(gobuild) -o bin/server cmd/server.go
-	$(gobuild) -o bin/worker cmd/worker.go
+build: build-server build-worker
 
-deploy: docker-build docker-push
-	$(deployservercommand)
-	$(deployworkercommand)
+build-server:
+	$(gobuild) -o bin/server cmd/server/main.go
+
+build-worker:
+	$(gobuild) -o bin/worker cmd/worker/main.go
+
+deploy: docker-build docker-push deploy-server deploy-worker
 
 deploy-server: docker-build-server docker-push-server
-	$(deployservercommand)
+	$(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com mattbutterfield
 
 deploy-worker: docker-build-worker docker-push-worker
-	$(deployworkercommand)
+	$(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com-worker mattbutterfield-worker
 
 docker-build:
 	docker-compose build
@@ -43,13 +43,13 @@ fmt:
 	npx eslint app/static/js/ --fix
 
 run-server:
-	DB_SOCKET="host=localhost dbname=mattbutterfield" USE_LOCAL_FS=true go run cmd/server.go
+	DB_SOCKET="host=localhost dbname=mattbutterfield" USE_LOCAL_FS=true go run cmd/server/main.go
 
 test:
 	dropdb --if-exists mattbutterfield_test && createdb mattbutterfield_test && psql -d mattbutterfield_test -f schema.sql
 	DB_SOCKET="host=localhost dbname=mattbutterfield_test" go test -v ./app/...
 
 update-deps:
-	go get -u ./app/...
+	go get -u ./...
 	go mod tidy
 	npm upgrade
