@@ -16,9 +16,6 @@ var homeTemplatePath = append([]string{templatePath + "index.gohtml"}, baseTempl
 type homePage struct {
 	*basePage
 	*imageInfo
-	ImageCaption  string
-	ImageDate     string
-	ImageLocation string
 	NextImagePath string
 }
 
@@ -26,9 +23,6 @@ func makeHomePage(image *data.Image, nextImageID string) homePage {
 	return homePage{
 		basePage:      makeBasePage(),
 		imageInfo:     getImageInfo(image),
-		ImageCaption:  image.Caption,
-		ImageDate:     image.Date.Format(dateDisplayLayout),
-		ImageLocation: image.Location,
 		NextImagePath: makeImagePath(nextImageID),
 	}
 }

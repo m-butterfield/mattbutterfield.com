@@ -47,16 +47,22 @@ func Initialize() error {
 }
 
 type imageInfo struct {
-	ImageURL    string
-	ImageWidth  int
-	ImageHeight int
+	ImageURL      string
+	ImageWidth    int
+	ImageHeight   int
+	ImageCaption  string
+	ImageDate     string
+	ImageLocation string
 }
 
 func getImageInfo(image *data.Image) *imageInfo {
 	return &imageInfo{
-		ImageURL:    lib.ImagesBaseURL + image.ID,
-		ImageWidth:  image.Width,
-		ImageHeight: image.Height,
+		ImageURL:      lib.ImagesBaseURL + image.ID,
+		ImageWidth:    image.Width,
+		ImageHeight:   image.Height,
+		ImageCaption:  image.Caption,
+		ImageDate:     image.CreatedAt.Format(dateDisplayLayout),
+		ImageLocation: image.Location,
 	}
 }
 

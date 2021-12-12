@@ -22,10 +22,12 @@ func Router() *mux.Router {
 	r.HandleFunc("/{blog:blog\\/?}", Blog).Methods(http.MethodGet)
 	r.HandleFunc("/blog/{entryName:.*\\/?}", BlogEntry).Methods(http.MethodGet)
 
+	r.HandleFunc("/{music:music\\/?}", Music).Methods(http.MethodGet)
+
+	r.HandleFunc("/{photos:photos\\/?}", Photos).Methods(http.MethodGet)
+
 	r.HandleFunc("/{video:video\\/?}", Video).Methods(http.MethodGet)
 	r.HandleFunc("/video/{connections:connections\\/?}", VideoConnections).Methods(http.MethodGet)
-
-	r.HandleFunc("/{music:music\\/?}", Music).Methods(http.MethodGet)
 
 	r.HandleFunc("/{admin:admin\\/?}", Admin).Methods(http.MethodGet)
 	r.HandleFunc("/admin/{upload_music:upload_music\\/?}", UploadMusic).Methods(http.MethodGet)
