@@ -4,7 +4,7 @@ CREATE TABLE images (
   location text,
   width integer NOT NULL,
   height integer NOT NULL,
-  date date NOT NULL
+  created_at timestamp NOT NULL
 );
 
 CREATE TABLE songs (
