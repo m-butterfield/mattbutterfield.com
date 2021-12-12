@@ -31,7 +31,7 @@ Init some env variables in case we want to use the pubsub emulator:
 
 Now the server can be started and accessed at [http://localhost:8000/](http://localhost:8000/):
 
-    make run
+    make run-server
 
 The pubsub emulator can optionally be started for testing video chat locally:
 
