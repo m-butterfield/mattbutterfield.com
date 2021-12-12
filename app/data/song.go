@@ -2,7 +2,6 @@ package data
 
 import (
 	"database/sql"
-	"log"
 	"time"
 )
 
@@ -31,7 +30,7 @@ func (s *dbStore) GetSongs() ([]*Song, error) {
 		)
 		err := rows.Scan(&song.ID, &description, &song.CreatedAt)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		song.Description = description.String
 		songs = append(songs, song)

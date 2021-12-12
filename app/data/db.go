@@ -9,6 +9,7 @@ import (
 
 type Store interface {
 	GetImage(string) (*Image, error)
+	GetImages(time.Time, int) ([]*Image, error)
 	GetRandomImage() (*Image, error)
 	GetSongs() ([]*Song, error)
 	SaveSong(string, string, time.Time) error

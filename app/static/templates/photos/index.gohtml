@@ -1,0 +1,19 @@
+{{ template "base" . }}
+{{ define "head" }}{{ end }}
+{{ define "main" }}
+<div class="section-div">
+  <h1 id="photos">photos</h1>
+  {{ range $i, $image := .ImagesInfo }}
+    {{ template "image" . }}
+    <p>{{ .ImageCaption }}</p>
+    <p>{{ .ImageLocation }}</p>
+    <p>{{ .ImageDate }}</p>
+  {{ end }}
+  {{ if .NextURL }}
+      <a href="{{ .NextURL }}">next</a>
+  {{ else }}
+      you have reached the end!
+  {{ end }}
+</div>
+<script type="text/javascript" src="/js/photos.js"></script>
+{{ end }}

@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	baseSelectImageRegex   = "^SELECT id, caption, location, width, height, date FROM images "
+	baseSelectImageRegex   = "^SELECT id, caption, location, width, height, created_at FROM images "
 	selectImageByIDRegex   = baseSelectImageRegex + "WHERE id = \\$1$"
 	selectRandomImageRegex = baseSelectImageRegex + "WHERE id = \\(SELECT id FROM images ORDER BY RANDOM\\(\\) LIMIT 1\\)$"
-	saveImageRegex         = "^INSERT INTO images \\(id, caption, location, width, height, date\\) VALUES \\(\\$1, \\$2, \\$3, \\$4, \\$5, \\$6\\)"
+	saveImageRegex         = "^INSERT INTO images \\(id, caption, location, width, height, created_at\\) VALUES \\(\\$1, \\$2, \\$3, \\$4, \\$5, \\$6\\)"
 )
 
 func TestGetImage(t *testing.T) {
@@ -20,9 +20,9 @@ func TestGetImage(t *testing.T) {
 	}
 	store := &dbStore{db: db}
 
-	id, caption, location, width, height, date := "ab23ce7b39649ad4380349578829d5786a9f29bcfca17bc786f2869351fc339b.jpg", "hello", "NYC", 100, 200, time.Now()
+	id, caption, location, width, height, createdAt := "ab23ce7b39649ad4380349578829d5786a9f29bcfca17bc786f2869351fc339b.jpg", "hello", "NYC", 100, 200, time.Now()
 	dbMock.ExpectQuery(selectImageByIDRegex).WithArgs(id).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height", "date"}).AddRow(id, caption, location, width, height, date))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height", "created_at"}).AddRow(id, caption, location, width, height, createdAt))
 
 	image, err := store.GetImage(id)
 	if err != nil {
@@ -47,6 +47,9 @@ func TestGetImage(t *testing.T) {
 	if image.Height != height {
 		t.Errorf("Unexpected image height: %d != %d", image.Height, height)
 	}
+	if image.CreatedAt != createdAt {
+		t.Errorf("Unexpected created_at: %s ! %s", image.CreatedAt, createdAt)
+	}
 }
 
 func TestGetRandomImage(t *testing.T) {
@@ -57,7 +60,7 @@ func TestGetRandomImage(t *testing.T) {
 	store := &dbStore{db: db}
 
 	dbMock.ExpectQuery(selectRandomImageRegex).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height", "date"}).AddRow("ab23ce7b39649ad4380349578829d5786a9f29bcfca17bc786f2869351fc339b.jpg", nil, nil, 100, 200, time.Now()))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "caption", "location", "width", "height", "created_at"}).AddRow("ab23ce7b39649ad4380349578829d5786a9f29bcfca17bc786f2869351fc339b.jpg", nil, nil, 100, 200, time.Now()))
 
 	_, err = store.GetRandomImage()
 	if err != nil {

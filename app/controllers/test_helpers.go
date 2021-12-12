@@ -10,6 +10,7 @@ var testRouter = Router()
 
 type testStore struct {
 	getImage       func(string) (*data.Image, error)
+	getImages      func(time.Time, int) ([]*data.Image, error)
 	getRandomImage func() (*data.Image, error)
 	getSongs       func() ([]*data.Song, error)
 	saveSong       func(string, string, time.Time) error
@@ -18,6 +19,10 @@ type testStore struct {
 
 func (s *testStore) GetImage(id string) (*data.Image, error) {
 	return s.getImage(id)
+}
+
+func (s *testStore) GetImages(before time.Time, limit int) ([]*data.Image, error) {
+	return s.getImages(before, limit)
 }
 
 func (s *testStore) GetRandomImage() (*data.Image, error) {
