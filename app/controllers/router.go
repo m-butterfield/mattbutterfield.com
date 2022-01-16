@@ -26,6 +26,8 @@ func Router() *mux.Router {
 
 	r.HandleFunc("/{photos:photos\\/?}", Photos).Methods(http.MethodGet)
 
+	r.HandleFunc("/{resume:resume\\/?}", Resume).Methods(http.MethodGet)
+
 	r.HandleFunc("/{video:video\\/?}", Video).Methods(http.MethodGet)
 	r.HandleFunc("/video/{connections:connections\\/?}", VideoConnections).Methods(http.MethodGet)
 
