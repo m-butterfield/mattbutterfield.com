@@ -2,7 +2,9 @@ package data
 
 import (
 	"database/sql"
-	_ "github.com/jackc/pgx/v4/stdlib"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"os"
 	"time"
 )
@@ -16,8 +18,8 @@ type Store interface {
 	SaveImage(string, string, string, int, int, time.Time) error
 }
 
-type dbStore struct {
-	db *sql.DB
+type ds struct {
+	db *gorm.DB
 }
 
 func Connect() (Store, error) {
@@ -31,12 +33,18 @@ func Connect() (Store, error) {
 	return &dbStore{db: db}, nil
 }
 
-func nullString(s string) sql.NullString {
-	if len(s) == 0 {
-		return sql.NullString{}
+func getDS() (*ds, error) {
+	var logLevel logger.LogLevel
+	if os.Getenv("SQL_LOGS") == "true" {
+		logLevel = logger.Info
+	} else {
+		logLevel = logger.Silent
 	}
-	return sql.NullString{
-		String: s,
-		Valid:  true,
+	db, err := gorm.Open(postgres.Open(os.Getenv("DB_SOCKET")), &gorm.Config{
+		Logger: logger.Default.LogMode(logLevel),
+	})
+	if err != nil {
+		return nil, err
 	}
+	return &ds{db: db}, nil
 }

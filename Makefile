@@ -43,16 +43,28 @@ docker-push-server:
 docker-push-worker:
 	docker-compose push worker
 
-db:
-	createdb mattbutterfield
+reset-db:
+	dropdb --if-exists social
+	createdb social
+	go run cmd/migrate/main.go
+
+migrate:
+	go run cmd/migrate/main.go
 
 fmt:
 	go fmt ./...
 	npx eslint app/static/js/ --fix
 	cd infra/ && terraform fmt
 
+run-server: export USE_LOCAL_FS=true
+run-server: export SQL_LOGS=true
+run-server: export WORKER_BASE_URL=http://localhost:8001/
 run-server:
-	DB_SOCKET="host=localhost dbname=mattbutterfield" USE_LOCAL_FS=true go run cmd/server/main.go
+	go run cmd/server/main.go
+
+run-worker: export SQL_LOGS=true
+run-worker:
+	go run cmd/worker/main.go
 
 test: export DB_SOCKET=host=localhost dbname=mattbutterfield_test
 test:
