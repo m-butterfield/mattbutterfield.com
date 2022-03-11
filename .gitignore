@@ -2,5 +2,4 @@ bin/
 node_modules/
 dump.sql
 .terraform
-*.tfstate
 secrets.tfvars

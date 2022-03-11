@@ -8,8 +8,8 @@ terraform {
 
 provider "google" {
   credentials = file("/var/terraform/mattbutterfield.json")
-  project = var.project
-  region  = var.default_region
+  project     = var.project
+  region      = var.default_region
 }
 
 terraform {

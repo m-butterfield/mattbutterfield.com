@@ -49,6 +49,7 @@ db:
 fmt:
 	go fmt ./...
 	npx eslint app/static/js/ --fix
+	cd infra/ && terraform fmt
 
 run-server:
 	DB_SOCKET="host=localhost dbname=mattbutterfield" USE_LOCAL_FS=true go run cmd/server/main.go
