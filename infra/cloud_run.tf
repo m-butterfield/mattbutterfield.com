@@ -15,8 +15,7 @@ resource "google_cloud_run_service" "mattbutterfield" {
         }
         env {
           name  = "WORKER_BASE_URL"
-          value = "https://mattbutterfield-worker-6wg57m4u3a-uc.a.run.app/"
-          #          value = "${google_cloud_run_service.mattbutterfield-worker.status[0].url}/"
+          value = "${google_cloud_run_service.mattbutterfield-worker.status[0].url}/"
         }
         env {
           name = "DB_SOCKET"
