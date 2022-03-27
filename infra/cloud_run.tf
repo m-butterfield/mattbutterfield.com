@@ -103,3 +103,45 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
   policy_data = data.google_iam_policy.noauth.policy_data
 }
+
+resource "google_cloud_run_service" "mattbutterfield-worker" {
+  name     = "mattbutterfield-worker"
+  location = var.default_region
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/mattbutterfield/mattbutterfield.com-worker"
+        ports {
+          container_port = 8001
+        }
+        env {
+          name = "DB_SOCKET"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.db_socket.secret_id
+              key  = "latest"
+            }
+          }
+        }
+      }
+      service_account_name = google_service_account.mattbutterfield_cloud_run.email
+    }
+    metadata {
+      annotations = {
+        "run.googleapis.com/cloudsql-instances"    = google_sql_database_instance.mattbutterfield.connection_name
+        "autoscaling.knative.dev/maxScale"         = "100"
+        "client.knative.dev/user-image"            = "gcr.io/mattbutterfield/mattbutterfield.com-worker"
+        "run.googleapis.com/client-name"           = "gcloud"
+        "run.googleapis.com/client-version"        = "376.0.0"
+        "run.googleapis.com/execution-environment" = "gen1"
+      }
+    }
+  }
+}
+
+resource "google_project_iam_member" "mattbutterfield_cloud_run_invoker" {
+  project = var.project
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.mattbutterfield_cloud_run.email}"
+}
