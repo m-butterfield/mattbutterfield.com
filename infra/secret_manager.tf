@@ -14,7 +14,7 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_db_socket" {
   project   = var.project
   secret_id = google_secret_manager_secret.db_socket.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.mattbutterfield_cloudrun.email}"
+  member    = "serviceAccount:${google_service_account.mattbutterfield_cloud_run.email}"
 }
 
 resource "google_secret_manager_secret" "auth_token" {
@@ -33,7 +33,7 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_auth_token" {
   project   = var.project
   secret_id = google_secret_manager_secret.auth_token.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.mattbutterfield_cloudrun.email}"
+  member    = "serviceAccount:${google_service_account.mattbutterfield_cloud_run.email}"
 }
 
 resource "google_secret_manager_secret" "uploader_service_account" {
@@ -52,5 +52,5 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_uploader_service_a
   project   = var.project
   secret_id = google_secret_manager_secret.uploader_service_account.secret_id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.mattbutterfield_cloudrun.email}"
+  member    = "serviceAccount:${google_service_account.mattbutterfield_cloud_run.email}"
 }

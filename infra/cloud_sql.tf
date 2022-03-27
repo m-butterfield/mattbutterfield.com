@@ -23,5 +23,5 @@ resource "google_sql_user" "mattbutterfield" {
 resource "google_project_iam_member" "mattbutterfield_cloud_run_cloud_sql" {
   project = var.project
   role    = "roles/cloudsql.client"
-  member  = "serviceAccount:${google_service_account.mattbutterfield_cloudrun.email}"
+  member  = "serviceAccount:${google_service_account.mattbutterfield_cloud_run.email}"
 }
