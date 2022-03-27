@@ -1,3 +1,40 @@
+resource "google_storage_bucket" "files" {
+  name     = "files.mattbutterfield.com"
+  location = "US"
+
+  cors {
+    max_age_seconds = 3600
+    method = [
+      "OPTIONS",
+      "GET",
+      "POST",
+      "PUT",
+      "HEAD",
+    ]
+    origin = [
+      "*",
+    ]
+    response_header = [
+      "Content-Type",
+      "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Origin",
+    ]
+  }
+
+}
+
+resource "google_storage_bucket" "images" {
+  name     = "images.mattbutterfield.com"
+  location = "US"
+  uniform_bucket_level_access = true
+}
+
+resource "google_storage_bucket_iam_member" "images_public" {
+  bucket = google_storage_bucket.images.name
+  role = "roles/storage.objectViewer"
+  member = "allUsers"
+}
+
 resource "google_project_iam_member" "uploader" {
   project = var.project
   role    = "roles/storage.objectCreator"
