@@ -46,3 +46,13 @@ resource "google_project_iam_member" "storage_object_admin" {
   role    = "roles/storage.objectAdmin"
   member  = "serviceAccount:${google_service_account.mattbutterfield_cloud_run.email}"
 }
+
+resource "google_compute_global_address" "images" {
+  name = "images"
+  address = "34.98.91.63"
+}
+
+resource "google_compute_global_address" "files" {
+  name = "files"
+  address = "34.120.4.174"
+}
