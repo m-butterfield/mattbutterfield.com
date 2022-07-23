@@ -84,3 +84,38 @@ resource "google_compute_backend_bucket" "files" {
   name        = "files"
   bucket_name = google_storage_bucket.files.name
 }
+
+resource "google_compute_url_map" "images" {
+  name = "images"
+  default_service = google_compute_backend_bucket.images.id
+}
+
+resource "google_compute_url_map" "files" {
+  name = "files"
+  default_service = google_compute_backend_bucket.files.id
+}
+
+resource "google_compute_target_https_proxy" "images" {
+  name             = "images-target-proxy"
+  url_map          = google_compute_url_map.images.id
+  ssl_certificates = [google_compute_managed_ssl_certificate.images.id]
+}
+
+resource "google_compute_target_https_proxy" "files" {
+  name             = "files-target-proxy"
+  url_map          = google_compute_url_map.files.id
+  ssl_certificates = [google_compute_managed_ssl_certificate.files.id]
+}
+
+resource "google_compute_global_forwarding_rule" "images" {
+  name       = "images"
+  target     = google_compute_target_https_proxy.images.id
+  port_range = 443
+}
+
+resource "google_compute_global_forwarding_rule" "files" {
+  name       = "files"
+  ip_version = "IPV4"
+  target     = google_compute_target_https_proxy.files.id
+  port_range = 443
+}
