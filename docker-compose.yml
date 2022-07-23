@@ -5,8 +5,10 @@ services:
       context: ./
       target: server
     image: "gcr.io/mattbutterfield/mattbutterfield.com"
+    platform: linux/amd64
   worker:
     build:
       context: ./
       target: worker
     image: "gcr.io/mattbutterfield/mattbutterfield.com-worker"
+    platform: linux/amd64

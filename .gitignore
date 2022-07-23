@@ -1,3 +1,5 @@
 bin/
 node_modules/
 dump.sql
+.terraform
+secrets.tfvars

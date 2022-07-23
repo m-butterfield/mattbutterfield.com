@@ -1,15 +1,19 @@
 cloudrunbasecommand := gcloud run deploy --project=mattbutterfield --region=us-central1 --platform=managed
 deployservercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com mattbutterfield
 deployworkercommand := $(cloudrunbasecommand) --image=gcr.io/mattbutterfield/mattbutterfield.com-worker mattbutterfield-worker
-gobuild := go build
+
+terraformbasecommand := cd infra && terraform
+terraformvarsarg := -var-file=secrets.tfvars
+
+export DB_SOCKET=host=localhost dbname=mattbutterfield
 
 build: build-server build-worker
 
 build-server:
-	$(gobuild) -o bin/server cmd/server/main.go
+	go build -o bin/server cmd/server/main.go
 
 build-worker:
-	$(gobuild) -o bin/worker cmd/worker/main.go
+	go build -o bin/worker cmd/worker/main.go
 
 deploy: docker-build docker-push
 	$(deployservercommand)
@@ -45,15 +49,27 @@ db:
 fmt:
 	go fmt ./...
 	npx eslint app/static/js/ --fix
+	cd infra/ && terraform fmt
 
 run-server:
 	DB_SOCKET="host=localhost dbname=mattbutterfield" USE_LOCAL_FS=true go run cmd/server/main.go
 
+test: export DB_SOCKET=host=localhost dbname=mattbutterfield_test
 test:
 	dropdb --if-exists mattbutterfield_test && createdb mattbutterfield_test && psql -d mattbutterfield_test -f schema.sql
-	DB_SOCKET="host=localhost dbname=mattbutterfield_test" go test -v ./app/...
+	go test -v ./app/...
+
+tf-plan:
+	$(terraformbasecommand) plan $(terraformvarsarg)
+
+tf-apply:
+	$(terraformbasecommand) apply $(terraformvarsarg)
+
+tf-refresh:
+	$(terraformbasecommand) apply $(terraformvarsarg) -refresh-only
 
 update-deps:
 	go get -u ./...
 	go mod tidy
 	npm upgrade
+	cd infra && terraform init -upgrade && cd -
