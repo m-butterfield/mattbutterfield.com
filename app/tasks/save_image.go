@@ -4,29 +4,28 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"crypto/sha256"
-	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"image"
 	_ "image/jpeg"
 	"io"
 	"log"
-	"net/http"
 )
 
-func SaveImage(w http.ResponseWriter, r *http.Request) {
+func saveImage(c *gin.Context) {
 	body := &lib.SaveImageRequest{}
-	err := json.NewDecoder(r.Body).Decode(body)
+	err := c.Bind(body)
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 	defer func(client *storage.Client) {
@@ -40,30 +39,30 @@ func SaveImage(w http.ResponseWriter, r *http.Request) {
 
 	width, height, err := getDimensions(ctx, upload)
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 
 	hash, err := getHash(ctx, upload)
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 	fileName := hash + ".jpg"
 
 	if err = copyAndDeleteUpload(ctx, client, upload, fileName); err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 
-	if err = db.SaveImage(&data.Image{
+	if err = ds.SaveImage(&data.Image{
 		ID:       fileName,
 		Caption:  body.Caption,
 		Location: body.Location,
 		Width:    width,
 		Height:   height,
 	}); err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 }

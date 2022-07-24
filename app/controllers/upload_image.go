@@ -1,22 +1,15 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"github.com/m-butterfield/mattbutterfield.com/app/static"
-	"html/template"
-	"net/http"
 )
 
-var uploadImageTemplatePath = append([]string{templatePath + "admin/upload_image.gohtml"}, baseTemplatePaths...)
-
-func UploadImage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(&static.FlexFS{}, uploadImageTemplatePath...)
+func uploadImage(c *gin.Context) {
+	body, err := templateRender("admin/upload_image", makeBasePage())
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
-	if err = tmpl.Execute(w, makeBasePage()); err != nil {
-		lib.InternalError(err, w)
-		return
-	}
+	c.Render(200, body)
 }

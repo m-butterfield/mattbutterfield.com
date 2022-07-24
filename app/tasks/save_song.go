@@ -4,25 +4,24 @@ import (
 	"bufio"
 	"cloud.google.com/go/storage"
 	"context"
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/viert/go-lame"
 	"log"
-	"net/http"
 )
 
-func SaveSong(w http.ResponseWriter, r *http.Request) {
+func saveSong(c *gin.Context) {
 	body := &lib.SaveSongRequest{}
-	err := json.NewDecoder(r.Body).Decode(body)
+	err := c.Bind(body)
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 	defer func(client *storage.Client) {
@@ -33,20 +32,20 @@ func SaveSong(w http.ResponseWriter, r *http.Request) {
 	bucket := client.Bucket(lib.FilesBucket)
 
 	if err = copyAndConvertAudio(ctx, bucket, body.AudioFileName, body.SongName); err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 
 	if err = copyImageUpload(ctx, bucket, body.ImageFileName, body.SongName); err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 
-	if err = db.SaveSong(&data.Song{
+	if err = ds.SaveSong(&data.Song{
 		ID:          body.SongName,
 		Description: body.Description,
 	}); err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 }

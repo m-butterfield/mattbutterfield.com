@@ -1,33 +1,25 @@
 package controllers
 
 import (
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"log"
 	"net/http"
 )
 
-type saveImageResult struct {
-	URL string `json:"url"`
-}
-
-func SaveImage(w http.ResponseWriter, r *http.Request) {
+func saveImage(c *gin.Context) {
 	body := &lib.SaveImageRequest{}
-	err := json.NewDecoder(r.Body).Decode(&body)
+	err := c.Bind(body)
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 
-	if task, err := taskCreator.CreateTask("save_image", "save-image-uploads", body); err != nil {
-		lib.InternalError(err, w)
+	if task, err := tc.CreateTask("save_image", "save-image-uploads", body); err != nil {
+		lib.InternalError(err, c)
 		return
 	} else {
 		log.Println("Created task: " + task.Name)
 	}
-	w.WriteHeader(201)
-	if err = json.NewEncoder(w).Encode(saveImageResult{URL: "hey"}); err != nil {
-		lib.InternalError(err, w)
-		return
-	}
+	c.Status(http.StatusCreated)
 }

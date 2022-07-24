@@ -1,41 +1,44 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/render"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"html/template"
-	"net/http"
 )
 
 var musicTemplatePath = append([]string{templatePath + "music/index.gohtml"}, baseTemplatePaths...)
 
-func Music(w http.ResponseWriter, _ *http.Request) {
-	songs, err := db.GetSongs()
+func music(c *gin.Context) {
+	songs, err := ds.GetSongs()
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
-	if tmpl, err := template.New("index.gohtml").Funcs(map[string]interface{}{
+	var tmpl *template.Template
+	if tmpl, err = template.New("index.gohtml").Funcs(map[string]interface{}{
 		"getDataNext": func(songs []*data.Song, i int) string {
 			if len(songs)-1 == i {
 				return ""
 			}
 			return songs[i+1].ID
 		},
-	}).ParseFS(&static.FlexFS{}, musicTemplatePath...); err != nil {
-		lib.InternalError(err, w)
-		return
-	} else if err = tmpl.Execute(w, struct {
-		*basePage
-		MusicBaseURL string
-		Songs        []*data.Song
-	}{
-		basePage:     makeBasePage(),
-		MusicBaseURL: lib.MusicBaseURL,
-		Songs:        songs,
-	}); err != nil {
-		lib.InternalError(err, w)
+	}).ParseFS(&static.FS{}, musicTemplatePath...); err != nil {
+		lib.InternalError(err, c)
 		return
 	}
+	c.Render(200, render.HTML{
+		Template: tmpl,
+		Data: struct {
+			*basePage
+			MusicBaseURL string
+			Songs        []*data.Song
+		}{
+			basePage:     makeBasePage(),
+			MusicBaseURL: lib.MusicBaseURL,
+			Songs:        songs,
+		},
+	})
 }

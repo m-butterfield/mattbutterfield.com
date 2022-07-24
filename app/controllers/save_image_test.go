@@ -26,7 +26,7 @@ func TestSaveImage(t *testing.T) {
 	r.AddCookie(&http.Cookie{Name: "auth", Value: "1234"})
 	authArray = []byte("1234")
 	taskCalled := false
-	taskCreator = &testTaskCreator{
+	tc = &testTaskCreator{
 		createTask: func(taskName, queueID string, body interface{}) (*tasks.Task, error) {
 			taskCalled = true
 			if taskName != "save_image" {
@@ -43,16 +43,12 @@ func TestSaveImage(t *testing.T) {
 	}
 
 	w := httptest.NewRecorder()
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, r)
 
 	if w.Code != http.StatusCreated {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 	if !taskCalled {
 		t.Errorf("create task never called")
-	}
-	result := &saveImageResult{}
-	if err = json.NewDecoder(w.Result().Body).Decode(result); err != nil {
-		t.Error("Error decoding result", err)
 	}
 }

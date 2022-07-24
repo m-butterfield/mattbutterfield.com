@@ -13,7 +13,7 @@ func TestPhotos(t *testing.T) {
 	getImagesCalled := 0
 	expectedBefore := time.Unix(time.Now().Unix(), 0)
 	expectedLimit := 5
-	db = &testStore{
+	ds = &testStore{
 		getImages: func(before time.Time, limit int) ([]*data.Image, error) {
 			getImagesCalled += 1
 			if before != expectedBefore {
@@ -37,7 +37,7 @@ func TestPhotos(t *testing.T) {
 	}
 	w := httptest.NewRecorder()
 
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, r)
 	if getImagesCalled != 1 {
 		t.Errorf("Unexpected call count for GetImages(): %d", getImagesCalled)
 	}

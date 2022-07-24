@@ -2,17 +2,21 @@ package tasks
 
 import (
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"net"
 )
 
 var (
-	db data.Store
+	ds data.Store
 )
 
-func Initialize() error {
-	store, err := data.Connect()
+func Run(port string) error {
+	var err error
+	if ds, err = data.Connect(); err != nil {
+		return err
+	}
+	r, err := router()
 	if err != nil {
 		return err
 	}
-	db = store
-	return nil
+	return r.Run(net.JoinHostPort("", port))
 }

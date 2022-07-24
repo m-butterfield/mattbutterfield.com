@@ -1,13 +1,18 @@
 package tasks
 
 import (
-	"github.com/gorilla/mux"
-	"net/http"
+	"github.com/gin-gonic/gin"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 )
 
-func Router() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/{save_song:save_song\\/?}", SaveSong).Methods(http.MethodPost)
-	r.HandleFunc("/{save_image:save_image\\/?}", SaveImage).Methods(http.MethodPost)
-	return r
+func router() (*gin.Engine, error) {
+	r, err := lib.BaseRouter()
+	if err != nil {
+		return nil, err
+	}
+
+	r.POST("/save_song", saveSong)
+	r.POST("/save_image", saveImage)
+
+	return r, nil
 }

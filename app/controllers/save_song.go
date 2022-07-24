@@ -1,25 +1,25 @@
 package controllers
 
 import (
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"log"
 	"net/http"
 )
 
-func SaveSong(w http.ResponseWriter, r *http.Request) {
+func saveSong(c *gin.Context) {
 	body := &lib.SaveSongRequest{}
-	err := json.NewDecoder(r.Body).Decode(&body)
+	err := c.Bind(body)
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 
-	if task, err := taskCreator.CreateTask("save_song", "save-song-uploads", body); err != nil {
-		lib.InternalError(err, w)
+	if task, err := tc.CreateTask("save_song", "save-song-uploads", body); err != nil {
+		lib.InternalError(err, c)
 		return
 	} else {
 		log.Println("Created task: " + task.Name)
 	}
-	w.WriteHeader(201)
+	c.Status(http.StatusCreated)
 }

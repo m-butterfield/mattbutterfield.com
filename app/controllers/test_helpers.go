@@ -1,12 +1,21 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	"log"
 	"time"
 )
 
-var testRouter = Router()
+func testRouter() *gin.Engine {
+	gin.SetMode(gin.ReleaseMode)
+	r, err := router()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return r
+}
 
 type testStore struct {
 	getImage       func(string) (*data.Image, error)

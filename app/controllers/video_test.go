@@ -13,7 +13,7 @@ func TestVideo(t *testing.T) {
 	}
 	w := httptest.NewRecorder()
 
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, r)
 	if w.Code != http.StatusOK {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}

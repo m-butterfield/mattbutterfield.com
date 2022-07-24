@@ -1,22 +1,15 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"github.com/m-butterfield/mattbutterfield.com/app/static"
-	"html/template"
-	"net/http"
 )
 
-var videoTemplatePath = append([]string{templatePath + "video.gohtml"}, baseTemplatePaths...)
-
-func Video(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(&static.FlexFS{}, videoTemplatePath...)
+func video(c *gin.Context) {
+	body, err := templateRender("video", makeBasePage())
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
-	if err = tmpl.Execute(w, makeBasePage()); err != nil {
-		lib.InternalError(err, w)
-		return
-	}
+	c.Render(200, body)
 }

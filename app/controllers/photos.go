@@ -2,16 +2,12 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"github.com/m-butterfield/mattbutterfield.com/app/static"
-	"html/template"
-	"net/http"
 	"strconv"
 	"time"
 )
-
-var photosTemplatePath = append([]string{templatePath + "photos/index.gohtml"}, baseTemplatePaths...)
 
 type photosPage struct {
 	*basePage
@@ -19,16 +15,10 @@ type photosPage struct {
 	NextURL    string
 }
 
-func Photos(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(&static.FlexFS{}, photosTemplatePath...)
+func photos(c *gin.Context) {
+	images, err := getImages(c)
 	if err != nil {
-		lib.InternalError(err, w)
-		return
-	}
-
-	images, err := getImages(w, r)
-	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
 
@@ -42,32 +32,30 @@ func Photos(w http.ResponseWriter, r *http.Request) {
 		nextURL = fmt.Sprintf("/photos?before=%d#photos", images[len(images)-1].CreatedAt.Unix())
 	}
 
-	if err = tmpl.Execute(w, &photosPage{
+	body, err := templateRender("photos/index", &photosPage{
 		basePage:   makeBasePage(),
 		ImagesInfo: imagesInfo,
 		NextURL:    nextURL,
-	}); err != nil {
-		lib.InternalError(err, w)
-		return
-	}
+	})
+	c.Render(200, body)
 }
 
-func getImages(w http.ResponseWriter, r *http.Request) ([]*data.Image, error) {
+func getImages(c *gin.Context) ([]*data.Image, error) {
 	var before time.Time
-	beforeStr := r.URL.Query().Get("before")
+	beforeStr := c.Param("before")
 	if beforeStr == "" {
 		before = time.Now()
 	} else {
 		beforeInt, err := strconv.ParseInt(beforeStr, 10, 64)
 		if err != nil {
-			lib.InternalError(err, w)
+			lib.InternalError(err, c)
 		}
 		before = time.Unix(beforeInt, 0)
 	}
 
-	images, err := db.GetImages(before, 5)
+	images, err := ds.GetImages(before, 5)
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return nil, err
 	}
 	return images, nil

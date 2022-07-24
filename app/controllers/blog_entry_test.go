@@ -10,7 +10,7 @@ import (
 
 func TestBlogEntry(t *testing.T) {
 	getRandomImageCalled := 0
-	db = &testStore{
+	ds = &testStore{
 		getRandomImage: func() (*data.Image, error) {
 			getRandomImageCalled += 1
 			return &data.Image{ID: lib.HomeImage}, nil
@@ -23,7 +23,7 @@ func TestBlogEntry(t *testing.T) {
 	}
 	w := httptest.NewRecorder()
 
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, r)
 	if getRandomImageCalled != 1 {
 		t.Errorf("Unexpected call count for GetRandomImage(): %d", getRandomImageCalled)
 	}

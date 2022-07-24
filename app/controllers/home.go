@@ -2,16 +2,11 @@ package controllers
 
 import (
 	"database/sql"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"github.com/m-butterfield/mattbutterfield.com/app/static"
-	"html/template"
 	"net/http"
-	"strings"
 )
-
-var homeTemplatePath = append([]string{templatePath + "index.gohtml"}, baseTemplatePaths...)
 
 type homePage struct {
 	*basePage
@@ -27,31 +22,30 @@ func makeHomePage(image *data.Image, nextImageID string) homePage {
 	}
 }
 
-func Home(w http.ResponseWriter, r *http.Request) {
-	id, err := decodeImageID(strings.TrimSuffix(mux.Vars(r)["id"], "/"))
+func home(c *gin.Context) {
+	id, err := decodeImageID(c.Param("id"))
 	if err != nil {
-		http.Error(w, "invalid image id", http.StatusBadRequest)
+		c.String(http.StatusBadRequest, "invalid image id")
 		return
 	}
 	var image *data.Image
-	if image, err = db.GetImage(id); err == sql.ErrNoRows {
-		http.NotFound(w, r)
+	if image, err = ds.GetImage(id); err == sql.ErrNoRows {
+		c.String(http.StatusNotFound, "not found")
 		return
 	}
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
-	nextImage, err := db.GetRandomImage()
+	nextImage, err := ds.GetRandomImage()
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
-	tmpl, err := template.ParseFS(&static.FlexFS{}, homeTemplatePath...)
+	body, err := templateRender("index", makeHomePage(image, nextImage.ID))
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
-	imagePage := makeHomePage(image, nextImage.ID)
-	tmpl.Execute(w, imagePage)
+	c.Render(200, body)
 }

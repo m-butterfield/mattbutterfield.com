@@ -4,21 +4,21 @@ import (
 	"cloud.google.com/go/pubsub"
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
-	"net/http"
 	"nhooyr.io/websocket"
 	"sort"
 	"strings"
 )
 
-func VideoConnections(w http.ResponseWriter, r *http.Request) {
-	ws, err := websocket.Accept(w, r, nil)
+func videoConnections(c *gin.Context) {
+	ws, err := websocket.Accept(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer closeWS(ws)
-	userID := strings.ToLower(r.URL.Query().Get("userID"))
-	peerID := strings.ToLower(r.URL.Query().Get("peerID"))
+	userID := strings.ToLower(c.Param("userID"))
+	peerID := strings.ToLower(c.Param("peerID"))
 
 	peers := []string{userID, peerID}
 	sort.Strings(peers)
