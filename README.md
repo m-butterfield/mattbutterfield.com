@@ -18,10 +18,13 @@ To get started, run:
 
     ./cloud_sql_proxy -dir=/var/cloudsql
 
-From another terminal, `pg_dump` can now be run (this will require the db password), followed by `psql` to load the data locally:
+From another terminal, `pg_dump` can now be run (this will require the db password):
 
     pg_dump -h /var/cloudsql/mattbutterfield:us-central1:mattbutterfield -U mattbutterfield mattbutterfield > dump.sql
-    psql -f dump.sql mattbutterfield
+
+Now the local database can be set up and the data loaded:
+
+    make reset-db
 
 ### Running the server
 

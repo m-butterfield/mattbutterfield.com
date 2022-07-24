@@ -23,12 +23,11 @@ func TestPhotos(t *testing.T) {
 				t.Errorf("Unexpected limit: %d != %d", limit, expectedLimit)
 			}
 			return []*data.Image{{
-				ID:        "12345",
-				Caption:   "test caption",
-				Location:  "test location",
-				Width:     100,
-				Height:    200,
-				CreatedAt: time.Now(),
+				ID:       "12345",
+				Caption:  "test caption",
+				Location: "test location",
+				Width:    100,
+				Height:   200,
 			}}, nil
 		},
 	}
