@@ -7,8 +7,6 @@ import (
 	"net/http"
 )
 
-const yearInSeconds = 60 * 60 * 24 * 365
-
 func loginUser(c *gin.Context) {
 	auth := c.PostFormArray("auth")
 	if len(auth) != 1 {
@@ -16,7 +14,7 @@ func loginUser(c *gin.Context) {
 		return
 	}
 	if subtle.ConstantTimeCompare([]byte(auth[0]), authArray) == 1 {
-		c.SetCookie("auth", auth[0], yearInSeconds, "/", "mattbutterfield.com", true, true)
+		c.SetCookie("auth", auth[0], 0, "", "", false, false)
 		next := c.Query("next")
 		if next != "" {
 			c.Redirect(http.StatusFound, next)
