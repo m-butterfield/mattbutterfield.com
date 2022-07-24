@@ -30,6 +30,14 @@ func signedUploadURL(c *gin.Context) {
 		return
 	}
 	fileName := lib.UploadsPrefix + body.FileName
+	if body.FileName == "" {
+		c.String(http.StatusBadRequest, "Please provide a file name")
+		return
+	}
+	if body.ContentType == "" {
+		c.String(http.StatusBadRequest, "Please provide the content type")
+		return
+	}
 	contentType := body.ContentType
 
 	conf, err := google.JWTConfigFromJSON(uploaderServiceAccount())

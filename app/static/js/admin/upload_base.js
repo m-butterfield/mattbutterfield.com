@@ -1,6 +1,7 @@
 export function uploadFile(fileObj, fileName) {
   return fetch("/admin/signed_upload_url", {
     method: "POST",
+    headers: new Headers({"Content-Type": "application/json"}),
     body: JSON.stringify({
       fileName: fileName,
       contentType: fileObj.type,
@@ -23,6 +24,7 @@ function upload(url, file) {
 export function saveUpload(action, body) {
   return fetch(`/admin/${action}`, {
     method: "POST",
+    headers: new Headers({"Content-Type": "application/json"}),
     body: JSON.stringify(body),
   }).then(resp => {
     if (resp.status === 201) {
