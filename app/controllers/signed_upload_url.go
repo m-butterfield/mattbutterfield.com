@@ -42,6 +42,7 @@ func signedUploadURL(c *gin.Context) {
 
 	conf, err := google.JWTConfigFromJSON(uploaderServiceAccount())
 	if err != nil {
+		lib.InternalError(err, c)
 		return
 	}
 	opts := &storage.SignedURLOptions{

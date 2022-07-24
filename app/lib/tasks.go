@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"bytes"
 	"cloud.google.com/go/cloudtasks/apiv2"
 	"context"
 	"encoding/json"
@@ -9,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -60,6 +62,9 @@ func NewTaskCreator() (TaskCreator, error) {
 	if workerBaseURL == "" {
 		return nil, errors.New("WORKER_BASE_URL not set")
 	}
+	if strings.HasPrefix(workerBaseURL, "http://localhost") {
+		return &localTaskCreator{workerBaseURL: workerBaseURL}, nil
+	}
 	serviceAccountEmail := os.Getenv("TASK_SERVICE_ACCOUNT_EMAIL")
 	if serviceAccountEmail == "" {
 		return nil, errors.New("TASK_SERVICE_ACCOUNT_EMAIL not set")
@@ -68,6 +73,24 @@ func NewTaskCreator() (TaskCreator, error) {
 		workerBaseURL:       workerBaseURL,
 		serviceAccountEmail: serviceAccountEmail,
 	}, nil
+}
+
+type localTaskCreator struct {
+	workerBaseURL string
+}
+
+func (t *localTaskCreator) CreateTask(taskName, _ string, data interface{}) (*tasks.Task, error) {
+	body, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		_, err = http.Post(t.workerBaseURL+taskName, "application/json", bytes.NewBuffer(body))
+		if err != nil {
+			log.Print("Async task error:", err)
+		}
+	}()
+	return nil, nil
 }
 
 type taskCreator struct {
@@ -97,6 +120,7 @@ func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*t
 				HttpRequest: &tasks.HttpRequest{
 					HttpMethod: tasks.HttpMethod_POST,
 					Url:        url,
+					Headers:    map[string]string{"Content-Type": "application/json"},
 					AuthorizationHeader: &tasks.HttpRequest_OidcToken{
 						OidcToken: &tasks.OidcToken{
 							ServiceAccountEmail: t.serviceAccountEmail,
