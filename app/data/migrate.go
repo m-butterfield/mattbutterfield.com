@@ -6,15 +6,11 @@ func Migrate() error {
 		return err
 	}
 	err = s.db.AutoMigrate(
-		&AccessToken{},
 		&Image{},
-		&Post{},
-		&PostImage{},
-		&User{},
+		&Song{},
 	)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-

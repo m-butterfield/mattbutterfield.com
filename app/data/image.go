@@ -1,73 +1,52 @@
 package data
 
 import (
-	"database/sql"
 	"time"
 )
 
-const (
-	baseSelectImageQuery = "SELECT id, caption, location, width, height, created_at FROM images "
-	getImageByIDQuery    = baseSelectImageQuery + "WHERE id = $1"
-	getRandomImageQuery  = baseSelectImageQuery + "WHERE id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)"
-	getImagesQuery       = baseSelectImageQuery + "WHERE created_at < $1 ORDER BY created_at DESC LIMIT $2"
-	insertImageQuery     = "INSERT INTO images (id, caption, location, width, height, created_at) VALUES ($1, $2, $3, $4, $5, $6)"
-)
-
 type Image struct {
-	ID        string
-	Caption   string
-	Location  string
-	Width     int
-	Height    int
-	CreatedAt time.Time
+	ID        string    `gorm:"type:varchar(128)"`
+	Caption   string    `gorm:"type:text"`
+	Location  string    `gorm:"type:text"`
+	Width     int       `gorm:"type:integer;not null"`
+	Height    int       `gorm:"type:integer;not null"`
+	CreatedAt time.Time `gorm:"not null;default:now()"`
 }
 
-func (s *dbStore) GetImage(id string) (*Image, error) {
-	return makeImageFromRow(s.db.QueryRow(getImageByIDQuery, id))
-}
-
-func (s *dbStore) GetImages(before time.Time, limit int) ([]*Image, error) {
-	rows, err := s.db.Query(getImagesQuery, before, limit)
-	if err != nil {
-		return nil, err
+func (s *ds) GetImage(id string) (*Image, error) {
+	image := &Image{}
+	tx := s.db.First(&image, "id = $1", id)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
+	return image, nil
+}
+
+func (s *ds) GetImages(before time.Time, limit int) ([]*Image, error) {
 	var images []*Image
-	for rows.Next() {
-		image, err := makeImageFromRow(rows)
-		if err != nil {
-			return nil, err
-		}
-		images = append(images, image)
+	tx := s.db.
+		Where("created_at < $1", before).
+		Order("created_at DESC").
+		Limit(limit).
+		Find(&images)
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
 	return images, nil
 }
 
-func (s *dbStore) GetRandomImage() (*Image, error) {
-	return makeImageFromRow(s.db.QueryRow(getRandomImageQuery))
-}
-
-func makeImageFromRow(row interface{ Scan(...interface{}) error }) (*Image, error) {
-	var (
-		caption  sql.NullString
-		location sql.NullString
-	)
+func (s *ds) GetRandomImage() (*Image, error) {
 	image := &Image{}
-	if err := row.Scan(&image.ID, &caption, &location, &image.Width, &image.Height, &image.CreatedAt); err != nil {
-		return nil, err
+	tx := s.db.First(&image, "id = (SELECT id FROM images ORDER BY RANDOM() LIMIT 1)")
+	if tx.Error != nil {
+		return nil, tx.Error
 	}
-	image.Caption = caption.String
-	image.Location = location.String
 	return image, nil
 }
 
-func (s *dbStore) SaveImage(id, caption, location string, width, height int, createdDate time.Time) error {
-	stmt, err := s.db.Prepare(insertImageQuery)
-	if err != nil {
-		return err
-	}
-	_, err = stmt.Exec(id, nullString(caption), nullString(location), width, height, createdDate)
-	if err != nil {
-		return err
+func (s *ds) SaveImage(image *Image) error {
+	if tx := s.db.Create(image); tx.Error != nil {
+		return tx.Error
 	}
 	return nil
 }

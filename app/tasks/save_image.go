@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"image"
 	_ "image/jpeg"
@@ -55,7 +56,13 @@ func SaveImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = db.SaveImage(fileName, body.Caption, body.Location, width, height, body.CreatedDate.Time); err != nil {
+	if err = db.SaveImage(&data.Image{
+		ID:       fileName,
+		Caption:  body.Caption,
+		Location: body.Location,
+		Width:    width,
+		Height:   height,
+	}); err != nil {
 		lib.InternalError(err, w)
 		return
 	}

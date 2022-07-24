@@ -86,12 +86,12 @@ resource "google_compute_backend_bucket" "files" {
 }
 
 resource "google_compute_url_map" "images" {
-  name = "images"
+  name            = "images"
   default_service = google_compute_backend_bucket.images.id
 }
 
 resource "google_compute_url_map" "files" {
-  name = "files"
+  name            = "files"
   default_service = google_compute_backend_bucket.files.id
 }
 

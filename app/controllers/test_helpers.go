@@ -13,8 +13,8 @@ type testStore struct {
 	getImages      func(time.Time, int) ([]*data.Image, error)
 	getRandomImage func() (*data.Image, error)
 	getSongs       func() ([]*data.Song, error)
-	saveSong       func(string, string, time.Time) error
-	saveImage      func(string, string, string, int, int, time.Time) error
+	saveSong       func(*data.Song) error
+	saveImage      func(*data.Image) error
 }
 
 func (s *testStore) GetImage(id string) (*data.Image, error) {
@@ -33,11 +33,11 @@ func (s *testStore) GetSongs() ([]*data.Song, error) {
 	return s.getSongs()
 }
 
-func (s *testStore) SaveSong(string, string, time.Time) error {
+func (s *testStore) SaveSong(*data.Song) error {
 	panic("do not call this from controllers")
 }
 
-func (s *testStore) SaveImage(string, string, string, int, int, time.Time) error {
+func (s *testStore) SaveImage(*data.Image) error {
 	panic("do not call this from controllers")
 }
 

@@ -5,6 +5,7 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"encoding/json"
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/viert/go-lame"
 	"log"
@@ -41,7 +42,10 @@ func SaveSong(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = db.SaveSong(body.SongName, body.Description, body.CreatedDate.Time); err != nil {
+	if err = db.SaveSong(&data.Song{
+		ID:          body.SongName,
+		Description: body.Description,
+	}); err != nil {
 		lib.InternalError(err, w)
 		return
 	}
