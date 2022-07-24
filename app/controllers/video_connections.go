@@ -17,8 +17,8 @@ func videoConnections(c *gin.Context) {
 		log.Fatal(err)
 	}
 	defer closeWS(ws)
-	userID := strings.ToLower(c.Param("userID"))
-	peerID := strings.ToLower(c.Param("peerID"))
+	userID := strings.ToLower(c.Query("userID"))
+	peerID := strings.ToLower(c.Query("peerID"))
 
 	peers := []string{userID, peerID}
 	sort.Strings(peers)

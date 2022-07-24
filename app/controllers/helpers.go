@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"cloud.google.com/go/pubsub"
+	"context"
 	"encoding/base64"
 	"errors"
 	"github.com/gin-gonic/gin/render"
@@ -37,6 +38,10 @@ func Run(port string) error {
 		return err
 	}
 	if tc, err = lib.NewTaskCreator(); err != nil {
+		return err
+	}
+	pubSub, err = pubsub.NewClient(context.Background(), lib.ProjectID)
+	if err != nil {
 		return err
 	}
 	authArray = []byte(os.Getenv("AUTH_TOKEN"))
