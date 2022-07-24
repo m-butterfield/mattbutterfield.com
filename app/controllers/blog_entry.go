@@ -19,7 +19,7 @@ func blogEntry(c *gin.Context) {
 	entryName := c.Param("entryName")
 	entryPath := fmt.Sprintf("blog/%s", entryName)
 	ffs := &static.FS{}
-	if list, err := fs.Glob(ffs, entryPath); err != nil {
+	if list, err := fs.Glob(ffs, templatePath+entryPath+".gohtml"); err != nil {
 		lib.InternalError(err, c)
 		return
 	} else if len(list) == 0 {

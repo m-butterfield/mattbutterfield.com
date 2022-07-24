@@ -30,14 +30,14 @@ func router() (*gin.Engine, error) {
 	r.GET("/video", video)
 	r.GET("/video/connections", videoConnections)
 
-	adminGroup := r.Group("/adminGroup")
+	adminGroup := r.Group("/admin")
 	adminGroup.Use(authRequired)
-	adminGroup.GET("/adminGroup", admin)
-	adminGroup.GET("/adminGroup/upload_music", uploadMusic)
-	adminGroup.GET("/adminGroup/upload_image", uploadImage)
-	adminGroup.POST("/adminGroup/signed_upload_url", signedUploadURL)
-	adminGroup.POST("/adminGroup/save_song", saveSong)
-	adminGroup.POST("/adminGroup/song_image", saveImage)
+	adminGroup.GET("/", admin)
+	adminGroup.GET("/upload_music", uploadMusic)
+	adminGroup.GET("/upload_image", uploadImage)
+	adminGroup.POST("/signed_upload_url", signedUploadURL)
+	adminGroup.POST("/save_song", saveSong)
+	adminGroup.POST("/save_image", saveImage)
 
 	return r, nil
 }

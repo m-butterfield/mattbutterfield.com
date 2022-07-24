@@ -42,7 +42,7 @@ func photos(c *gin.Context) {
 
 func getImages(c *gin.Context) ([]*data.Image, error) {
 	var before time.Time
-	beforeStr := c.Param("before")
+	beforeStr := c.Query("before")
 	if beforeStr == "" {
 		before = time.Now()
 	} else {

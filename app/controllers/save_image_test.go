@@ -23,6 +23,7 @@ func TestSaveImage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	r.Header.Add("Content-Type", "application/json")
 	r.AddCookie(&http.Cookie{Name: "auth", Value: "1234"})
 	authArray = []byte("1234")
 	taskCalled := false

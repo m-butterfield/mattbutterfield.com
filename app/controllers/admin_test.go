@@ -7,7 +7,7 @@ import (
 )
 
 func TestAdmin(t *testing.T) {
-	r, err := http.NewRequest(http.MethodGet, "/admin", nil)
+	r, err := http.NewRequest(http.MethodGet, "/admin/", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
