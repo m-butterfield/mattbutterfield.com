@@ -13,7 +13,7 @@ func TestHome(t *testing.T) {
 	imageID := lib.HomeImage
 	randImageID := "blerp"
 	getImageCalled, randomCalled := 0, 0
-	db = &testStore{
+	ds = &testStore{
 		getImage: func(id string) (*data.Image, error) {
 			getImageCalled += 1
 			if id != imageID {
@@ -27,13 +27,10 @@ func TestHome(t *testing.T) {
 		},
 	}
 
-	r, err := http.NewRequest(http.MethodGet, "/img/"+encodeImageID(imageID), nil)
-	if err != nil {
-		t.Fatal(err)
-	}
 	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/img/"+encodeImageID(imageID), nil)
+	testRouter().ServeHTTP(w, req)
 
-	testRouter.ServeHTTP(w, r)
 	if getImageCalled != 1 {
 		t.Errorf("Unexpected call count for GetImage(): %d", getImageCalled)
 	}
@@ -46,13 +43,10 @@ func TestHome(t *testing.T) {
 }
 
 func TestHomeInvalidID(t *testing.T) {
-	r, err := http.NewRequest(http.MethodGet, "/img/"+"MjAwO", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	r, _ := http.NewRequest(http.MethodGet, "/img/"+"MjAwO", nil)
 	w := httptest.NewRecorder()
 
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, r)
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
@@ -60,20 +54,17 @@ func TestHomeInvalidID(t *testing.T) {
 
 func TestHomeImageNotFound(t *testing.T) {
 	getImageCalled := 0
-	db = &testStore{
+	ds = &testStore{
 		getImage: func(id string) (*data.Image, error) {
 			getImageCalled += 1
 			return nil, sql.ErrNoRows
 		},
 	}
 
-	r, err := http.NewRequest(http.MethodGet, "/img/"+encodeImageID("1234"), nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	r, _ := http.NewRequest(http.MethodGet, "/img/"+encodeImageID("1234"), nil)
 	w := httptest.NewRecorder()
 
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, r)
 	if getImageCalled != 1 {
 		t.Errorf("Unexpected call count for GetImage(): %d", getImageCalled)
 	}

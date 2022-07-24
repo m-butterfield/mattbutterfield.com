@@ -1,20 +1,16 @@
 package controllers
 
 import (
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestFavicon(t *testing.T) {
-	r, err := http.NewRequest(http.MethodGet, "/favicon.ico", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
 	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/favicon.ico", nil)
+	testRouter().ServeHTTP(w, req)
 
-	testRouter.ServeHTTP(w, r)
-	if w.Code != http.StatusMovedPermanently {
-		t.Errorf("Unexpected return code: %d", w.Code)
-	}
+	assert.Equal(t, 301, w.Code)
 }

@@ -2,40 +2,35 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/m-butterfield/mattbutterfield.com/app/static"
-	"html/template"
 	"io/fs"
 	"net/http"
-	"strings"
 )
 
-var blogEntryTemplateBase = templatePath + "blog/%s.gohtml"
-
-func BlogEntry(w http.ResponseWriter, r *http.Request) {
-	image, err := db.GetRandomImage()
+func blogEntry(c *gin.Context) {
+	image, err := ds.GetRandomImage()
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
-	entryName := strings.TrimSuffix(mux.Vars(r)["entryName"], "/")
-	entryPath := fmt.Sprintf(blogEntryTemplateBase, entryName)
-	ffs := &static.FlexFS{}
-	if list, err := fs.Glob(ffs, entryPath); err != nil {
-		lib.InternalError(err, w)
+
+	entryName := c.Param("entryName")
+	entryPath := fmt.Sprintf("blog/%s", entryName)
+	ffs := &static.FS{}
+	if list, err := fs.Glob(ffs, templatePath+entryPath+".gohtml"); err != nil {
+		lib.InternalError(err, c)
 		return
 	} else if len(list) == 0 {
-		http.NotFound(w, r)
+		c.String(http.StatusNotFound, "not found")
 		return
 	}
-	var tmpl *template.Template
-	if tmpl, err = template.ParseFS(ffs, append([]string{entryPath}, baseTemplatePaths...)...); err != nil {
-		lib.InternalError(err, w)
+
+	body, err := templateRender(entryPath, makeSingleImagePage(image))
+	if err != nil {
+		lib.InternalError(err, c)
 		return
 	}
-	if err = tmpl.Execute(w, makeSingleImagePage(image)); err != nil {
-		lib.InternalError(err, w)
-		return
-	}
+	c.Render(200, body)
 }

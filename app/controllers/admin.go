@@ -1,22 +1,15 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"github.com/m-butterfield/mattbutterfield.com/app/static"
-	"html/template"
-	"net/http"
 )
 
-var adminTemplatePath = append([]string{templatePath + "admin/index.gohtml"}, baseTemplatePaths...)
-
-func Admin(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(&static.FlexFS{}, adminTemplatePath...)
+func admin(c *gin.Context) {
+	body, err := templateRender("admin/index", makeBasePage())
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
-	if err = tmpl.Execute(w, makeBasePage()); err != nil {
-		lib.InternalError(err, w)
-		return
-	}
+	c.Render(200, body)
 }

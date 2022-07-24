@@ -18,11 +18,12 @@ func TestSignedUploadURL(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	r.Header.Add("Content-Type", "application/json")
 	r.AddCookie(&http.Cookie{Name: "auth", Value: "1234"})
 	authArray = []byte("1234")
 
 	w := httptest.NewRecorder()
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, r)
 
 	if w.Code != http.StatusOK {
 		t.Errorf("Unexpected return code: %d", w.Code)
@@ -32,6 +33,6 @@ func TestSignedUploadURL(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !strings.HasPrefix(result.URL, "https://storage.googleapis.com/files.mattbutterfield.com/uploads/test.wav") {
-		t.Errorf("Unexpected URL result")
+		t.Errorf("Unexpected URL result: %s", result.URL)
 	}
 }

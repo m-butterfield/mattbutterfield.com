@@ -7,13 +7,11 @@ import (
 )
 
 func TestIndex(t *testing.T) {
-	r, err := http.NewRequest(http.MethodGet, "/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
 	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/", nil)
 
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, req)
+
 	if w.Code != http.StatusFound {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}

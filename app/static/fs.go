@@ -17,9 +17,9 @@ var (
 	jsEmbedFS embed.FS
 )
 
-type FlexFS struct{}
+type FS struct{}
 
-func (f *FlexFS) Open(name string) (fs.File, error) {
+func (f FS) Open(name string) (fs.File, error) {
 	if os.Getenv("USE_LOCAL_FS") != "" {
 		return os.Open("./app/static/" + name)
 	}

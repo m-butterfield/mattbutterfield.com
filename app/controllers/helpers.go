@@ -5,8 +5,12 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"github.com/gin-gonic/gin/render"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
+	"github.com/m-butterfield/mattbutterfield.com/app/static"
+	"html/template"
+	"net"
 	"os"
 	"time"
 )
@@ -22,18 +26,20 @@ var (
 		templatePath + "base.gohtml",
 	}
 
-	authArray   []byte
-	db          data.Store
-	pubSub      *pubsub.Client
-	taskCreator lib.TaskCreator
+	authArray []byte
+	ds        data.Store
+	pubSub    *pubsub.Client
+	tc        lib.TaskCreator
 )
 
-func Initialize() error {
-	store, err := data.Connect()
-	if err != nil {
+func Run(port string) error {
+	var err error
+	if ds, err = data.Connect(); err != nil {
 		return err
 	}
-	db = store
+	if tc, err = lib.NewTaskCreator(); err != nil {
+		return err
+	}
 	pubSub, err = pubsub.NewClient(context.Background(), lib.ProjectID)
 	if err != nil {
 		return err
@@ -42,8 +48,11 @@ func Initialize() error {
 	if len(authArray) == 0 {
 		return errors.New("no value set for AUTH_TOKEN")
 	}
-	taskCreator, err = lib.NewTaskCreator()
-	return nil
+	r, err := router()
+	if err != nil {
+		return err
+	}
+	return r.Run(net.JoinHostPort("", port))
 }
 
 type imageInfo struct {
@@ -104,4 +113,16 @@ func decodeImageID(encodedID string) (string, error) {
 
 func encodeImageID(imageID string) string {
 	return base64.URLEncoding.EncodeToString([]byte(imageID))
+}
+
+func templateRender(name string, data interface{}) (render.Render, error) {
+	paths := append([]string{templatePath + name + ".gohtml"}, baseTemplatePaths...)
+	tmpl, err := template.ParseFS(static.FS{}, paths...)
+	if err != nil {
+		return nil, err
+	}
+	return render.HTML{
+		Template: tmpl,
+		Data:     data,
+	}, nil
 }

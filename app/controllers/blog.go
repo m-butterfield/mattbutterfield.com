@@ -1,27 +1,20 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"github.com/m-butterfield/mattbutterfield.com/app/static"
-	"html/template"
-	"net/http"
 )
 
-var blogTemplatePath = append([]string{templatePath + "blog/index.gohtml"}, baseTemplatePaths...)
-
-func Blog(w http.ResponseWriter, _ *http.Request) {
-	image, err := db.GetRandomImage()
+func blog(c *gin.Context) {
+	image, err := ds.GetRandomImage()
 	if err != nil {
-		lib.InternalError(err, w)
+		lib.InternalError(err, c)
 		return
 	}
-	var tmpl *template.Template
-	if tmpl, err = template.ParseFS(&static.FlexFS{}, blogTemplatePath...); err != nil {
-		lib.InternalError(err, w)
+	body, err := templateRender("blog/index", makeSingleImagePage(image))
+	if err != nil {
+		lib.InternalError(err, c)
 		return
 	}
-	if err = tmpl.Execute(w, makeSingleImagePage(image)); err != nil {
-		lib.InternalError(err, w)
-		return
-	}
+	c.Render(200, body)
 }

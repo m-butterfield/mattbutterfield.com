@@ -59,6 +59,7 @@ fmt:
 run-server: export USE_LOCAL_FS=true
 run-server: export SQL_LOGS=true
 run-server: export WORKER_BASE_URL=http://localhost:8001/
+run-server: export AUTH_TOKEN=1234
 run-server:
 	go run cmd/server/main.go
 

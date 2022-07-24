@@ -1,39 +1,50 @@
 package controllers
 
 import (
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/m-butterfield/mattbutterfield.com/app/static"
 	"net/http"
+	"path"
 )
 
-func Router() *mux.Router {
-	r := mux.NewRouter()
-	r.Use(AuthMiddleware)
-	r.HandleFunc("/{login:login\\/?}", Login).Methods(http.MethodGet, http.MethodPost)
+func router() (*gin.Engine, error) {
+	r, err := lib.BaseRouter()
+	if err != nil {
+		return nil, err
+	}
 
-	ffs := &static.FlexFS{}
-	r.PathPrefix("/css/").Handler(http.FileServer(http.FS(ffs)))
-	r.PathPrefix("/js/").Handler(http.FileServer(http.FS(ffs)))
+	fs := http.FileServer(http.FS(static.FS{}))
+	addStaticHandler(r, "/css", fs)
+	addStaticHandler(r, "/js", fs)
 
-	r.HandleFunc("/favicon.ico", Favicon).Methods(http.MethodGet)
-	r.HandleFunc("/", Index).Methods(http.MethodGet)
-	r.HandleFunc("/img/{id:.*\\/?}", Home).Methods(http.MethodGet)
+	r.GET("/favicon.ico", favicon)
+	r.GET("/", index)
+	r.GET("/login", login)
+	r.POST("/login", loginUser)
+	r.GET("/img/:id", home)
+	r.GET("/blog", blog)
+	r.GET("/blog/:entryName", blogEntry)
+	r.GET("/music", music)
+	r.GET("/photos", photos)
+	r.GET("/video", video)
+	r.GET("/video/connections", videoConnections)
 
-	r.HandleFunc("/{blog:blog\\/?}", Blog).Methods(http.MethodGet)
-	r.HandleFunc("/blog/{entryName:.*\\/?}", BlogEntry).Methods(http.MethodGet)
+	adminGroup := r.Group("/admin")
+	adminGroup.Use(authRequired)
+	adminGroup.GET("/", admin)
+	adminGroup.GET("/upload_music", uploadMusic)
+	adminGroup.GET("/upload_image", uploadImage)
+	adminGroup.POST("/signed_upload_url", signedUploadURL)
+	adminGroup.POST("/save_song", saveSong)
+	adminGroup.POST("/save_image", saveImage)
 
-	r.HandleFunc("/{music:music\\/?}", Music).Methods(http.MethodGet)
+	return r, nil
+}
 
-	r.HandleFunc("/{photos:photos\\/?}", Photos).Methods(http.MethodGet)
-
-	r.HandleFunc("/{video:video\\/?}", Video).Methods(http.MethodGet)
-	r.HandleFunc("/video/{connections:connections\\/?}", VideoConnections).Methods(http.MethodGet)
-
-	r.HandleFunc("/{admin:admin\\/?}", Admin).Methods(http.MethodGet)
-	r.HandleFunc("/admin/{upload_music:upload_music\\/?}", UploadMusic).Methods(http.MethodGet)
-	r.HandleFunc("/admin/{upload_image:upload_image\\/?}", UploadImage).Methods(http.MethodGet)
-	r.HandleFunc("/admin/{signed_upload_url:signed_upload_url\\/?}", SignedUploadURL).Methods(http.MethodPost)
-	r.HandleFunc("/admin/{save_song:save_song\\/?}", SaveSong).Methods(http.MethodPost)
-	r.HandleFunc("/admin/{song_image:save_image\\/?}", SaveImage).Methods(http.MethodPost)
-	return r
+func addStaticHandler(r *gin.Engine, prefix string, fileServer http.Handler) {
+	handler := func(c *gin.Context) { fileServer.ServeHTTP(c.Writer, c.Request) }
+	pattern := path.Join(prefix, "/*filepath")
+	r.GET(pattern, handler)
+	r.HEAD(pattern, handler)
 }

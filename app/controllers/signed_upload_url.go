@@ -2,8 +2,7 @@ package controllers
 
 import (
 	"encoding/base64"
-	"encoding/json"
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"golang.org/x/oauth2/google"
 	"log"
@@ -23,18 +22,27 @@ type signedUploadURLResponse struct {
 	URL string `json:"url"`
 }
 
-func SignedUploadURL(w http.ResponseWriter, r *http.Request) {
+func signedUploadURL(c *gin.Context) {
 	body := &signedUploadURLRequest{}
-	err := json.NewDecoder(r.Body).Decode(body)
+	err := c.Bind(body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		lib.InternalError(err, c)
 		return
 	}
 	fileName := lib.UploadsPrefix + body.FileName
+	if body.FileName == "" {
+		c.String(http.StatusBadRequest, "Please provide a file name")
+		return
+	}
+	if body.ContentType == "" {
+		c.String(http.StatusBadRequest, "Please provide the content type")
+		return
+	}
 	contentType := body.ContentType
 
 	conf, err := google.JWTConfigFromJSON(uploaderServiceAccount())
 	if err != nil {
+		lib.InternalError(err, c)
 		return
 	}
 	opts := &storage.SignedURLOptions{
@@ -50,18 +58,10 @@ func SignedUploadURL(w http.ResponseWriter, r *http.Request) {
 
 	url, err := storage.SignedURL(lib.FilesBucket, fileName, opts)
 	if err != nil {
-		if _, err = fmt.Fprintf(w, err.Error()); err != nil {
-			log.Fatal("error:", err)
-		}
+		lib.InternalError(err, c)
 		return
 	}
-	result, err := json.Marshal(&signedUploadURLResponse{URL: url})
-	if err != nil {
-		log.Fatal("error: ", err)
-	}
-	if _, err = fmt.Fprint(w, string(result)); err != nil {
-		log.Fatal("error:", err)
-	}
+	c.JSON(http.StatusOK, &signedUploadURLResponse{URL: url})
 }
 
 func uploaderServiceAccount() []byte {

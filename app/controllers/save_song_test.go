@@ -24,10 +24,11 @@ func TestSaveSong(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	r.Header.Add("Content-Type", "application/json")
 	r.AddCookie(&http.Cookie{Name: "auth", Value: "1234"})
 	authArray = []byte("1234")
 	taskCalled := false
-	taskCreator = &testTaskCreator{
+	tc = &testTaskCreator{
 		createTask: func(taskName, queueID string, body interface{}) (*tasks.Task, error) {
 			taskCalled = true
 			if taskName != "save_song" {
@@ -44,7 +45,7 @@ func TestSaveSong(t *testing.T) {
 	}
 
 	w := httptest.NewRecorder()
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, r)
 
 	if w.Code != http.StatusCreated {
 		t.Errorf("Unexpected return code: %d", w.Code)

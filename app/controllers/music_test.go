@@ -10,7 +10,7 @@ import (
 
 func TestMusic(t *testing.T) {
 	getSongsCalled := 0
-	db = &testStore{
+	ds = &testStore{
 		getSongs: func() ([]*data.Song, error) {
 			getSongsCalled += 1
 			createdAt := time.Date(2021, time.Month(9), 6, 13, 11, 0, 0, time.UTC)
@@ -27,7 +27,7 @@ func TestMusic(t *testing.T) {
 	}
 	w := httptest.NewRecorder()
 
-	testRouter.ServeHTTP(w, r)
+	testRouter().ServeHTTP(w, r)
 	if getSongsCalled != 1 {
 		t.Errorf("Unexpected call count for GetSongs(): %d", getSongsCalled)
 	}

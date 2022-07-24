@@ -18,6 +18,10 @@ resource "google_cloud_run_service" "mattbutterfield" {
           value = "${google_cloud_run_service.mattbutterfield-worker.status[0].url}/"
         }
         env {
+          name  = "GIN_MODE"
+          value = "release"
+        }
+        env {
           name = "DB_SOCKET"
           value_from {
             secret_key_ref {
@@ -53,7 +57,7 @@ resource "google_cloud_run_service" "mattbutterfield" {
         "autoscaling.knative.dev/maxScale"         = "100"
         "client.knative.dev/user-image"            = "gcr.io/mattbutterfield/mattbutterfield.com"
         "run.googleapis.com/client-name"           = "gcloud"
-        "run.googleapis.com/client-version"        = "376.0.0"
+        "run.googleapis.com/client-version"        = "378.0.0"
         "run.googleapis.com/execution-environment" = "gen1"
       }
     }
@@ -115,6 +119,10 @@ resource "google_cloud_run_service" "mattbutterfield-worker" {
           container_port = 8001
         }
         env {
+          name  = "GIN_MODE"
+          value = "release"
+        }
+        env {
           name = "DB_SOCKET"
           value_from {
             secret_key_ref {
@@ -132,7 +140,7 @@ resource "google_cloud_run_service" "mattbutterfield-worker" {
         "autoscaling.knative.dev/maxScale"         = "100"
         "client.knative.dev/user-image"            = "gcr.io/mattbutterfield/mattbutterfield.com-worker"
         "run.googleapis.com/client-name"           = "gcloud"
-        "run.googleapis.com/client-version"        = "376.0.0"
+        "run.googleapis.com/client-version"        = "378.0.0"
         "run.googleapis.com/execution-environment" = "gen1"
       }
     }
