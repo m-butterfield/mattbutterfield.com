@@ -7,7 +7,15 @@
 <div class="section-div blog-post">
   <h2>Adding Terraform to an existing project.</h2>
   <em>2022-07-24</em>
-  <p>hey.</p>
+  <p>Even if you're familiar with Terraform already, it might be hard to know where to start if you have an existing project and want to add terraform to it 'in-place', with minimal disruption. I'll walk through how to do this for a project running on Google Cloud, as I recently did for this website.</p>
+  <p>The first thing to do after installing Terraform is to create a directory in your project for your Terraform files. I called mine <code>infra/</code>. It's also a good idea to add a couple lines to your <code>.gitignore</code> file:</p>
+  <pre>
+    <code>
+.terraform
+secrets.tfvars
+    </code>
+  </pre>
+  <p><code>.terraform</code> is a directory that terraform uses to store things like cached provider plugins and modules, and <code>secrets.tfvars</code> will contain production secrets needed by terraform to manage our resources.</p>
 </div>
 <script src="/js/highlight.pack.js"></script>
 <script type="text/javascript">hljs.highlightAll();</script>
