@@ -133,6 +133,7 @@ resource "google_cloud_run_service" "mattbutterfield-worker" {
         }
       }
       service_account_name = google_service_account.mattbutterfield_cloud_run.email
+      timeout_seconds = 3600
     }
     metadata {
       annotations = {
