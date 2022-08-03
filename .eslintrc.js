@@ -3,11 +3,12 @@ module.exports = {
     "browser": true,
     "es2021": true
   },
-  "extends": "eslint:recommended",
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "parserOptions": {
     "ecmaVersion": 12,
     "sourceType": "module"
   },
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "indent": [
       "error",
@@ -24,6 +25,7 @@ module.exports = {
     "semi": [
       "error",
       "always"
-    ]
+    ],
+    "object-curly-spacing": ["error", "always"],
   }
 };

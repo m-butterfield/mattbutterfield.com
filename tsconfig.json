@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "./app/static/js/dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es6",
+    "moduleResolution": "node"
+  }
+}

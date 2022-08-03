@@ -53,7 +53,7 @@ migrate:
 
 fmt:
 	go fmt ./...
-	npx eslint app/static/js/ --fix
+	npx eslint app/static/js/ app/static/ts/ --fix
 	cd infra/ && terraform fmt
 
 run-server: export USE_LOCAL_FS=true
@@ -86,5 +86,5 @@ tf-refresh:
 update-deps:
 	go get -u ./...
 	go mod tidy
-	npm upgrade
+	yarn upgrade
 	cd infra && terraform init -upgrade && cd -
