@@ -10,6 +10,9 @@ module.exports = {
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "no-restricted-imports": ["error", {
+      "patterns": [".*"]
+    }],
     "indent": [
       "error",
       2
@@ -26,6 +29,6 @@ module.exports = {
       "error",
       "always"
     ],
-    "object-curly-spacing": ["error", "always"],
+    "object-curly-spacing": ["error", "never"],
   }
 };

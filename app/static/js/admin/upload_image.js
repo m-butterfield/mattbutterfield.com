@@ -1,4 +1,4 @@
-import { disableForm, uploadFile, saveUpload } from "./upload_base.js";
+import {disableForm, uploadFile, saveUpload} from "./upload_base.js";
 
 document.querySelector("#upload-button").addEventListener("click", async function(e) {
   e.preventDefault();

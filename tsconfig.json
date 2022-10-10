@@ -3,8 +3,10 @@
     "outDir": "./app/static/js/dist/",
     "sourceMap": true,
     "noImplicitAny": true,
-    "module": "es6",
+    "module": "es2020",
     "target": "es6",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "app/static/ts"
   }
 }

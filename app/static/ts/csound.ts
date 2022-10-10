@@ -1,4 +1,4 @@
-import { Csound } from "@csound/browser";
+import {Csound} from "@csound/browser";
 import song from "../csound/song.csd";
 
 export const playSong = async () => {
