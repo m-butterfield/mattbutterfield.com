@@ -3,12 +3,12 @@ package lib
 import (
 	"bytes"
 	"cloud.google.com/go/cloudtasks/apiv2"
+	"cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/rs/zerolog/log"
-	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"net/http"
 	"os"
@@ -54,7 +54,7 @@ func (j *CreatedDateJSON) MarshalJSON() ([]byte, error) {
 }
 
 type TaskCreator interface {
-	CreateTask(string, string, interface{}) (*tasks.Task, error)
+	CreateTask(string, string, interface{}) (*cloudtaskspb.Task, error)
 }
 
 func NewTaskCreator() (TaskCreator, error) {
@@ -79,7 +79,7 @@ type localTaskCreator struct {
 	workerBaseURL string
 }
 
-func (t *localTaskCreator) CreateTask(taskName, _ string, data interface{}) (*tasks.Task, error) {
+func (t *localTaskCreator) CreateTask(taskName, _ string, data interface{}) (*cloudtaskspb.Task, error) {
 	body, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ type taskCreator struct {
 	serviceAccountEmail string
 }
 
-func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*tasks.Task, error) {
+func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*cloudtaskspb.Task, error) {
 	url := t.workerBaseURL + taskName
 	ctx := context.Background()
 	client, err := cloudtasks.NewClient(ctx)
@@ -112,17 +112,17 @@ func (t *taskCreator) CreateTask(taskName, queueID string, body interface{}) (*t
 		}
 	}(client)
 
-	req := &tasks.CreateTaskRequest{
+	req := &cloudtaskspb.CreateTaskRequest{
 		Parent: fmt.Sprintf("projects/%s/locations/%s/queues/%s", ProjectID, locationID, queueID),
-		Task: &tasks.Task{
+		Task: &cloudtaskspb.Task{
 			DispatchDeadline: durationpb.New(30 * time.Minute),
-			MessageType: &tasks.Task_HttpRequest{
-				HttpRequest: &tasks.HttpRequest{
-					HttpMethod: tasks.HttpMethod_POST,
+			MessageType: &cloudtaskspb.Task_HttpRequest{
+				HttpRequest: &cloudtaskspb.HttpRequest{
+					HttpMethod: cloudtaskspb.HttpMethod_POST,
 					Url:        url,
 					Headers:    map[string]string{"Content-Type": "application/json"},
-					AuthorizationHeader: &tasks.HttpRequest_OidcToken{
-						OidcToken: &tasks.OidcToken{
+					AuthorizationHeader: &cloudtaskspb.HttpRequest_OidcToken{
+						OidcToken: &cloudtaskspb.OidcToken{
 							ServiceAccountEmail: t.serviceAccountEmail,
 						},
 					},

@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
-	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"log"
 	"time"
 )
@@ -51,9 +51,9 @@ func (s *testStore) SaveImage(*data.Image) error {
 }
 
 type testTaskCreator struct {
-	createTask func(string, string, interface{}) (*tasks.Task, error)
+	createTask func(string, string, interface{}) (*cloudtaskspb.Task, error)
 }
 
-func (t *testTaskCreator) CreateTask(taskName, queueID string, body interface{}) (*tasks.Task, error) {
+func (t *testTaskCreator) CreateTask(taskName, queueID string, body interface{}) (*cloudtaskspb.Task, error) {
 	return t.createTask(taskName, queueID, body)
 }

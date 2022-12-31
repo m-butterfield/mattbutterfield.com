@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"bytes"
+	"cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 	"encoding/json"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"google.golang.org/genproto/googleapis/cloud/tasks/v2"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -29,7 +29,7 @@ func TestSaveSong(t *testing.T) {
 	authArray = []byte("1234")
 	taskCalled := false
 	tc = &testTaskCreator{
-		createTask: func(taskName, queueID string, body interface{}) (*tasks.Task, error) {
+		createTask: func(taskName, queueID string, body interface{}) (*cloudtaskspb.Task, error) {
 			taskCalled = true
 			if taskName != "save_song" {
 				t.Error("Unexpected task name")
@@ -40,7 +40,7 @@ func TestSaveSong(t *testing.T) {
 			if *body.(*lib.SaveSongRequest) != *expectedBody {
 				t.Error("Unexpected task body")
 			}
-			return &tasks.Task{}, nil
+			return &cloudtaskspb.Task{}, nil
 		},
 	}
 
