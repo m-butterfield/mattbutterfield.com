@@ -12,6 +12,7 @@ document.querySelector("#upload-button").addEventListener("click", async functio
     alert("Please provide a created date.");
     return;
   }
+  const imageType = document.querySelector("#image-type").value;
 
   disableForm();
 
@@ -27,6 +28,7 @@ document.querySelector("#upload-button").addEventListener("click", async functio
     createdDate: createdDate,
     caption: document.querySelector("#caption").value,
     location: document.querySelector("#location").value,
+    imageType: imageType,
   }).catch(err => {
     alert("error saving image");
     console.log(err);

@@ -54,13 +54,21 @@ func saveImage(c *gin.Context) {
 		lib.InternalError(err, c)
 		return
 	}
+	var imageTypes []data.ImageType
+	if body.ImageType != "" {
+		imageTypes = append(imageTypes, data.ImageType{
+			Type: body.ImageType,
+		})
+	}
 
 	if err = ds.SaveImage(&data.Image{
-		ID:       fileName,
-		Caption:  body.Caption,
-		Location: body.Location,
-		Width:    width,
-		Height:   height,
+		ID:         fileName,
+		Caption:    body.Caption,
+		Location:   body.Location,
+		Width:      width,
+		Height:     height,
+		ImageTypes: imageTypes,
+		CreatedAt:  body.CreatedDate.Time,
 	}); err != nil {
 		lib.InternalError(err, c)
 		return

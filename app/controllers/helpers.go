@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	dateDisplayLayout = "January 2006"
+	dateDisplayLayout = "January 2 2006"
 	templatePath      = "templates/"
 )
 

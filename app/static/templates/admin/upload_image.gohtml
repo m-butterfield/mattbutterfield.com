@@ -10,6 +10,15 @@
     <small>(jpg - ~750ish px wide if horizontal)</small>
   </p>
   <p>
+    <label for="image-type">image type: </label>
+    <select id="image-type">
+      {{range $type := .ImageTypes}}
+        <option value="{{$type}}">{{$type}}</option>
+      {{end}}
+      <option></option>
+    </select>
+  </p>
+  <p>
     <label for="created-date">date taken: </label>
     <input class="upload-form-element" type="date" id="created-date">
   </p>

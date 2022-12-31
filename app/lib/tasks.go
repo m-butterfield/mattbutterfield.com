@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"net/http"
@@ -30,10 +31,11 @@ type SaveSongRequest struct {
 }
 
 type SaveImageRequest struct {
-	ImageFileName string          `json:"imageFileName"`
-	CreatedDate   CreatedDateJSON `json:"createdDate"`
-	Location      string          `json:"location"`
-	Caption       string          `json:"caption"`
+	ImageFileName string             `json:"imageFileName"`
+	CreatedDate   CreatedDateJSON    `json:"createdDate"`
+	Location      string             `json:"location"`
+	Caption       string             `json:"caption"`
+	ImageType     data.ImageTypeName `json:"imageType"`
 }
 
 type CreatedDateJSON struct {

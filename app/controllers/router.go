@@ -27,6 +27,8 @@ func router() (*gin.Engine, error) {
 	r.GET("/blog/:entryName", blogEntry)
 	r.GET("/music", music)
 	r.GET("/photos", photos)
+	r.GET("/photoaday", photoADay)
+	r.GET("/photoaday/:year", photoADayYear)
 	r.GET("/video", video)
 	r.GET("/video/connections", videoConnections)
 

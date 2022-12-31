@@ -2,12 +2,7 @@
 {{ define "head" }}{{ end }}
 {{ define "main" }}
 <div class="section-div">
-  <ul>
-    <li><a href="/photoaday">photo a day</a></li>
-  </ul>
-</div>
-<div class="section-div">
-  <h1 id="photos">latest photos</h1>
+  <h1 id="photos">one photo every day in 2023</h1>
   {{ range $i, $image := .ImagesInfo }}
     <div class="image-div">
       <p>{{ .ImageDate }}</p>
@@ -18,8 +13,6 @@
   {{ end }}
   {{ if .NextURL }}
       <a href="{{ .NextURL }}">next</a>
-  {{ else }}
-      you have reached the end!
   {{ end }}
 </div>
 <script type="text/javascript" src="/js/photos.js"></script>
