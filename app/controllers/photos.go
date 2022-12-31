@@ -44,7 +44,7 @@ func getImages(c *gin.Context) ([]*data.Image, error) {
 	var before time.Time
 	beforeStr := c.Query("before")
 	if beforeStr == "" {
-		before = time.Now().Add((time.Hour * 24) * 360)
+		before = time.Now()
 	} else {
 		beforeInt, err := strconv.ParseInt(beforeStr, 10, 64)
 		if err != nil {

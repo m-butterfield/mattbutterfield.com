@@ -76,3 +76,12 @@ code {
   background: inherit;
   tab-size: 4;
 }
+
+.image-div {
+  margin-bottom: 180px;
+  /*border-top: solid #454545 1px;*/
+}
+
+.image-div, img {
+  max-width: 100%;
+}

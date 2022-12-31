@@ -9,10 +9,12 @@
 <div class="section-div">
   <h1 id="photos">latest photos</h1>
   {{ range $i, $image := .ImagesInfo }}
-    {{ template "image" . }}
-    <p>{{ .ImageCaption }}</p>
-    <p>{{ .ImageLocation }}</p>
-    <p>{{ .ImageDate }}</p>
+    <div class="image-div">
+      <p>{{ .ImageDate }}</p>
+      {{ template "image" . }}
+      <p>{{ .ImageLocation }}</p>
+      <p>{{ .ImageCaption }}</p>
+    </div>
   {{ end }}
   {{ if .NextURL }}
       <a href="{{ .NextURL }}">next</a>

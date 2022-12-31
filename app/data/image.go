@@ -50,7 +50,10 @@ func (s *ds) GetImages(before time.Time, limit int) ([]*Image, error) {
 func (s *ds) GetYearImages(year int, before time.Time, limit int) ([]*Image, error) {
 	var images []*Image
 	tx := s.db.
-		Where("created_at < $1", before).
+		Joins("JOIN image_types it ON it.image_id = images.id").
+		Where("it.type = ?", PhotoADayImageType).
+		Where("created_at < ?", before).
+		Where("date_part('year', created_at) = ?", year).
 		Order("created_at DESC").
 		Limit(limit).
 		Find(&images)
