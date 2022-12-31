@@ -56,7 +56,7 @@ func getYearImages(c *gin.Context, year int) ([]*data.Image, error) {
 	var before time.Time
 	beforeStr := c.Query("before")
 	if beforeStr == "" {
-		before = time.Now()
+		before = time.Now().Add((time.Hour * 24) * 360) // todo: remove this extra time here, not harmful but just for testing
 	} else {
 		beforeInt, err := strconv.ParseInt(beforeStr, 10, 64)
 		if err != nil {
