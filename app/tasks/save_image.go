@@ -6,12 +6,18 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/h2non/bimg"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"image"
 	_ "image/jpeg"
 	"io"
 	"log"
+	"math"
+)
+
+const (
+	maxWidth  = 1000
+	maxHeight = 1200
 )
 
 func saveImage(c *gin.Context) {
@@ -34,26 +40,37 @@ func saveImage(c *gin.Context) {
 		}
 	}(client)
 
-	bucket := client.Bucket(lib.FilesBucket)
-	upload := bucket.Object(lib.UploadsPrefix + body.ImageFileName)
+	upload := client.Bucket(lib.FilesBucket).Object(lib.UploadsPrefix + body.ImageFileName)
 
-	width, height, err := getDimensions(ctx, upload)
+	size, imgData, err := processImage(ctx, upload)
 	if err != nil {
 		lib.InternalError(err, c)
 		return
 	}
 
-	hash, err := getHash(ctx, upload)
+	hash, err := getHash(imgData)
 	if err != nil {
 		lib.InternalError(err, c)
 		return
 	}
 	fileName := hash + ".jpg"
 
-	if err = copyAndDeleteUpload(ctx, client, upload, fileName); err != nil {
+	result := client.Bucket(lib.ImagesBucket).Object(hash + ".jpg")
+	w := result.NewWriter(ctx)
+	w.ContentType = "image/jpeg"
+	if _, err = w.Write(imgData); err != nil {
 		lib.InternalError(err, c)
 		return
 	}
+	if err = w.Close(); err != nil {
+		lib.InternalError(err, c)
+		return
+	}
+	if err := upload.Delete(ctx); err != nil {
+		lib.InternalError(err, c)
+		return
+	}
+
 	var imageTypes []data.ImageType
 	if body.ImageType != "" {
 		imageTypes = append(imageTypes, data.ImageType{
@@ -65,8 +82,8 @@ func saveImage(c *gin.Context) {
 		ID:         fileName,
 		Caption:    body.Caption,
 		Location:   body.Location,
-		Width:      width,
-		Height:     height,
+		Width:      size.Width,
+		Height:     size.Height,
 		ImageTypes: imageTypes,
 		CreatedAt:  body.CreatedDate.Time,
 	}); err != nil {
@@ -75,47 +92,62 @@ func saveImage(c *gin.Context) {
 	}
 }
 
-func getDimensions(ctx context.Context, obj *storage.ObjectHandle) (int, int, error) {
+func processImage(ctx context.Context, obj *storage.ObjectHandle) (*bimg.ImageSize, []byte, error) {
 	reader, err := obj.NewReader(ctx)
 	if err != nil {
-		return 0, 0, err
+		return nil, nil, err
 	}
 	defer func(reader *storage.Reader) {
 		if err := reader.Close(); err != nil {
 			log.Println(err)
 		}
 	}(reader)
-	imgConf, _, err := image.DecodeConfig(reader)
+	buffer, err := io.ReadAll(reader)
 	if err != nil {
-		return 0, 0, err
+		return nil, nil, err
 	}
-	return imgConf.Width, imgConf.Height, nil
+
+	img := bimg.NewImage(buffer)
+	if _, err = img.AutoRotate(); err != nil {
+		return nil, nil, err
+	}
+
+	size, err := img.Size()
+	if err != nil {
+		return nil, nil, err
+	}
+	width := size.Width
+	height := size.Height
+
+	if width > maxWidth {
+		ratio := float64(height) / float64(width)
+		width = maxWidth
+		height = int(math.Round(float64(width) * ratio))
+	}
+	if height > maxHeight {
+		ratio := float64(width) / float64(height)
+		height = maxHeight
+		width = int(math.Round(float64(height) * ratio))
+	}
+
+	imgData, err := img.Process(bimg.Options{
+		Width:   width,
+		Height:  height,
+		Quality: 92,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	return &bimg.ImageSize{
+		Width:  width,
+		Height: height,
+	}, imgData, nil
 }
 
-func getHash(ctx context.Context, obj *storage.ObjectHandle) (string, error) {
-	reader, err := obj.NewReader(ctx)
-	if err != nil {
-		return "", err
-	}
-	defer func(reader *storage.Reader) {
-		if err := reader.Close(); err != nil {
-			log.Println(err)
-		}
-	}(reader)
+func getHash(data []byte) (string, error) {
 	hash := sha256.New()
-	if _, err := io.Copy(hash, reader); err != nil {
+	if _, err := hash.Write(data); err != nil {
 		return "", err
 	}
 	return fmt.Sprintf("%x", hash.Sum(nil)), nil
-}
-
-func copyAndDeleteUpload(ctx context.Context, client *storage.Client, upload *storage.ObjectHandle, fileName string) error {
-	result := client.Bucket(lib.ImagesBucket).Object(fileName)
-	if _, err := result.CopierFrom(upload).Run(ctx); err != nil {
-		return err
-	}
-	if err := upload.Delete(ctx); err != nil {
-		return err
-	}
-	return nil
 }
