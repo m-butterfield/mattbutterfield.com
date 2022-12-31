@@ -5,13 +5,25 @@ import (
 )
 
 type Image struct {
-	ID        string    `gorm:"type:varchar(128)"`
-	Caption   string    `gorm:"type:text"`
-	Location  string    `gorm:"type:text"`
-	Width     int       `gorm:"type:integer;not null"`
-	Height    int       `gorm:"type:integer;not null"`
-	CreatedAt time.Time `gorm:"not null;default:now()"`
+	ID         string    `gorm:"type:varchar(128)"`
+	Caption    string    `gorm:"type:text"`
+	Location   string    `gorm:"type:text"`
+	Width      int       `gorm:"type:integer;not null"`
+	Height     int       `gorm:"type:integer;not null"`
+	CreatedAt  time.Time `gorm:"not null;default:now()"`
+	ImageTypes []ImageType
 }
+
+type ImageType struct {
+	ImageID string        `gorm:"primarykey;not null"`
+	Type    ImageTypeName `gorm:"primarykey;type:varchar(128);not null"`
+}
+
+type ImageTypeName string
+
+const (
+	PhotoADayImageType ImageTypeName = "photo-a-day"
+)
 
 func (s *ds) GetImage(id string) (*Image, error) {
 	image := &Image{}
@@ -23,6 +35,19 @@ func (s *ds) GetImage(id string) (*Image, error) {
 }
 
 func (s *ds) GetImages(before time.Time, limit int) ([]*Image, error) {
+	var images []*Image
+	tx := s.db.
+		Where("created_at < $1", before).
+		Order("created_at DESC").
+		Limit(limit).
+		Find(&images)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return images, nil
+}
+
+func (s *ds) GetYearImages(year int, before time.Time, limit int) ([]*Image, error) {
 	var images []*Image
 	tx := s.db.
 		Where("created_at < $1", before).

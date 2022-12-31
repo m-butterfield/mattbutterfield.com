@@ -7,6 +7,7 @@ func Migrate() error {
 	}
 	err = s.db.AutoMigrate(
 		&Image{},
+		&ImageType{},
 		&Song{},
 	)
 	if err != nil {

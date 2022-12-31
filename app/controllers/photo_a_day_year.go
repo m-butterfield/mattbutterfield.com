@@ -5,18 +5,30 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
+	"github.com/m-butterfield/mattbutterfield.com/app/static"
+	"io/fs"
+	"net/http"
 	"strconv"
 	"time"
 )
 
-type photosPage struct {
-	*basePage
-	ImagesInfo []*imageInfo
-	NextURL    string
-}
+func photoADayYear(c *gin.Context) {
+	year, err := strconv.Atoi(c.Param("year"))
+	if err != nil {
+		lib.InternalError(err, c)
+		return
+	}
+	yearPath := fmt.Sprintf("photos/photo_a_day/%d", year)
+	ffs := &static.FS{}
+	if list, err := fs.Glob(ffs, templatePath+yearPath+".gohtml"); err != nil {
+		lib.InternalError(err, c)
+		return
+	} else if len(list) == 0 {
+		c.String(http.StatusNotFound, "not found")
+		return
+	}
 
-func photos(c *gin.Context) {
-	images, err := getImages(c)
+	images, err := getYearImages(c, year)
 	if err != nil {
 		lib.InternalError(err, c)
 		return
@@ -32,7 +44,7 @@ func photos(c *gin.Context) {
 		nextURL = fmt.Sprintf("/photos?before=%d#photos", images[len(images)-1].CreatedAt.Unix())
 	}
 
-	body, err := templateRender("photos/index", &photosPage{
+	body, err := templateRender(yearPath, &photosPage{
 		basePage:   makeBasePage(),
 		ImagesInfo: imagesInfo,
 		NextURL:    nextURL,
@@ -40,11 +52,11 @@ func photos(c *gin.Context) {
 	c.Render(200, body)
 }
 
-func getImages(c *gin.Context) ([]*data.Image, error) {
+func getYearImages(c *gin.Context, year int) ([]*data.Image, error) {
 	var before time.Time
 	beforeStr := c.Query("before")
 	if beforeStr == "" {
-		before = time.Now().Add((time.Hour * 24) * 360)
+		before = time.Now()
 	} else {
 		beforeInt, err := strconv.ParseInt(beforeStr, 10, 64)
 		if err != nil {
@@ -53,7 +65,7 @@ func getImages(c *gin.Context) ([]*data.Image, error) {
 		before = time.Unix(beforeInt, 0)
 	}
 
-	images, err := ds.GetImages(before, 5)
+	images, err := ds.GetYearImages(year, before, 5)
 	if err != nil {
 		lib.InternalError(err, c)
 		return nil, err
