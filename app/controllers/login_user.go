@@ -14,7 +14,7 @@ func loginUser(c *gin.Context) {
 		return
 	}
 	if subtle.ConstantTimeCompare([]byte(auth[0]), authArray) == 1 {
-		c.SetCookie("auth", auth[0], 0, "", "", false, false)
+		c.SetCookie("auth", auth[0], 31536000, "", "", false, false) // expires in 1 year
 		next := c.Query("next")
 		if next != "" {
 			c.Redirect(http.StatusFound, next)
