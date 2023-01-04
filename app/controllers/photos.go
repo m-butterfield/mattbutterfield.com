@@ -53,7 +53,7 @@ func getImages(c *gin.Context) ([]*data.Image, error) {
 		before = time.Unix(beforeInt, 0)
 	}
 
-	images, err := ds.GetImages(before, 5)
+	images, err := ds.GetImages(before, 20)
 	if err != nil {
 		lib.InternalError(err, c)
 		return nil, err

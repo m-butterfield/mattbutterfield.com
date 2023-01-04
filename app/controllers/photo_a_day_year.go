@@ -41,7 +41,7 @@ func photoADayYear(c *gin.Context) {
 
 	nextURL := ""
 	if len(images) > 0 {
-		nextURL = fmt.Sprintf("/photos?before=%d#photos", images[len(images)-1].CreatedAt.Unix())
+		nextURL = fmt.Sprintf("/photoaday/%d?before=%d#photos", year, images[len(images)-1].CreatedAt.Unix())
 	}
 
 	body, err := templateRender(yearPath, &photosPage{
@@ -65,7 +65,7 @@ func getYearImages(c *gin.Context, year int) ([]*data.Image, error) {
 		before = time.Unix(beforeInt, 0)
 	}
 
-	images, err := ds.GetYearImages(year, before, 5)
+	images, err := ds.GetYearImages(year, before, 20)
 	if err != nil {
 		lib.InternalError(err, c)
 		return nil, err

@@ -12,7 +12,9 @@
     </div>
   {{ end }}
   {{ if .NextURL }}
-      <a href="{{ .NextURL }}">next</a>
+    <a href="{{ .NextURL }}">next</a>
+  {{ else }}
+    you have reached the end!
   {{ end }}
 </div>
 <script type="text/javascript" src="/js/photos.js"></script>
