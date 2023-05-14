@@ -1,5 +1,5 @@
 # Bases for building and running the app
-FROM golang:1.19-alpine AS builder-base
+FROM golang:1.20-alpine AS builder-base
 WORKDIR /go/src/github.com/m-butterfield/mattbutterfield.com
 COPY go.* ./
 RUN go mod download
@@ -22,6 +22,6 @@ COPY --from=server-builder /go/src/github.com/m-butterfield/mattbutterfield.com/
 CMD ["bin/server"]
 
 FROM runner-base AS worker
-RUN apk add lame vips
+RUN apk add lame-dev vips
 COPY --from=worker-builder /go/src/github.com/m-butterfield/mattbutterfield.com/bin/ ./bin/
 CMD ["bin/worker"]
