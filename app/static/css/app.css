@@ -85,3 +85,7 @@ code {
 .image-div, img {
   max-width: 100%;
 }
+
+#heatmap {
+  height: 600px;
+}

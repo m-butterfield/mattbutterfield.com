@@ -25,6 +25,7 @@ func router() (*gin.Engine, error) {
 	r.GET("/img/:id", home)
 	r.GET("/blog", blog)
 	r.GET("/blog/:entryName", blogEntry)
+	r.GET("/heatmap", heatmap)
 	r.GET("/music", music)
 	r.GET("/photos", photos)
 	r.GET("/photoaday", photoADay)
