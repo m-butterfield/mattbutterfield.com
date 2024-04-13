@@ -10,5 +10,4 @@
 package swagger
 
 // A pair of latitude/longitude coordinates, represented as an array of 2 floating point numbers.
-type LatLng struct {
-}
+type LatLng []float64

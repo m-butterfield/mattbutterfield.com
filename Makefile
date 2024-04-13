@@ -51,6 +51,9 @@ reset-db:
 migrate:
 	go run cmd/migrate/main.go
 
+heatmap:
+	go run cmd/heatmap/main.go
+
 fmt:
 	go fmt ./...
 	npx eslint app/static/js/ --fix
