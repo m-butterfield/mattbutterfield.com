@@ -12,7 +12,7 @@ import (
 func TestPhotos(t *testing.T) {
 	getImagesCalled := 0
 	expectedBefore := time.Unix(time.Now().Unix(), 0)
-	expectedLimit := 5
+	expectedLimit := 20
 	ds = &testStore{
 		getImages: func(before time.Time, limit int) ([]*data.Image, error) {
 			getImagesCalled += 1
