@@ -10,7 +10,7 @@ func UpdateHeatMap() error {
 		return err
 	}
 
-	if err := getLatestActivities(ds); err != nil {
+	if err = getLatestActivities(ds); err != nil {
 		return err
 	}
 

@@ -4,6 +4,7 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/antihax/optional"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
@@ -49,6 +50,10 @@ func getLatestActivities(ds data.Store) error {
 	}
 	if r.StatusCode != 200 {
 		return fmt.Errorf("unexpected status code when fetching activities: %d", r.StatusCode)
+	}
+
+	if len(activities) == 0 {
+		return errors.New("No new activities found")
 	}
 
 	for len(activities) > 0 {
