@@ -34,7 +34,7 @@ COPY --from=server-builder /go/src/github.com/m-butterfield/mattbutterfield.com/
 CMD ["bin/server"]
 
 FROM runner-base AS worker
-RUN apk add lame-dev vips # gdal-tools - if we need to convert CRS
+RUN apk add lame-dev vips
 COPY --from=worker-builder /go/src/github.com/m-butterfield/mattbutterfield.com/bin/ ./bin/
 COPY --from=worker-builder /usr/local/bin/* /usr/local/bin/
 CMD ["bin/worker"]
