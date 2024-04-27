@@ -192,7 +192,7 @@ resource "google_cloud_run_service" "mattbutterfield-worker" {
       }
       labels = {
         "run.googleapis.com/startupProbeType" = "Default"
-        "client.knative.dev/nonce"            = "mrbzzpdpbj"
+        "client.knative.dev/nonce"            = "eukrnmcvgn"
       }
     }
   }
