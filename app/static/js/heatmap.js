@@ -10,17 +10,18 @@ const map = new mapboxgl.Map({
 map.on("load", () => {
   map.addSource("heatmap", {
     type: "vector",
-    url: "mapbox://mbutterfield.d9j1gx0a"
+    url: "mapbox://mbutterfield.heatmap"
   });
   map.addLayer({
     "id": "heatmap",
     "type": "line",
     "source": "heatmap",
-    "source-layer": "data",
+    "source-layer": "heatmap",
     "paint": {
       "line-color": "#EB9360",
       "line-width": 1,
       "line-opacity": 0.8
     },
   });
+  map.addControl(new mapboxgl.NavigationControl());
 });
