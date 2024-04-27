@@ -16,6 +16,9 @@ resource "google_cloud_tasks_queue" "save_song_uploads" {
 resource "google_cloud_tasks_queue" "update_heatmap" {
   name     = "update-heatmap"
   location = var.default_region
+  retry_config {
+    max_attempts = 1
+  }
 }
 
 resource "google_project_iam_member" "task_creator" {

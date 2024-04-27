@@ -8,6 +8,7 @@ import (
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 func saveGeoJSONResult(coordinates [][][]float64, name string) error {
@@ -46,6 +47,11 @@ func saveGeoJSONResultLocal(coordinates [][][]float64, fileName string) error {
 		return err
 	}
 
+	newpath := filepath.Join(".", "tmp")
+	err = os.MkdirAll(newpath, os.ModePerm)
+	if err != nil {
+		return err
+	}
 	return os.WriteFile(fileName, geoJSONData, 0644)
 }
 
