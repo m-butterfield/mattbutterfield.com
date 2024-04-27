@@ -116,16 +116,15 @@ func uploadHeatmap(fileName string) (string, error) {
 }
 
 func createUpload(ds data.Store, s3Url string) error {
-	mapboxConfig, err := ds.GetMapBoxConfig()
+	tileSetID, err := TileSetID(ds)
 	if err != nil {
 		return err
 	}
 
-	// Maybe with header? "Cache-Control: no-cache"
 	url := fmt.Sprintf("%s?access_token=%s", mapboxUploadsBaseURL, mapboxUploadAccessToken)
 	body := createUploadBody{
 		URL:     s3Url,
-		Tileset: fmt.Sprintf("%s.%s", mapBoxUsername, mapboxConfig.HeatMapTilesetName),
+		Tileset: tileSetID,
 	}
 	uploadData, err := json.Marshal(body)
 	if err != nil {
@@ -148,4 +147,12 @@ func createUpload(ds data.Store, s3Url string) error {
 	log.Printf("Got response: %s", responseData)
 
 	return nil
+}
+
+func TileSetID(ds data.Store) (string, error) {
+	mapboxConfig, err := ds.GetMapBoxConfig()
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s.%s", mapBoxUsername, mapboxConfig.HeatMapTilesetName), nil
 }
