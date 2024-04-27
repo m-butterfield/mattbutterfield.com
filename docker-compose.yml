@@ -11,8 +11,3 @@ services:
       target: worker
     image: "gcr.io/mattbutterfield/mattbutterfield.com-worker"
     platform: linux/amd64
-#    volumes:
-#      - worker-data:/opt/worker-data
-
-#volumes:
-#  worker-data:
