@@ -1,11 +1,15 @@
 package heatmap
 
 import (
+	"cloud.google.com/go/storage"
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/antihax/optional"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/m-butterfield/mattbutterfield.com/strava-api/swagger"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -173,4 +177,56 @@ func saveActivity(ds data.Store, client *swagger.APIClient, auth context.Context
 type geoJSONResult struct {
 	Type        string        `json:"type"`
 	Coordinates [][][]float64 `json:"coordinates"`
+}
+
+func getActivityCoordinates(ds data.Store) ([][][]float64, error) {
+	activities, err := ds.GetStravaActivities()
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer func(client *storage.Client) {
+		if err := client.Close(); err != nil {
+			log.Println(err)
+		}
+	}(client)
+
+	coordinates := make([][][]float64, 0)
+
+	for i, activity := range activities {
+		log.Printf("Getting GEOJSON for activity %d", activity.ID)
+		object := client.Bucket(lib.FilesBucket).Object(fmt.Sprintf("heatmap-geoJSONData/%d.geojson", activity.ID))
+		reader, err := object.NewReader(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		jsonData, err := io.ReadAll(reader)
+		if err != nil {
+			return nil, err
+		}
+
+		jsonResult := geoJSONResult{}
+
+		if err = json.Unmarshal(jsonData, &jsonResult); err != nil {
+			return nil, err
+		}
+
+		if err = reader.Close(); err != nil {
+			return nil, err
+		}
+
+		coordinates = append(coordinates, jsonResult.Coordinates[0])
+
+		if i > 10 {
+			break
+		}
+	}
+
+	return coordinates, nil
 }

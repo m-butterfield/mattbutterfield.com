@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	if err := heatmap.BuildHeatMap(); err != nil {
+	if err := heatmap.UpdateHeatMap(); err != nil {
 		log.Fatal(err)
 	}
 }
