@@ -62,7 +62,7 @@ resource "google_cloud_run_service" "mattbutterfield" {
       }
       labels = {
         "run.googleapis.com/startupProbeType" = "Default"
-        "client.knative.dev/nonce"            = "youwvyjhfy"
+        "client.knative.dev/nonce"            = "aqfrlxcbtw"
       }
     }
   }

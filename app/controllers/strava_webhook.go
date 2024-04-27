@@ -17,6 +17,12 @@ type StravaWebhookRequest struct {
 }
 
 func stravaWebhook(c *gin.Context) {
+	// The below is required if adding a new webhook subscription (update router to accept GET requests here as well)
+	// See:https://developers.strava.com/docs/webhooks/
+	//if c.Request.Method == http.MethodGet {
+	//	c.JSON(http.StatusOK, gin.H{"hub.challenge": c.Query("hub.challenge")})
+	//	return
+	//}
 	c.Status(http.StatusOK)
 	body := &StravaWebhookRequest{}
 	err := c.Bind(body)
