@@ -25,3 +25,23 @@ variable "auth_token" {
   type      = string
   sensitive = true
 }
+
+variable "mapbox_username" {
+  type      = string
+  sensitive = true
+}
+
+variable "mapbox_upload_access_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "strava_client_id" {
+  type      = string
+  sensitive = true
+}
+
+variable "strava_client_secret" {
+  type      = string
+  sensitive = true
+}

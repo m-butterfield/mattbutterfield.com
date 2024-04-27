@@ -13,6 +13,7 @@ func router() (*gin.Engine, error) {
 
 	r.POST("/save_song", saveSong)
 	r.POST("/save_image", saveImage)
+	r.POST("/update_heatmap", updateHeatmap)
 
 	return r, nil
 }
