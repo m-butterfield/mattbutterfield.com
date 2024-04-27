@@ -11,6 +11,6 @@ package swagger
 
 type HeartRateZoneRanges struct {
 	// Whether the athlete has set their own custom heart rate zones
-	CustomZones bool `json:"custom_zones,omitempty"`
-	Zones *ZoneRanges `json:"zones,omitempty"`
+	CustomZones bool        `json:"custom_zones,omitempty"`
+	Zones       *ZoneRanges `json:"zones,omitempty"`
 }

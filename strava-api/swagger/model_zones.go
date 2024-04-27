@@ -11,5 +11,5 @@ package swagger
 
 type Zones struct {
 	HeartRate *HeartRateZoneRanges `json:"heart_rate,omitempty"`
-	Power *PowerZoneRanges `json:"power,omitempty"`
+	Power     *PowerZoneRanges     `json:"power,omitempty"`
 }

@@ -24,8 +24,8 @@ type Route struct {
 	// The unique identifier of this route
 	Id int64 `json:"id,omitempty"`
 	// The unique identifier of the route in string format
-	IdStr string `json:"id_str,omitempty"`
-	Map_ *PolylineMap `json:"map,omitempty"`
+	IdStr string       `json:"id_str,omitempty"`
+	Map_  *PolylineMap `json:"map,omitempty"`
 	// The name of this route
 	Name string `json:"name,omitempty"`
 	// Whether this route is private

@@ -19,9 +19,9 @@ type ExplorerSegment struct {
 	// The description for the category of the climb
 	ClimbCategoryDesc string `json:"climb_category_desc,omitempty"`
 	// The segment's average grade, in percents
-	AvgGrade float32 `json:"avg_grade,omitempty"`
+	AvgGrade    float32 `json:"avg_grade,omitempty"`
 	StartLatlng *LatLng `json:"start_latlng,omitempty"`
-	EndLatlng *LatLng `json:"end_latlng,omitempty"`
+	EndLatlng   *LatLng `json:"end_latlng,omitempty"`
 	// The segments's evelation difference, in meters
 	ElevDifference float32 `json:"elev_difference,omitempty"`
 	// The segment's distance, in meters

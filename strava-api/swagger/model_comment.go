@@ -19,7 +19,7 @@ type Comment struct {
 	// The identifier of the activity this comment is related to
 	ActivityId int64 `json:"activity_id,omitempty"`
 	// The content of the comment
-	Text string `json:"text,omitempty"`
+	Text    string          `json:"text,omitempty"`
 	Athlete *SummaryAthlete `json:"athlete,omitempty"`
 	// The time at which this comment was created.
 	CreatedAt time.Time `json:"created_at,omitempty"`

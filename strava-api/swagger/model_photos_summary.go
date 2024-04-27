@@ -11,6 +11,6 @@ package swagger
 
 type PhotosSummary struct {
 	// The number of photos
-	Count int32 `json:"count,omitempty"`
+	Count   int32                 `json:"count,omitempty"`
 	Primary *PhotosSummaryPrimary `json:"primary,omitempty"`
 }

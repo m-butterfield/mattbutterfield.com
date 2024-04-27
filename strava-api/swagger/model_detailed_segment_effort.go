@@ -29,9 +29,9 @@ type DetailedSegmentEffort struct {
 	// Whether this effort is the current best on the leaderboard
 	IsKom bool `json:"is_kom,omitempty"`
 	// The name of the segment on which this effort was performed
-	Name string `json:"name,omitempty"`
+	Name     string        `json:"name,omitempty"`
 	Activity *MetaActivity `json:"activity,omitempty"`
-	Athlete *MetaAthlete `json:"athlete,omitempty"`
+	Athlete  *MetaAthlete  `json:"athlete,omitempty"`
 	// The effort's moving time
 	MovingTime int32 `json:"moving_time,omitempty"`
 	// The start index of this effort in its activity's stream
@@ -47,8 +47,8 @@ type DetailedSegmentEffort struct {
 	// The heart heart rate of the athlete during this effort
 	AverageHeartrate float32 `json:"average_heartrate,omitempty"`
 	// The maximum heart rate of the athlete during this effort
-	MaxHeartrate float32 `json:"max_heartrate,omitempty"`
-	Segment *SummarySegment `json:"segment,omitempty"`
+	MaxHeartrate float32         `json:"max_heartrate,omitempty"`
+	Segment      *SummarySegment `json:"segment,omitempty"`
 	// The rank of the effort on the global leaderboard if it belongs in the top 10 at the time of upload
 	KomRank int32 `json:"kom_rank,omitempty"`
 	// The rank of the effort on the athlete's leaderboard if it belongs in the top 3 at the time of upload

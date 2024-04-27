@@ -19,8 +19,8 @@ type DetailedActivity struct {
 	// The identifier provided at upload time
 	ExternalId string `json:"external_id,omitempty"`
 	// The identifier of the upload that resulted in this activity
-	UploadId int64 `json:"upload_id,omitempty"`
-	Athlete *MetaAthlete `json:"athlete,omitempty"`
+	UploadId int64        `json:"upload_id,omitempty"`
+	Athlete  *MetaAthlete `json:"athlete,omitempty"`
 	// The name of the activity
 	Name string `json:"name,omitempty"`
 	// The activity's distance, in meters
@@ -36,16 +36,16 @@ type DetailedActivity struct {
 	// The activity's lowest elevation, in meters
 	ElevLow float32 `json:"elev_low,omitempty"`
 	// Deprecated. Prefer to use sport_type
-	Type_ *ActivityType `json:"type,omitempty"`
-	SportType *SportType `json:"sport_type,omitempty"`
+	Type_     *ActivityType `json:"type,omitempty"`
+	SportType *SportType    `json:"sport_type,omitempty"`
 	// The time at which the activity was started.
 	StartDate time.Time `json:"start_date,omitempty"`
 	// The time at which the activity was started in the local timezone.
 	StartDateLocal time.Time `json:"start_date_local,omitempty"`
 	// The timezone of the activity
-	Timezone string `json:"timezone,omitempty"`
+	Timezone    string  `json:"timezone,omitempty"`
 	StartLatlng *LatLng `json:"start_latlng,omitempty"`
-	EndLatlng *LatLng `json:"end_latlng,omitempty"`
+	EndLatlng   *LatLng `json:"end_latlng,omitempty"`
 	// The number of achievements gained during this activity
 	AchievementCount int32 `json:"achievement_count,omitempty"`
 	// The number of kudos given for this activity
@@ -57,8 +57,8 @@ type DetailedActivity struct {
 	// The number of Instagram photos for this activity
 	PhotoCount int32 `json:"photo_count,omitempty"`
 	// The number of Instagram and Strava photos for this activity
-	TotalPhotoCount int32 `json:"total_photo_count,omitempty"`
-	Map_ *PolylineMap `json:"map,omitempty"`
+	TotalPhotoCount int32        `json:"total_photo_count,omitempty"`
+	Map_            *PolylineMap `json:"map,omitempty"`
 	// Whether this activity was recorded on a training machine
 	Trainer bool `json:"trainer,omitempty"`
 	// Whether this activity is a commute
@@ -94,11 +94,11 @@ type DetailedActivity struct {
 	// Similar to Normalized Power. Rides with power meter data only
 	WeightedAverageWatts int32 `json:"weighted_average_watts,omitempty"`
 	// The description of the activity
-	Description string `json:"description,omitempty"`
-	Photos *PhotosSummary `json:"photos,omitempty"`
-	Gear *SummaryGear `json:"gear,omitempty"`
+	Description string         `json:"description,omitempty"`
+	Photos      *PhotosSummary `json:"photos,omitempty"`
+	Gear        *SummaryGear   `json:"gear,omitempty"`
 	// The number of kilocalories consumed during this activity
-	Calories float32 `json:"calories,omitempty"`
+	Calories       float32                 `json:"calories,omitempty"`
 	SegmentEfforts []DetailedSegmentEffort `json:"segment_efforts,omitempty"`
 	// The name of the device used to record the activity
 	DeviceName string `json:"device_name,omitempty"`
@@ -107,7 +107,7 @@ type DetailedActivity struct {
 	// The splits of this activity in metric units (for runs)
 	SplitsMetric []Split `json:"splits_metric,omitempty"`
 	// The splits of this activity in imperial units (for runs)
-	SplitsStandard []Split `json:"splits_standard,omitempty"`
-	Laps []Lap `json:"laps,omitempty"`
-	BestEfforts []DetailedSegmentEffort `json:"best_efforts,omitempty"`
+	SplitsStandard []Split                 `json:"splits_standard,omitempty"`
+	Laps           []Lap                   `json:"laps,omitempty"`
+	BestEfforts    []DetailedSegmentEffort `json:"best_efforts,omitempty"`
 }

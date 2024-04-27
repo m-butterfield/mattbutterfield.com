@@ -22,8 +22,8 @@ type ClubActivity struct {
 	// The activity's total elevation gain.
 	TotalElevationGain float32 `json:"total_elevation_gain,omitempty"`
 	// Deprecated. Prefer to use sport_type
-	Type_ *ActivityType `json:"type,omitempty"`
-	SportType *SportType `json:"sport_type,omitempty"`
+	Type_     *ActivityType `json:"type,omitempty"`
+	SportType *SportType    `json:"sport_type,omitempty"`
 	// The activity's workout type
 	WorkoutType int32 `json:"workout_type,omitempty"`
 }

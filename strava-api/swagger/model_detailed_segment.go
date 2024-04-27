@@ -17,7 +17,7 @@ type DetailedSegment struct {
 	// The unique identifier of this segment
 	Id int64 `json:"id,omitempty"`
 	// The name of this segment
-	Name string `json:"name,omitempty"`
+	Name         string `json:"name,omitempty"`
 	ActivityType string `json:"activity_type,omitempty"`
 	// The segment's distance, in meters
 	Distance float32 `json:"distance,omitempty"`
@@ -29,8 +29,8 @@ type DetailedSegment struct {
 	ElevationHigh float32 `json:"elevation_high,omitempty"`
 	// The segments's lowest elevation, in meters
 	ElevationLow float32 `json:"elevation_low,omitempty"`
-	StartLatlng *LatLng `json:"start_latlng,omitempty"`
-	EndLatlng *LatLng `json:"end_latlng,omitempty"`
+	StartLatlng  *LatLng `json:"start_latlng,omitempty"`
+	EndLatlng    *LatLng `json:"end_latlng,omitempty"`
 	// The category of the climb [0, 5]. Higher is harder ie. 5 is Hors catégorie, 0 is uncategorized in climb_category.
 	ClimbCategory int32 `json:"climb_category,omitempty"`
 	// The segments's city.
@@ -40,16 +40,16 @@ type DetailedSegment struct {
 	// The segment's country.
 	Country string `json:"country,omitempty"`
 	// Whether this segment is private.
-	Private bool `json:"private,omitempty"`
-	AthletePrEffort *SummaryPrSegmentEffort `json:"athlete_pr_effort,omitempty"`
-	AthleteSegmentStats *SummarySegmentEffort `json:"athlete_segment_stats,omitempty"`
+	Private             bool                    `json:"private,omitempty"`
+	AthletePrEffort     *SummaryPrSegmentEffort `json:"athlete_pr_effort,omitempty"`
+	AthleteSegmentStats *SummarySegmentEffort   `json:"athlete_segment_stats,omitempty"`
 	// The time at which the segment was created.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// The time at which the segment was last updated.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// The segment's total elevation gain.
-	TotalElevationGain float32 `json:"total_elevation_gain,omitempty"`
-	Map_ *PolylineMap `json:"map,omitempty"`
+	TotalElevationGain float32      `json:"total_elevation_gain,omitempty"`
+	Map_               *PolylineMap `json:"map,omitempty"`
 	// The total number of efforts for this segment
 	EffortCount int32 `json:"effort_count,omitempty"`
 	// The number of unique athletes who have an effort for this segment

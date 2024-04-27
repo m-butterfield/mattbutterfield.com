@@ -15,9 +15,9 @@ import (
 
 type Lap struct {
 	// The unique identifier of this lap
-	Id int64 `json:"id,omitempty"`
+	Id       int64         `json:"id,omitempty"`
 	Activity *MetaActivity `json:"activity,omitempty"`
-	Athlete *MetaAthlete `json:"athlete,omitempty"`
+	Athlete  *MetaAthlete  `json:"athlete,omitempty"`
 	// The lap's average cadence
 	AverageCadence float32 `json:"average_cadence,omitempty"`
 	// The lap's average speed
@@ -40,7 +40,7 @@ type Lap struct {
 	Name string `json:"name,omitempty"`
 	// The athlete's pace zone during this lap
 	PaceZone int32 `json:"pace_zone,omitempty"`
-	Split int32 `json:"split,omitempty"`
+	Split    int32 `json:"split,omitempty"`
 	// The time at which the lap was started.
 	StartDate time.Time `json:"start_date,omitempty"`
 	// The time at which the lap was started in the local timezone.
