@@ -57,11 +57,12 @@ resource "google_cloud_run_service" "mattbutterfield" {
         "autoscaling.knative.dev/maxScale"         = "100"
         "client.knative.dev/user-image"            = "gcr.io/mattbutterfield/mattbutterfield.com"
         "run.googleapis.com/client-name"           = "gcloud"
-        "run.googleapis.com/client-version"        = "437.0.0"
+        "run.googleapis.com/client-version"        = "472.0.0"
         "run.googleapis.com/execution-environment" = "gen1"
       }
       labels = {
         "run.googleapis.com/startupProbeType" = "Default"
+        "client.knative.dev/nonce"            = "sqvuvlncmb"
       }
     }
   }
@@ -178,13 +179,14 @@ resource "google_cloud_run_service" "mattbutterfield-worker" {
       annotations = {
         "run.googleapis.com/cloudsql-instances"    = google_sql_database_instance.mattbutterfield.connection_name
         "autoscaling.knative.dev/maxScale"         = "100"
-        "client.knative.dev/user-image"            = "gcr.io/mattbutterfield/mattbutterfield.com-worker"
         "run.googleapis.com/client-name"           = "gcloud"
-        "run.googleapis.com/client-version"        = "437.0.0"
+        "run.googleapis.com/client-version"        = "472.0.0"
         "run.googleapis.com/execution-environment" = "gen1"
+        "run.googleapis.com/startup-cpu-boost"     = "false"
       }
       labels = {
         "run.googleapis.com/startupProbeType" = "Default"
+        "client.knative.dev/nonce"            = "ugvbyaybbc"
       }
     }
   }
