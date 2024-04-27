@@ -8,7 +8,10 @@ func Migrate() error {
 	err = s.db.AutoMigrate(
 		&Image{},
 		&ImageType{},
+		&StravaAccessToken{},
+		&StravaActivity{},
 		&Song{},
+		&MapBoxConfig{},
 	)
 	if err != nil {
 		return err

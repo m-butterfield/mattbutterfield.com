@@ -55,6 +55,46 @@ func (s *testStore) SaveImage(*data.Image) error {
 	panic("do not call this from controllers")
 }
 
+func (s *testStore) GetStravaAccessToken(string) (*data.StravaAccessToken, error) {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) CreateStravaAccessToken(*data.StravaAccessToken) error {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) UpdateStravaAccessToken(*data.StravaAccessToken) error {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) GetStravaActivity(int64) (*data.StravaActivity, error) {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) GetStravaActivities() ([]*data.StravaActivity, error) {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) GetLatestStravaActivity() (*data.StravaActivity, error) {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) CreateStravaActivity(*data.StravaActivity) error {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) GetMapBoxConfig() (*data.MapBoxConfig, error) {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) UpdateMapBoxConfig(config *data.MapBoxConfig) error {
+	panic("do not call this from controllers")
+}
+
+func (s *testStore) CreateMapBoxConfig(config *data.MapBoxConfig) error {
+	panic("do not call this from controllers")
+}
+
 type testTaskCreator struct {
 	createTask func(string, string, interface{}) (*cloudtaskspb.Task, error)
 }
