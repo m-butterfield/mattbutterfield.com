@@ -6,7 +6,7 @@ import (
 )
 
 type StravaActivity struct {
-	ID                 int64
+	ID                 int64 `gorm:"autoIncrement:false"`
 	Name               string
 	Distance           float32 // in meters
 	MovingTime         int32   // in seconds
