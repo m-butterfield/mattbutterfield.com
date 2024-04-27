@@ -10,20 +10,19 @@ func UpdateHeatMap() error {
 		return err
 	}
 
-	//if err := getLatestActivities(ds); err != nil {
-	//	return err
-	//}
+	if err := getLatestActivities(ds); err != nil {
+		return err
+	}
 
-	_, err = buildHeatmap(ds)
+	mbtilesFileName, err := buildHeatmap(ds)
 	if err != nil {
 		return err
 	}
 
-	//log.Print("Updating Mapbox")
-	//err = updateMapbox(ds, mbtilesFileName)
-	//if err != nil {
-	//	return err
-	//}
+	err = updateMapbox(ds, mbtilesFileName)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

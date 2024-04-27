@@ -198,7 +198,7 @@ func getActivityCoordinates(ds data.Store) ([][][]float64, error) {
 
 	coordinates := make([][][]float64, 0)
 
-	for i, activity := range activities {
+	for _, activity := range activities {
 		log.Printf("Getting GEOJSON for activity %d", activity.ID)
 		object := client.Bucket(lib.FilesBucket).Object(fmt.Sprintf("heatmap-geoJSONData/%d.geojson", activity.ID))
 		reader, err := object.NewReader(ctx)
@@ -222,10 +222,6 @@ func getActivityCoordinates(ds data.Store) ([][][]float64, error) {
 		}
 
 		coordinates = append(coordinates, jsonResult.Coordinates[0])
-
-		if i > 10 {
-			break
-		}
 	}
 
 	return coordinates, nil
