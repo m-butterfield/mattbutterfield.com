@@ -57,8 +57,11 @@ resource "google_cloud_run_service" "mattbutterfield" {
         "autoscaling.knative.dev/maxScale"         = "100"
         "client.knative.dev/user-image"            = "gcr.io/mattbutterfield/mattbutterfield.com"
         "run.googleapis.com/client-name"           = "gcloud"
-        "run.googleapis.com/client-version"        = "378.0.0"
+        "run.googleapis.com/client-version"        = "437.0.0"
         "run.googleapis.com/execution-environment" = "gen1"
+      }
+      labels = {
+        "run.googleapis.com/startupProbeType" = "Default"
       }
     }
   }
@@ -131,9 +134,45 @@ resource "google_cloud_run_service" "mattbutterfield-worker" {
             }
           }
         }
+        env {
+          name = "MAPBOX_USERNAME"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.mapbox_username.secret_id
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "MAPBOX_UPLOAD_ACCESS_TOKEN"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.mapbox_upload_access_token.secret_id
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "STRAVA_CLIENT_ID"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.strava_client_id.secret_id
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "STRAVA_CLIENT_SECRET"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.strava_client_secret.secret_id
+              key  = "latest"
+            }
+          }
+        }
       }
       service_account_name = google_service_account.mattbutterfield_cloud_run.email
-      timeout_seconds = 3600
+      timeout_seconds      = 3600
     }
     metadata {
       annotations = {
@@ -141,8 +180,11 @@ resource "google_cloud_run_service" "mattbutterfield-worker" {
         "autoscaling.knative.dev/maxScale"         = "100"
         "client.knative.dev/user-image"            = "gcr.io/mattbutterfield/mattbutterfield.com-worker"
         "run.googleapis.com/client-name"           = "gcloud"
-        "run.googleapis.com/client-version"        = "378.0.0"
+        "run.googleapis.com/client-version"        = "437.0.0"
         "run.googleapis.com/execution-environment" = "gen1"
+      }
+      labels = {
+        "run.googleapis.com/startupProbeType" = "Default"
       }
     }
   }
