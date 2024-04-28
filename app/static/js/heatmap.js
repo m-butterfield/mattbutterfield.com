@@ -3,8 +3,8 @@ mapboxgl.accessToken = "pk.eyJ1IjoibWJ1dHRlcmZpZWxkIiwiYSI6ImNsdDllbDFkYjA3dGUyc
 const map = new mapboxgl.Map({
   container: "heatmap",
   style: "mapbox://styles/mbutterfield/clt9fms1l003l01qqfjccc3i3",
-  zoom: 10.74,
-  center: [-73.95551, 40.73932]
+  zoom: 9.051149469526258,
+  center: [-73.86565348283756, 40.938546832249756]
 });
 
 map.on("load", () => {

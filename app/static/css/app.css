@@ -87,6 +87,13 @@ code {
 }
 
 #heatmap {
-  margin-top: 50px;
-  height: 600px;
+  grid-column: 1 / 4;
+  justify-self: center;
+  width: 80%;
+  height: 800px;
+}
+
+.heatmap-description {
+  grid-column: 2;
+  margin-bottom: 15px;
 }
