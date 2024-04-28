@@ -130,12 +130,12 @@ func createUpload(ds data.Store, s3Url string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Creating upload with body: %s\n", uploadData)
+	log.Printf("Creating upload with body: %s\n", uploadData)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(uploadData))
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Response code: %d\n", resp.StatusCode)
+	log.Printf("Response code: %d\n", resp.StatusCode)
 	if resp.StatusCode != http.StatusCreated {
 		return fmt.Errorf("unexpected response code: %d", resp.StatusCode)
 	}
