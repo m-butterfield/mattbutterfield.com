@@ -62,6 +62,10 @@ func getLatestActivities(ds data.Store) error {
 				log.Print("Skipping virtual ride")
 				continue
 			}
+			if *activity.SportType == "Workout" {
+				log.Print("Skipping workout")
+				continue
+			}
 			if activity.Private {
 				log.Print("Skipping private activity")
 				continue
