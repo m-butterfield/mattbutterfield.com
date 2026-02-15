@@ -18,25 +18,30 @@ func testRouter() *gin.Engine {
 }
 
 type testStore struct {
-	getImage       func(string) (*data.Image, error)
-	getImages      func(time.Time, int) ([]*data.Image, error)
-	getYearImages  func(int, time.Time, int) ([]*data.Image, error)
-	getRandomImage func() (*data.Image, error)
-	getSongs       func() ([]*data.Song, error)
-	saveSong       func(*data.Song) error
-	saveImage      func(*data.Image) error
+	getImage            func(string) (*data.Image, error)
+	getImages           func(time.Time, int, string) ([]*data.Image, error)
+	getYearImages       func(int, time.Time, int) ([]*data.Image, error)
+	getImageYearsMonths func() ([]*data.YearMonthCount, error)
+	getRandomImage      func() (*data.Image, error)
+	getSongs            func() ([]*data.Song, error)
+	saveSong            func(*data.Song) error
+	saveImage           func(*data.Image) error
 }
 
 func (s *testStore) GetImage(id string) (*data.Image, error) {
 	return s.getImage(id)
 }
 
-func (s *testStore) GetImages(before time.Time, limit int) ([]*data.Image, error) {
-	return s.getImages(before, limit)
+func (s *testStore) GetImages(before time.Time, limit int, filter string) ([]*data.Image, error) {
+	return s.getImages(before, limit, filter)
 }
 
 func (s *testStore) GetYearImages(year int, before time.Time, limit int) ([]*data.Image, error) {
 	return s.getYearImages(year, before, limit)
+}
+
+func (s *testStore) GetImageYearsMonths() ([]*data.YearMonthCount, error) {
+	return s.getImageYearsMonths()
 }
 
 func (s *testStore) GetRandomImage() (*data.Image, error) {

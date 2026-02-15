@@ -5,10 +5,15 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"os"
+	"sync"
+	"time"
 )
 
 type ds struct {
-	db *gorm.DB
+	db                 *gorm.DB
+	yearMonthCache     []*YearMonthCount
+	yearMonthCacheTime time.Time
+	cacheMutex         sync.Mutex
 }
 
 func getDS() (*ds, error) {

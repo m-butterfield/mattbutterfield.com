@@ -11,10 +11,11 @@ import (
 
 func TestPhotos(t *testing.T) {
 	getImagesCalled := 0
+	getImageYearsMonthsCalled := 0
 	expectedBefore := time.Unix(time.Now().Unix(), 0)
 	expectedLimit := 20
 	ds = &testStore{
-		getImages: func(before time.Time, limit int) ([]*data.Image, error) {
+		getImages: func(before time.Time, limit int, filter string) ([]*data.Image, error) {
 			getImagesCalled += 1
 			if before != expectedBefore {
 				t.Errorf("Unexpected before: %s != %s", before, expectedBefore)
@@ -30,6 +31,14 @@ func TestPhotos(t *testing.T) {
 				Height:   200,
 			}}, nil
 		},
+		getImageYearsMonths: func() ([]*data.YearMonthCount, error) {
+			getImageYearsMonthsCalled += 1
+			return []*data.YearMonthCount{{
+				Year:  2023,
+				Month: time.January,
+				Count: 10,
+			}}, nil
+		},
 	}
 	r, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/photos?before=%d", expectedBefore.Unix()), nil)
 	if err != nil {
@@ -40,6 +49,9 @@ func TestPhotos(t *testing.T) {
 	testRouter().ServeHTTP(w, r)
 	if getImagesCalled != 1 {
 		t.Errorf("Unexpected call count for GetImages(): %d", getImagesCalled)
+	}
+	if getImageYearsMonthsCalled != 1 {
+		t.Errorf("Unexpected call count for GetImageYearsMonths(): %d", getImageYearsMonthsCalled)
 	}
 	if w.Code != http.StatusOK {
 		t.Errorf("Unexpected return code: %d", w.Code)

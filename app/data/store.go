@@ -6,8 +6,9 @@ import (
 
 type Store interface {
 	GetImage(string) (*Image, error)
-	GetImages(time.Time, int) ([]*Image, error)
+	GetImages(time.Time, int, string) ([]*Image, error)
 	GetYearImages(int, time.Time, int) ([]*Image, error)
+	GetImageYearsMonths() ([]*YearMonthCount, error)
 	GetRandomImage() (*Image, error)
 	GetSongs() ([]*Song, error)
 	GetStravaAccessToken(string) (*StravaAccessToken, error)
