@@ -14,7 +14,6 @@ type photosPage struct {
 	ImagesInfo []*imageInfo
 	NextURL    string
 	Years      []*yearInfo
-	Filter     string
 }
 
 type yearInfo struct {
@@ -29,7 +28,7 @@ type monthInfo struct {
 }
 
 func photos(c *gin.Context) {
-	images, filter, err := getImages(c)
+	images, err := getImages(c)
 	if err != nil {
 		lib.InternalError(err, c)
 		return
@@ -42,11 +41,7 @@ func photos(c *gin.Context) {
 
 	nextURL := ""
 	if len(images) > 0 {
-		nextURL = fmt.Sprintf("/photos?before=%d", images[len(images)-1].CreatedAt.Unix())
-		if filter != "" {
-			nextURL += fmt.Sprintf("&filter=%s", filter)
-		}
-		nextURL += "#photos"
+		nextURL = fmt.Sprintf("/photos?before=%d#photos", images[len(images)-1].CreatedAt.Unix())
 	}
 
 	ymc, err := ds.GetImageYearsMonths()
@@ -75,12 +70,11 @@ func photos(c *gin.Context) {
 		ImagesInfo: imagesInfo,
 		NextURL:    nextURL,
 		Years:      years,
-		Filter:     filter,
 	})
 	c.Render(200, body)
 }
 
-func getImages(c *gin.Context) ([]*data.Image, string, error) {
+func getImages(c *gin.Context) ([]*data.Image, error) {
 	var before time.Time
 	beforeStr := c.Query("before")
 	if beforeStr != "" {
@@ -95,12 +89,12 @@ func getImages(c *gin.Context) ([]*data.Image, string, error) {
 		if yearStr != "" {
 			year, err := strconv.Atoi(yearStr)
 			if err != nil {
-				return nil, "", err
+				return nil, err
 			}
 			if monthStr != "" {
 				month, err := strconv.Atoi(monthStr)
 				if err != nil {
-					return nil, "", err
+					return nil, err
 				}
 				before = time.Date(year, time.Month(month)+1, 1, 0, 0, 0, 0, time.UTC)
 			} else {
@@ -111,11 +105,10 @@ func getImages(c *gin.Context) ([]*data.Image, string, error) {
 		}
 	}
 
-	filter := c.Query("filter")
-	images, err := ds.GetImages(before, 20, filter)
+	images, err := ds.GetImages(before, 20)
 	if err != nil {
 		lib.InternalError(err, c)
-		return nil, "", err
+		return nil, err
 	}
-	return images, filter, nil
+	return images, nil
 }

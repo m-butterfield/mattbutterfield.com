@@ -15,7 +15,7 @@ func TestPhotos(t *testing.T) {
 	expectedBefore := time.Unix(time.Now().Unix(), 0)
 	expectedLimit := 20
 	ds = &testStore{
-		getImages: func(before time.Time, limit int, filter string) ([]*data.Image, error) {
+		getImages: func(before time.Time, limit int) ([]*data.Image, error) {
 			getImagesCalled += 1
 			if before != expectedBefore {
 				t.Errorf("Unexpected before: %s != %s", before, expectedBefore)

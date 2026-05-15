@@ -4,15 +4,12 @@
 <div id="photos-container">
   <div id="photos-sidebar">
     <ul>
-      <li>
-        <a href="/photos">all</a> | <a href="/photos?filter=film">film</a> | <a href="/photos?filter=digital">digital</a>
-      </li>
       {{ range $i, $year := .Years }}
         <li>
-          <a class="year-link" href="/photos?year={{ $year.Year }}{{ if $.Filter }}&filter={{ $.Filter }}{{ end }}">{{ .Year }}</a>
+          <a class="year-link" href="/photos?year={{ $year.Year }}">{{ .Year }}</a>
           <ul>
             {{ range $j, $month := .Months }}
-              <li><a href="/photos?year={{ $year.Year }}&month={{ $month.Month }}{{ if $.Filter }}&filter={{ $.Filter }}{{ end }}">{{ $month.MonthName }}</a></li>
+              <li><a href="/photos?year={{ $year.Year }}&month={{ $month.Month }}">{{ $month.MonthName }}</a></li>
             {{ end }}
           </ul>
         </li>

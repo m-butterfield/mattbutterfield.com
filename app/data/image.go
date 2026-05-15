@@ -37,16 +37,11 @@ func (s *ds) GetImage(id string) (*Image, error) {
 	return image, nil
 }
 
-func (s *ds) GetImages(before time.Time, limit int, filter string) ([]*Image, error) {
+func (s *ds) GetImages(before time.Time, limit int) ([]*Image, error) {
 	var images []*Image
 	tx := s.db.
-		Where("created_at < $1", before)
-	if filter == "film" {
-		tx = tx.Where("film != ''")
-	} else if filter == "digital" {
-		tx = tx.Where("film = '' OR film IS NULL")
-	}
-	tx = tx.Order("created_at DESC").
+		Where("created_at < $1", before).
+		Order("created_at DESC").
 		Limit(limit).
 		Find(&images)
 	if tx.Error != nil {
