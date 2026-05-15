@@ -36,6 +36,9 @@ type SaveImageRequest struct {
 	Location      string             `json:"location"`
 	Caption       string             `json:"caption"`
 	ImageType     data.ImageTypeName `json:"imageType"`
+	Camera        string             `json:"camera"`
+	Lens          string             `json:"lens"`
+	Film          string             `json:"film"`
 }
 
 type CreatedDateJSON struct {

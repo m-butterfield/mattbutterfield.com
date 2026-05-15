@@ -86,6 +86,9 @@ func saveImage(c *gin.Context) {
 		Height:     size.Height,
 		ImageTypes: imageTypes,
 		CreatedAt:  body.CreatedDate.Time,
+		Camera:     body.Camera,
+		Lens:       body.Lens,
+		Film:       body.Film,
 	}); err != nil {
 		lib.InternalError(err, c)
 		return
