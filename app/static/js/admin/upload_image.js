@@ -29,6 +29,9 @@ document.querySelector("#upload-button").addEventListener("click", async functio
     caption: document.querySelector("#caption").value,
     location: document.querySelector("#location").value,
     imageType: imageType,
+    camera: document.querySelector("#camera").value,
+    lens: document.querySelector("#lens").value,
+    film: document.querySelector("#film").value,
   }).catch(err => {
     alert("error saving image");
     console.log(err);

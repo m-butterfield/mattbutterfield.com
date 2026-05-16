@@ -26,22 +26,22 @@ deploy-worker: docker-build-worker docker-push-worker
 	$(deployworkercommand)
 
 docker-build:
-	docker-compose build
+	docker compose build
 
 docker-build-server:
-	docker-compose build server
+	docker compose build server
 
 docker-build-worker:
-	docker-compose build worker
+	docker compose build worker
 
 docker-push:
-	docker-compose push
+	docker compose push
 
 docker-push-server:
-	docker-compose push server
+	docker compose push server
 
 docker-push-worker:
-	docker-compose push worker
+	docker compose push worker
 
 reset-db:
 	dropdb --if-exists mattbutterfield

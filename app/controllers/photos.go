@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"strconv"
-	"time"
 )
 
 type photosPage struct {

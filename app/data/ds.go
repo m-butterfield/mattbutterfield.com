@@ -1,10 +1,11 @@
 package data
 
 import (
+	"os"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"os"
 )
 
 type ds struct {

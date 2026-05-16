@@ -10,7 +10,10 @@ type Image struct {
 	Location   string    `gorm:"type:text"`
 	Width      int       `gorm:"type:integer;not null"`
 	Height     int       `gorm:"type:integer;not null"`
-	CreatedAt  time.Time `gorm:"not null;default:now()"`
+	CreatedAt  time.Time `gorm:"not null;default:now();index"`
+	Camera     string    `gorm:"type:text"`
+	Lens       string    `gorm:"type:text"`
+	Film       string    `gorm:"type:text"`
 	ImageTypes []ImageType
 }
 

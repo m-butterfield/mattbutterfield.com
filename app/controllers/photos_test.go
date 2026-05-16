@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
 )
 
 func TestPhotos(t *testing.T) {
