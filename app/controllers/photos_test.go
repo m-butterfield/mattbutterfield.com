@@ -2,16 +2,16 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
 )
 
 func TestPhotos(t *testing.T) {
 	getImagesCalled := 0
-	getImageYearsMonthsCalled := 0
 	expectedBefore := time.Unix(time.Now().Unix(), 0)
 	expectedLimit := 20
 	ds = &testStore{
@@ -31,14 +31,6 @@ func TestPhotos(t *testing.T) {
 				Height:   200,
 			}}, nil
 		},
-		getImageYearsMonths: func() ([]*data.YearMonthCount, error) {
-			getImageYearsMonthsCalled += 1
-			return []*data.YearMonthCount{{
-				Year:  2023,
-				Month: time.January,
-				Count: 10,
-			}}, nil
-		},
 	}
 	r, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/photos?before=%d", expectedBefore.Unix()), nil)
 	if err != nil {
@@ -49,9 +41,6 @@ func TestPhotos(t *testing.T) {
 	testRouter().ServeHTTP(w, r)
 	if getImagesCalled != 1 {
 		t.Errorf("Unexpected call count for GetImages(): %d", getImagesCalled)
-	}
-	if getImageYearsMonthsCalled != 1 {
-		t.Errorf("Unexpected call count for GetImageYearsMonths(): %d", getImageYearsMonthsCalled)
 	}
 	if w.Code != http.StatusOK {
 		t.Errorf("Unexpected return code: %d", w.Code)

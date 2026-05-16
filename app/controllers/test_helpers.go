@@ -1,11 +1,12 @@
 package controllers
 
 import (
+	"log"
+	"time"
+
 	"cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 	"github.com/gin-gonic/gin"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
-	"log"
-	"time"
 )
 
 func testRouter() *gin.Engine {
@@ -18,14 +19,13 @@ func testRouter() *gin.Engine {
 }
 
 type testStore struct {
-	getImage            func(string) (*data.Image, error)
-	getImages           func(time.Time, int) ([]*data.Image, error)
-	getYearImages       func(int, time.Time, int) ([]*data.Image, error)
-	getImageYearsMonths func() ([]*data.YearMonthCount, error)
-	getRandomImage      func() (*data.Image, error)
-	getSongs            func() ([]*data.Song, error)
-	saveSong            func(*data.Song) error
-	saveImage           func(*data.Image) error
+	getImage       func(string) (*data.Image, error)
+	getImages      func(time.Time, int) ([]*data.Image, error)
+	getYearImages  func(int, time.Time, int) ([]*data.Image, error)
+	getRandomImage func() (*data.Image, error)
+	getSongs       func() ([]*data.Song, error)
+	saveSong       func(*data.Song) error
+	saveImage      func(*data.Image) error
 }
 
 func (s *testStore) GetImage(id string) (*data.Image, error) {
@@ -38,10 +38,6 @@ func (s *testStore) GetImages(before time.Time, limit int) ([]*data.Image, error
 
 func (s *testStore) GetYearImages(year int, before time.Time, limit int) ([]*data.Image, error) {
 	return s.getYearImages(year, before, limit)
-}
-
-func (s *testStore) GetImageYearsMonths() ([]*data.YearMonthCount, error) {
-	return s.getImageYearsMonths()
 }
 
 func (s *testStore) GetRandomImage() (*data.Image, error) {

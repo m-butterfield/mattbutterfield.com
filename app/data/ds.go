@@ -1,19 +1,15 @@
 package data
 
 import (
+	"os"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"os"
-	"sync"
-	"time"
 )
 
 type ds struct {
-	db                 *gorm.DB
-	yearMonthCache     []*YearMonthCount
-	yearMonthCacheTime time.Time
-	cacheMutex         sync.Mutex
+	db *gorm.DB
 }
 
 func getDS() (*ds, error) {
