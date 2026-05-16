@@ -1,21 +1,22 @@
 package heatmap
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/antihax/optional"
-	"github.com/m-butterfield/mattbutterfield.com/app/data"
-	"github.com/m-butterfield/mattbutterfield.com/app/lib"
-	"github.com/m-butterfield/mattbutterfield.com/strava-api/swagger"
 	"io"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"cloud.google.com/go/storage"
+	"github.com/antihax/optional"
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
+	"github.com/m-butterfield/mattbutterfield.com/strava-api/swagger"
 )
 
 func getLatestActivities(ds data.Store) error {
@@ -66,10 +67,10 @@ func getLatestActivities(ds data.Store) error {
 				log.Print("Skipping workout")
 				continue
 			}
-			if activity.Private {
-				log.Print("Skipping private activity")
-				continue
-			}
+			//if activity.Private {
+			//	log.Print("Skipping private activity")
+			//	continue
+			//}
 			if activity.Manual {
 				log.Print("Skipping manually created activity")
 				continue
