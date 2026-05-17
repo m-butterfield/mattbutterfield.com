@@ -78,6 +78,16 @@ func saveImage(c *gin.Context) {
 		})
 	}
 
+	var tags []data.Tag
+	for _, tagName := range body.Tags {
+		if tagName != "" {
+			tags = append(tags, data.Tag{
+				Name: tagName,
+				Slug: data.MakeTagSlug(tagName),
+			})
+		}
+	}
+
 	if err = ds.SaveImage(&data.Image{
 		ID:         fileName,
 		Caption:    body.Caption,
@@ -85,6 +95,7 @@ func saveImage(c *gin.Context) {
 		Width:      size.Width,
 		Height:     size.Height,
 		ImageTypes: imageTypes,
+		Tags:       tags,
 		CreatedAt:  body.CreatedDate.Time,
 		Camera:     body.Camera,
 		Lens:       body.Lens,

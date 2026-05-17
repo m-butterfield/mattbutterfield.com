@@ -15,6 +15,7 @@ type Image struct {
 	Lens       string    `gorm:"type:text"`
 	Film       string    `gorm:"type:text"`
 	ImageTypes []ImageType
+	Tags       []Tag `gorm:"many2many:image_tags;"`
 }
 
 type ImageType struct {
@@ -73,11 +74,4 @@ func (s *ds) GetRandomImage() (*Image, error) {
 		return nil, tx.Error
 	}
 	return image, nil
-}
-
-func (s *ds) SaveImage(image *Image) error {
-	if tx := s.db.Create(image); tx.Error != nil {
-		return tx.Error
-	}
-	return nil
 }
