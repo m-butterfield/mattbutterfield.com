@@ -8,6 +8,9 @@ module.exports = {
     "ecmaVersion": 12,
     "sourceType": "module"
   },
+  "globals": {
+    "mapboxgl": "readonly"
+  },
   "rules": {
     "indent": [
       "error",
