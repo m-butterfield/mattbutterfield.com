@@ -32,6 +32,15 @@ func (s *ds) GetImagesByTag(slugs []string, before time.Time, limit int) ([]*Ima
 	return images, nil
 }
 
+func (s *ds) GetTagsBySlugs(slugs []string) ([]*Tag, error) {
+	var tags []*Tag
+	tx := s.db.Where("slug IN ?", slugs).Find(&tags)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return tags, nil
+}
+
 func (s *ds) GetImageTags(imageID string) ([]*Tag, error) {
 	var tags []*Tag
 	tx := s.db.

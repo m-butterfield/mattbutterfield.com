@@ -22,6 +22,7 @@ type Store interface {
 	GetMapBoxConfig() (*MapBoxConfig, error)
 	UpdateMapBoxConfig(config *MapBoxConfig) error
 	CreateMapBoxConfig(config *MapBoxConfig) error
+	GetTagsBySlugs([]string) ([]*Tag, error)
 	GetImagesByTag([]string, time.Time, int) ([]*Image, error)
 }
 

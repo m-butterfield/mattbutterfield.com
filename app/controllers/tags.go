@@ -19,6 +19,16 @@ func tagImages(c *gin.Context) {
 	}
 	slugs := strings.Split(raw, ",")
 
+	tags, err := ds.GetTagsBySlugs(slugs)
+	if err != nil {
+		lib.InternalError(err, c)
+		return
+	}
+	tagNames := make([]string, len(tags))
+	for i, t := range tags {
+		tagNames[i] = t.Name
+	}
+
 	var before time.Time
 	beforeStr := c.Query("before")
 	if beforeStr == "" {
@@ -51,7 +61,7 @@ func tagImages(c *gin.Context) {
 	body, err := templateRender("photos/index", &photosPage{
 		basePage:   makeBasePage(),
 		ImagesInfo: imagesInfo,
-		TagNames:   raw,
+		TagNames:   strings.Join(tagNames, ", "),
 		NextURL:    nextURL,
 	})
 	if err != nil {

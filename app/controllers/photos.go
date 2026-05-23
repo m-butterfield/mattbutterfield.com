@@ -51,6 +51,7 @@ func getImages(c *gin.Context) ([]*data.Image, error) {
 		beforeInt, err := strconv.ParseInt(beforeStr, 10, 64)
 		if err != nil {
 			lib.InternalError(err, c)
+			return nil, err
 		}
 		before = time.Unix(beforeInt, 0)
 	}

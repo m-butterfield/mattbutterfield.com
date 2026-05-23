@@ -11,6 +11,9 @@ import (
 
 func TestTagImages(t *testing.T) {
 	ds = &testStore{
+		getTagsBySlugs: func(slugs []string) ([]*data.Tag, error) {
+			return []*data.Tag{{Name: "Travel", Slug: "travel"}}, nil
+		},
 		getImagesByTag: func(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
 			return []*data.Image{
 				{ID: "test.jpg", Width: 100, Height: 100},
@@ -37,6 +40,12 @@ func TestTagImages(t *testing.T) {
 
 func TestTagImagesMulti(t *testing.T) {
 	ds = &testStore{
+		getTagsBySlugs: func(slugs []string) ([]*data.Tag, error) {
+			return []*data.Tag{
+				{Name: "Travel", Slug: "travel"},
+				{Name: "Food", Slug: "food"},
+			}, nil
+		},
 		getImagesByTag: func(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
 			return []*data.Image{
 				{ID: "test.jpg", Width: 100, Height: 100},
@@ -63,6 +72,9 @@ func TestTagImagesMulti(t *testing.T) {
 
 func TestTagImagesEmpty(t *testing.T) {
 	ds = &testStore{
+		getTagsBySlugs: func(slugs []string) ([]*data.Tag, error) {
+			return []*data.Tag{}, nil
+		},
 		getImagesByTag: func(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
 			return []*data.Image{}, nil
 		},
