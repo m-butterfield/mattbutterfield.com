@@ -43,6 +43,48 @@ func TestSaveImageWithTags(t *testing.T) {
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
 }
 
+func TestSaveImageReusesExistingTag(t *testing.T) {
+	s, err := getDS()
+	if err != nil {
+		t.Fatal(err)
+	}
+	image1 := &Image{
+		ID:     "first.jpg",
+		Width:  100,
+		Height: 100,
+		Tags: []Tag{
+			{Name: "Travel", Slug: "travel"},
+		},
+	}
+	if err = s.SaveImage(image1); err != nil {
+		t.Fatal(err)
+	}
+
+	image2 := &Image{
+		ID:     "second.jpg",
+		Width:  200,
+		Height: 200,
+		Tags: []Tag{
+			{Name: "Travel", Slug: "travel"},
+		},
+	}
+	if err = s.SaveImage(image2); err != nil {
+		t.Fatal(err)
+	}
+
+	tags, err := s.GetImageTags(image2.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Len(t, tags, 1)
+	assert.Equal(t, "Travel", tags[0].Name)
+
+	// cleanup
+	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
+	s.db.Exec("DELETE FROM image_tags")
+	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
+}
+
 func TestGetTags(t *testing.T) {
 	s, err := getDS()
 	if err != nil {

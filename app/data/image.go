@@ -2,8 +2,6 @@ package data
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Image struct {
@@ -79,32 +77,8 @@ func (s *ds) GetRandomImage() (*Image, error) {
 }
 
 func (s *ds) SaveImage(image *Image) error {
-	tags := image.Tags
-	image.Tags = nil
-
 	if tx := s.db.Create(image); tx.Error != nil {
 		return tx.Error
-	}
-
-	for i := range tags {
-		tag := &tags[i]
-		var existing Tag
-		result := s.db.Where("slug = ?", tag.Slug).First(&existing)
-		if result.Error != nil {
-			if result.Error == gorm.ErrRecordNotFound {
-				if err := s.db.Create(tag).Error; err != nil {
-					return err
-				}
-			} else {
-				return result.Error
-			}
-		} else {
-			tags[i] = existing
-		}
-	}
-
-	if len(tags) > 0 {
-		return s.db.Model(image).Association("Tags").Append(tags)
 	}
 	return nil
 }
