@@ -101,11 +101,53 @@ func TestGetImagesByTag(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	images, err := s.GetImagesByTag("travel", time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC), 10)
+	images, err := s.GetImagesByTag([]string{"travel"}, time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC), 10)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assert.Len(t, images, 2)
+
+	// cleanup
+	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
+	s.db.Exec("DELETE FROM image_tags")
+	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
+}
+
+func TestGetImagesByMultipleTags(t *testing.T) {
+	s, err := getDS()
+	if err != nil {
+		t.Fatal(err)
+	}
+	image1 := &Image{
+		ID:     "test_multi1.jpg",
+		Width:  100,
+		Height: 100,
+		Tags: []Tag{
+			{Name: "Travel", Slug: "travel"},
+			{Name: "Food", Slug: "food"},
+		},
+	}
+	image2 := &Image{
+		ID:     "test_multi2.jpg",
+		Width:  200,
+		Height: 200,
+		Tags: []Tag{
+			{Name: "Travel", Slug: "travel"},
+		},
+	}
+	if err = s.SaveImage(image1); err != nil {
+		t.Fatal(err)
+	}
+	if err = s.SaveImage(image2); err != nil {
+		t.Fatal(err)
+	}
+
+	images, err := s.GetImagesByTag([]string{"travel", "food"}, time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC), 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Len(t, images, 1)
+	assert.Equal(t, "test_multi1.jpg", images[0].ID)
 
 	// cleanup
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})

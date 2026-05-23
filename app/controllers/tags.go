@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -11,24 +12,12 @@ import (
 )
 
 func tagImages(c *gin.Context) {
-	slug := c.Param("slug")
-	tags, err := ds.GetTags()
-	if err != nil {
-		lib.InternalError(err, c)
-		return
-	}
-
-	var tagName string
-	for _, t := range tags {
-		if t.Slug == slug {
-			tagName = t.Name
-			break
-		}
-	}
-	if tagName == "" {
+	raw := c.Param("slugs")
+	if raw == "" {
 		c.String(http.StatusNotFound, "tag not found")
 		return
 	}
+	slugs := strings.Split(raw, ",")
 
 	var before time.Time
 	beforeStr := c.Query("before")
@@ -43,7 +32,7 @@ func tagImages(c *gin.Context) {
 		before = time.Unix(beforeInt, 0)
 	}
 
-	images, err := ds.GetImagesByTag(slug, before, 20)
+	images, err := ds.GetImagesByTag(slugs, before, 20)
 	if err != nil {
 		lib.InternalError(err, c)
 		return
@@ -56,13 +45,13 @@ func tagImages(c *gin.Context) {
 
 	nextURL := ""
 	if len(images) > 0 {
-		nextURL = fmt.Sprintf("/tag/%s?before=%d#photos", slug, images[len(images)-1].CreatedAt.Unix())
+		nextURL = fmt.Sprintf("/tag/%s?before=%d#photos", raw, images[len(images)-1].CreatedAt.Unix())
 	}
 
 	body, err := templateRender("photos/index", &photosPage{
 		basePage:   makeBasePage(),
 		ImagesInfo: imagesInfo,
-		TagName:    tagName,
+		TagNames:   raw,
 		NextURL:    nextURL,
 	})
 	if err != nil {

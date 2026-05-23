@@ -14,7 +14,7 @@ type photosPage struct {
 	*basePage
 	ImagesInfo []*imageInfo
 	NextURL    string
-	TagName    string
+	TagNames   string
 }
 
 func photos(c *gin.Context) {

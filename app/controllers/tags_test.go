@@ -11,10 +11,7 @@ import (
 
 func TestTagImages(t *testing.T) {
 	ds = &testStore{
-		getTags: func() ([]*data.Tag, error) {
-			return []*data.Tag{{Name: "Travel", Slug: "travel"}}, nil
-		},
-		getImagesByTag: func(slug string, before time.Time, limit int) ([]*data.Image, error) {
+		getImagesByTag: func(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
 			return []*data.Image{
 				{ID: "test.jpg", Width: 100, Height: 100},
 			}, nil
@@ -38,10 +35,36 @@ func TestTagImages(t *testing.T) {
 	}
 }
 
-func TestTagImagesNotFound(t *testing.T) {
+func TestTagImagesMulti(t *testing.T) {
 	ds = &testStore{
-		getTags: func() ([]*data.Tag, error) {
-			return []*data.Tag{}, nil
+		getImagesByTag: func(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
+			return []*data.Image{
+				{ID: "test.jpg", Width: 100, Height: 100},
+			}, nil
+		},
+	}
+	tc = &testTaskCreator{
+		createTask: func(string, string, interface{}) (*cloudtaskspb.Task, error) {
+			return &cloudtaskspb.Task{}, nil
+		},
+	}
+
+	r, err := http.NewRequest(http.MethodGet, "/tag/travel,food", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := httptest.NewRecorder()
+	testRouter().ServeHTTP(w, r)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Unexpected return code: %d", w.Code)
+	}
+}
+
+func TestTagImagesEmpty(t *testing.T) {
+	ds = &testStore{
+		getImagesByTag: func(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
+			return []*data.Image{}, nil
 		},
 	}
 	tc = &testTaskCreator{
@@ -57,7 +80,7 @@ func TestTagImagesNotFound(t *testing.T) {
 	w := httptest.NewRecorder()
 	testRouter().ServeHTTP(w, r)
 
-	if w.Code != http.StatusNotFound {
+	if w.Code != http.StatusOK {
 		t.Errorf("Unexpected return code: %d", w.Code)
 	}
 }

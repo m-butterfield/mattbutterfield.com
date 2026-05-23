@@ -26,12 +26,14 @@ func (s *ds) GetTags() ([]*Tag, error) {
 	return tags, nil
 }
 
-func (s *ds) GetImagesByTag(slug string, before time.Time, limit int) ([]*Image, error) {
+func (s *ds) GetImagesByTag(slugs []string, before time.Time, limit int) ([]*Image, error) {
 	var images []*Image
 	tx := s.db.
 		Joins("JOIN image_tags ON image_tags.image_id = images.id").
-		Where("image_tags.tag_slug = ?", slug).
+		Where("image_tags.tag_slug IN ?", slugs).
 		Where("created_at < ?", before).
+		Group("images.id").
+		Having("COUNT(DISTINCT image_tags.tag_slug) = ?", len(slugs)).
 		Order("created_at DESC").
 		Limit(limit).
 		Find(&images)
