@@ -61,7 +61,7 @@ func TestGetTags(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tags, err := s.GetTags()
+	tags, err := s.GetImageTags(image.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
