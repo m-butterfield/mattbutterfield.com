@@ -145,7 +145,7 @@ func processImage(ctx context.Context, obj *storage.ObjectHandle) (*bimg.ImageSi
 	imgData, err := img.Process(bimg.Options{
 		Width:   width,
 		Height:  height,
-		Quality: 100,
+		Quality: 98,
 	})
 	if err != nil {
 		return nil, nil, err
