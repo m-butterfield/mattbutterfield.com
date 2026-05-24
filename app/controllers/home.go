@@ -15,9 +15,11 @@ type homePage struct {
 }
 
 func makeHomePage(image *data.Image, nextImageID string) homePage {
+	info := getImageInfo(image)
+	info.LinkImage = false
 	return homePage{
 		basePage:      makeBasePage(),
-		imageInfo:     getImageInfo(image),
+		imageInfo:     info,
 		NextImagePath: makeImagePath(nextImageID),
 	}
 }

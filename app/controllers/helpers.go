@@ -67,6 +67,7 @@ func isLoggedIn(c *gin.Context) bool {
 
 type imageInfo struct {
 	ImageID       string
+	ImagePath     string
 	ImageURL      string
 	ImageWidth    int
 	ImageHeight   int
@@ -76,6 +77,7 @@ type imageInfo struct {
 	EditID        string
 	EditImagePath string
 	ImageTags     []*data.Tag
+	LinkImage     bool
 }
 
 func getImageInfo(image *data.Image) *imageInfo {
@@ -86,6 +88,7 @@ func getImageInfo(image *data.Image) *imageInfo {
 	}
 	return &imageInfo{
 		ImageID:       image.ID,
+		ImagePath:     makeImagePath(image.ID),
 		ImageURL:      lib.ImagesBaseURL + image.ID,
 		ImageWidth:    image.Width,
 		ImageHeight:   image.Height,
@@ -95,6 +98,7 @@ func getImageInfo(image *data.Image) *imageInfo {
 		EditID:        encodedID,
 		EditImagePath: "/admin/edit_image/" + encodedID,
 		ImageTags:     tags,
+		LinkImage:     true,
 	}
 }
 
