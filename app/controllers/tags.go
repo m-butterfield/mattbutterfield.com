@@ -58,15 +58,12 @@ func tagImages(c *gin.Context) {
 		nextURL = fmt.Sprintf("/tag/%s?before=%d#photos", raw, images[len(images)-1].CreatedAt.Unix())
 	}
 
-	page := &photosPage{
-		basePage:   makeBasePage(),
+	body, err := templateRender("photos/index", &photosPage{
+		basePage:   makeBasePage(c),
 		ImagesInfo: imagesInfo,
 		TagNames:   strings.Join(tagNames, ", "),
 		NextURL:    nextURL,
-	}
-	page.LoggedIn = isLoggedIn(c)
-
-	body, err := templateRender("photos/index", page)
+	})
 	if err != nil {
 		lib.InternalError(err, c)
 		return

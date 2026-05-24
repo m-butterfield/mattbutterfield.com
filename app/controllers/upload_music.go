@@ -6,7 +6,7 @@ import (
 )
 
 func uploadMusic(c *gin.Context) {
-	body, err := templateRender("admin/upload_music", makeBasePage())
+	body, err := templateRender("admin/upload_music", makeBasePage(c))
 	if err != nil {
 		lib.InternalError(err, c)
 		return

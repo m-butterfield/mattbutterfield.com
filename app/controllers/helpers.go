@@ -113,17 +113,18 @@ type singleImagePage struct {
 	*imageInfo
 }
 
-func makeSingleImagePage(image *data.Image) *singleImagePage {
+func makeSingleImagePage(c *gin.Context, image *data.Image) *singleImagePage {
 	return &singleImagePage{
-		basePage:  makeBasePage(),
+		basePage:  makeBasePage(c),
 		imageInfo: getImageInfo(image),
 	}
 }
 
-func makeBasePage() *basePage {
+func makeBasePage(c *gin.Context) *basePage {
 	return &basePage{
 		ImagesBaseURL: lib.ImagesBaseURL,
 		Year:          time.Now().Format("2006"),
+		LoggedIn:      isLoggedIn(c),
 	}
 }
 

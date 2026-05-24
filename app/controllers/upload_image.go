@@ -20,7 +20,7 @@ func uploadImage(c *gin.Context) {
 	}
 
 	body, err := templateRender("admin/upload_image", uploadPage{
-		basePage: makeBasePage(),
+		basePage: makeBasePage(c),
 		ImageTypes: []data.ImageTypeName{
 			data.PhotoADayImageType,
 		},

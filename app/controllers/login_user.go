@@ -20,7 +20,7 @@ func loginUser(c *gin.Context) {
 			c.Redirect(http.StatusFound, next)
 		} else {
 			body, err := templateRender("login", loginPage{
-				basePage: makeBasePage(),
+				basePage: makeBasePage(c),
 				LoggedIn: true,
 			})
 			if err != nil {

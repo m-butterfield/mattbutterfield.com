@@ -13,7 +13,7 @@ type loginPage struct {
 func login(c *gin.Context) {
 	_, loggedIn := c.Get("loggedIn")
 	body, err := templateRender("login", loginPage{
-		basePage: makeBasePage(),
+		basePage: makeBasePage(c),
 		LoggedIn: loggedIn,
 	})
 	if err != nil {

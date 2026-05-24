@@ -6,7 +6,7 @@ import (
 )
 
 func heatmap(c *gin.Context) {
-	body, err := templateRender("heatmap", makeBasePage())
+	body, err := templateRender("heatmap", makeBasePage(c))
 	if err != nil {
 		lib.InternalError(err, c)
 		return

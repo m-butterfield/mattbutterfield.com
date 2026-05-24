@@ -6,7 +6,7 @@ import (
 )
 
 func photoADay(c *gin.Context) {
-	body, err := templateRender("photos/photo_a_day/index", makeBasePage())
+	body, err := templateRender("photos/photo_a_day/index", makeBasePage(c))
 	if err != nil {
 		lib.InternalError(err, c)
 		return

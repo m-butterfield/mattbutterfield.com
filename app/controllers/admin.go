@@ -6,7 +6,7 @@ import (
 )
 
 func admin(c *gin.Context) {
-	body, err := templateRender("admin/index", makeBasePage())
+	body, err := templateRender("admin/index", makeBasePage(c))
 	if err != nil {
 		lib.InternalError(err, c)
 		return

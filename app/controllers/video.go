@@ -6,7 +6,7 @@ import (
 )
 
 func video(c *gin.Context) {
-	body, err := templateRender("video", makeBasePage())
+	body, err := templateRender("video", makeBasePage(c))
 	if err != nil {
 		lib.InternalError(err, c)
 		return

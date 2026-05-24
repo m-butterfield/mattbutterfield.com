@@ -27,7 +27,7 @@ func blogEntry(c *gin.Context) {
 		return
 	}
 
-	body, err := templateRender(entryPath, makeSingleImagePage(image))
+	body, err := templateRender(entryPath, makeSingleImagePage(c, image))
 	if err != nil {
 		lib.InternalError(err, c)
 		return

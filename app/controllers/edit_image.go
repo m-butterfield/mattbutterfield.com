@@ -64,7 +64,7 @@ func editImage(c *gin.Context) {
 	}
 
 	body, err := templateRender("admin/edit_image", &editImagePage{
-		basePage:  makeBasePage(),
+		basePage:  makeBasePage(c),
 		imageInfo: getImageInfo(image),
 		AllTags:   allTags,
 		ImageTypes: []data.ImageTypeName{

@@ -14,11 +14,11 @@ type homePage struct {
 	NextImagePath string
 }
 
-func makeHomePage(image *data.Image, nextImageID string) homePage {
+func makeHomePage(c *gin.Context, image *data.Image, nextImageID string) homePage {
 	info := getImageInfo(image)
 	info.LinkImage = false
 	return homePage{
-		basePage:      makeBasePage(),
+		basePage:      makeBasePage(c),
 		imageInfo:     info,
 		NextImagePath: makeImagePath(nextImageID),
 	}
@@ -44,9 +44,7 @@ func home(c *gin.Context) {
 		lib.InternalError(err, c)
 		return
 	}
-	page := makeHomePage(image, nextImage.ID)
-	page.LoggedIn = isLoggedIn(c)
-	body, err := templateRender("index", page)
+	body, err := templateRender("index", makeHomePage(c, image, nextImage.ID))
 	if err != nil {
 		lib.InternalError(err, c)
 		return

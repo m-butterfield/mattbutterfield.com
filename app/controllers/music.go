@@ -36,7 +36,7 @@ func music(c *gin.Context) {
 			MusicBaseURL string
 			Songs        []*data.Song
 		}{
-			basePage:     makeBasePage(),
+			basePage:     makeBasePage(c),
 			MusicBaseURL: lib.MusicBaseURL,
 			Songs:        songs,
 		},

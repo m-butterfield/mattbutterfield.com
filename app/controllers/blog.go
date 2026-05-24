@@ -11,7 +11,7 @@ func blog(c *gin.Context) {
 		lib.InternalError(err, c)
 		return
 	}
-	body, err := templateRender("blog/index", makeSingleImagePage(image))
+	body, err := templateRender("blog/index", makeSingleImagePage(c, image))
 	if err != nil {
 		lib.InternalError(err, c)
 		return

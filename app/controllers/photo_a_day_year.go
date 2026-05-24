@@ -45,10 +45,14 @@ func photoADayYear(c *gin.Context) {
 	}
 
 	body, err := templateRender(yearPath, &photosPage{
-		basePage:   makeBasePage(),
+		basePage:   makeBasePage(c),
 		ImagesInfo: imagesInfo,
 		NextURL:    nextURL,
 	})
+	if err != nil {
+		lib.InternalError(err, c)
+		return
+	}
 	c.Render(200, body)
 }
 
