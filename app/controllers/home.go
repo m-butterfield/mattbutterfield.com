@@ -42,7 +42,9 @@ func home(c *gin.Context) {
 		lib.InternalError(err, c)
 		return
 	}
-	body, err := templateRender("index", makeHomePage(image, nextImage.ID))
+	page := makeHomePage(image, nextImage.ID)
+	page.LoggedIn = isLoggedIn(c)
+	body, err := templateRender("index", page)
 	if err != nil {
 		lib.InternalError(err, c)
 		return

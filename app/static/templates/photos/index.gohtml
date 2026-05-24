@@ -9,6 +9,7 @@
       {{ template "image" . }}
       <p>{{ .ImageLocation }}</p>
       <p>{{ .ImageCaption }}</p>
+      {{ if $.LoggedIn }}<p><a href="{{ .EditImagePath }}">edit</a></p>{{ end }}
     </div>
   {{ end }}
   {{ if .NextURL }}

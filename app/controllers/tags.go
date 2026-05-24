@@ -12,14 +12,14 @@ import (
 )
 
 func tagImages(c *gin.Context) {
-	raw := c.Param("slugs")
+	raw := c.Param("names")
 	if raw == "" {
 		c.String(http.StatusNotFound, "tag not found")
 		return
 	}
-	slugs := strings.Split(raw, ",")
+	names := strings.Split(raw, ",")
 
-	tags, err := ds.GetTagsBySlugs(slugs)
+	tags, err := ds.GetTagsByNames(names)
 	if err != nil {
 		lib.InternalError(err, c)
 		return
@@ -42,7 +42,7 @@ func tagImages(c *gin.Context) {
 		before = time.Unix(beforeInt, 0)
 	}
 
-	images, err := ds.GetImagesByTag(slugs, before, 20)
+	images, err := ds.GetImagesByTag(names, before, 20)
 	if err != nil {
 		lib.InternalError(err, c)
 		return
@@ -58,12 +58,15 @@ func tagImages(c *gin.Context) {
 		nextURL = fmt.Sprintf("/tag/%s?before=%d#photos", raw, images[len(images)-1].CreatedAt.Unix())
 	}
 
-	body, err := templateRender("photos/index", &photosPage{
+	page := &photosPage{
 		basePage:   makeBasePage(),
 		ImagesInfo: imagesInfo,
 		TagNames:   strings.Join(tagNames, ", "),
 		NextURL:    nextURL,
-	})
+	}
+	page.LoggedIn = isLoggedIn(c)
+
+	body, err := templateRender("photos/index", page)
 	if err != nil {
 		lib.InternalError(err, c)
 		return

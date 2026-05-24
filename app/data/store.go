@@ -13,6 +13,7 @@ type Store interface {
 	GetStravaAccessToken(string) (*StravaAccessToken, error)
 	SaveSong(*Song) error
 	SaveImage(*Image) error
+	UpdateImage(*Image) error
 	CreateStravaAccessToken(*StravaAccessToken) error
 	UpdateStravaAccessToken(*StravaAccessToken) error
 	GetStravaActivity(int64) (*StravaActivity, error)
@@ -22,7 +23,8 @@ type Store interface {
 	GetMapBoxConfig() (*MapBoxConfig, error)
 	UpdateMapBoxConfig(config *MapBoxConfig) error
 	CreateMapBoxConfig(config *MapBoxConfig) error
-	GetTagsBySlugs([]string) ([]*Tag, error)
+	GetAllTags() ([]*Tag, error)
+	GetTagsByNames([]string) ([]*Tag, error)
 	GetImagesByTag([]string, time.Time, int) ([]*Image, error)
 }
 

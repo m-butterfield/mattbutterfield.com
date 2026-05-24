@@ -34,11 +34,18 @@ func photos(c *gin.Context) {
 		nextURL = fmt.Sprintf("/photos?before=%d#photos", images[len(images)-1].CreatedAt.Unix())
 	}
 
-	body, err := templateRender("photos/index", &photosPage{
+	page := &photosPage{
 		basePage:   makeBasePage(),
 		ImagesInfo: imagesInfo,
 		NextURL:    nextURL,
-	})
+	}
+	page.LoggedIn = isLoggedIn(c)
+
+	body, err := templateRender("photos/index", page)
+	if err != nil {
+		lib.InternalError(err, c)
+		return
+	}
 	c.Render(200, body)
 }
 

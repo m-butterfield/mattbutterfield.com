@@ -1,12 +1,19 @@
 package controllers
 
 import (
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestUploadImage(t *testing.T) {
+	ds = &testStore{
+		getAllTags: func() ([]*data.Tag, error) {
+			return []*data.Tag{}, nil
+		},
+	}
+
 	r, err := http.NewRequest(http.MethodGet, "/admin/upload_image", nil)
 	if err != nil {
 		t.Fatal(err)

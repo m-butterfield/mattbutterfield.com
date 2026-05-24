@@ -1,6 +1,7 @@
 package data
 
 import (
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -31,7 +32,7 @@ const (
 
 func (s *ds) GetImage(id string) (*Image, error) {
 	image := &Image{}
-	tx := s.db.First(&image, "id = $1", id)
+	tx := s.db.Preload("Tags").First(&image, "id = $1", id)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
@@ -81,4 +82,26 @@ func (s *ds) SaveImage(image *Image) error {
 		return tx.Error
 	}
 	return nil
+}
+
+func (s *ds) UpdateImage(image *Image) error {
+	tags := image.Tags
+	return s.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(image).Select("Caption", "Location", "CreatedAt", "Camera", "Lens", "Film").Updates(image).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(image).Association("Tags").Clear(); err != nil {
+			return err
+		}
+		for _, t := range tags {
+			tag := &Tag{Name: t.Name}
+			if err := tx.Where("name = ?", t.Name).FirstOrCreate(tag).Error; err != nil {
+				return err
+			}
+			if err := tx.Model(image).Association("Tags").Append(tag); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

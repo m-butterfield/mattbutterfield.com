@@ -1,18 +1,19 @@
 package tasks
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/h2non/bimg"
-	"github.com/m-butterfield/mattbutterfield.com/app/data"
-	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	_ "image/jpeg"
 	"io"
 	"log"
 	"math"
+
+	"cloud.google.com/go/storage"
+	"github.com/gin-gonic/gin"
+	"github.com/h2non/bimg"
+	"github.com/m-butterfield/mattbutterfield.com/app/data"
+	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 )
 
 const (
@@ -81,10 +82,7 @@ func saveImage(c *gin.Context) {
 	var tags []data.Tag
 	for _, tagName := range body.Tags {
 		if tagName != "" {
-			tags = append(tags, data.Tag{
-				Name: tagName,
-				Slug: data.MakeTagSlug(tagName),
-			})
+			tags = append(tags, data.Tag{Name: tagName})
 		}
 	}
 
@@ -147,7 +145,7 @@ func processImage(ctx context.Context, obj *storage.ObjectHandle) (*bimg.ImageSi
 	imgData, err := img.Process(bimg.Options{
 		Width:   width,
 		Height:  height,
-		Quality: 92,
+		Quality: 100,
 	})
 	if err != nil {
 		return nil, nil, err
