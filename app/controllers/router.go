@@ -44,6 +44,7 @@ func router() (*gin.Engine, error) {
 	adminGroup.POST("/signed_upload_url", signedUploadURL)
 	adminGroup.GET("/edit_image/:id", editImage)
 	adminGroup.POST("/update_image", updateImage)
+	adminGroup.POST("/delete_image", deleteImage)
 	adminGroup.POST("/save_song", saveSong)
 	adminGroup.POST("/save_image", saveImage)
 

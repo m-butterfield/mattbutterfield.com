@@ -41,3 +41,33 @@ document.querySelector("#save-button").addEventListener("click", async function(
     console.log(err);
   });
 });
+
+document.querySelector("#delete-button").addEventListener("click", async function(e) {
+  e.preventDefault();
+
+  if (!confirm("Delete this image?")) {
+    return;
+  }
+
+  disableForm();
+
+  fetch("/admin/delete_image", {
+    method: "POST",
+    headers: new Headers({"Content-Type": "application/json"}),
+    body: JSON.stringify({
+      imageID: document.querySelector("#image-id").value,
+    }),
+  }).then(resp => {
+    if (resp.ok) {
+      return resp.json();
+    }
+    throw new Error("delete failed");
+  }).then(data => {
+    if (data.redirect) {
+      window.location.href = data.redirect;
+    }
+  }).catch(err => {
+    alert("error deleting image");
+    console.log(err);
+  });
+});

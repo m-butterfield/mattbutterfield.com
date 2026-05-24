@@ -26,6 +26,7 @@ type testStore struct {
 	getSongs       func() ([]*data.Song, error)
 	saveSong       func(*data.Song) error
 	saveImage      func(*data.Image) error
+	deleteImage    func(string) error
 	updateImage    func(*data.Image) error
 	getAllTags     func() ([]*data.Tag, error)
 	getImagesByTag func([]string, time.Time, int) ([]*data.Image, error)
@@ -70,6 +71,10 @@ func (s *testStore) SaveSong(*data.Song) error {
 
 func (s *testStore) SaveImage(*data.Image) error {
 	panic("do not call this from controllers")
+}
+
+func (s *testStore) DeleteImage(id string) error {
+	return s.deleteImage(id)
 }
 
 func (s *testStore) UpdateImage(image *data.Image) error {

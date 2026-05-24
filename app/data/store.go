@@ -13,6 +13,7 @@ type Store interface {
 	GetStravaAccessToken(string) (*StravaAccessToken, error)
 	SaveSong(*Song) error
 	SaveImage(*Image) error
+	DeleteImage(string) error
 	UpdateImage(*Image) error
 	CreateStravaAccessToken(*StravaAccessToken) error
 	UpdateStravaAccessToken(*StravaAccessToken) error

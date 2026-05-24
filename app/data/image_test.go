@@ -30,6 +30,30 @@ func TestGetImage(t *testing.T) {
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
 }
 
+func TestDeleteImage(t *testing.T) {
+	s, err := getDS()
+	if err != nil {
+		t.Fatal(err)
+	}
+	image := &Image{
+		ID:     "test_delete.jpg",
+		Width:  100,
+		Height: 100,
+	}
+	if err = s.SaveImage(image); err != nil {
+		t.Fatal(err)
+	}
+
+	if err = s.DeleteImage(image.ID); err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.GetImage(image.ID)
+	assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
+
+	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
+}
+
 func TestGetRandomImage(t *testing.T) {
 	s, err := getDS()
 	if err != nil {

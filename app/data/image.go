@@ -84,6 +84,21 @@ func (s *ds) SaveImage(image *Image) error {
 	return nil
 }
 
+func (s *ds) DeleteImage(id string) error {
+	return s.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("image_id = ?", id).Delete(&ImageType{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Model(&Image{ID: id}).Association("Tags").Clear(); err != nil {
+			return err
+		}
+		if err := tx.Delete(&Image{ID: id}).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
 func (s *ds) UpdateImage(image *Image) error {
 	tags := image.Tags
 	return s.db.Transaction(func(tx *gorm.DB) error {

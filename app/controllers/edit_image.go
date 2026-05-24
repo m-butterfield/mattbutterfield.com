@@ -83,6 +83,31 @@ func editImage(c *gin.Context) {
 	c.Render(200, body)
 }
 
+type deleteImageRequest struct {
+	ImageID string `json:"imageID"`
+}
+
+func deleteImage(c *gin.Context) {
+	req := &deleteImageRequest{}
+	if err := c.Bind(req); err != nil {
+		lib.InternalError(err, c)
+		return
+	}
+
+	id, err := decodeImageID(req.ImageID)
+	if err != nil {
+		c.String(http.StatusBadRequest, "invalid image id")
+		return
+	}
+
+	if err := ds.DeleteImage(id); err != nil {
+		lib.InternalError(err, c)
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"redirect": "/photos"})
+}
+
 func updateImage(c *gin.Context) {
 	req := &updateImageRequest{}
 	if err := c.Bind(req); err != nil {

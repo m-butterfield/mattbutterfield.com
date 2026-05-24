@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
@@ -29,6 +30,30 @@ func TestEditImage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	r.AddCookie(&http.Cookie{Name: "auth", Value: "1234"})
+	authArray = []byte("1234")
+
+	w := httptest.NewRecorder()
+	testRouter().ServeHTTP(w, r)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Unexpected return code: %d", w.Code)
+	}
+}
+
+func TestDeleteImage(t *testing.T) {
+	ds = &testStore{
+		deleteImage: func(id string) error {
+			return nil
+		},
+	}
+
+	body := strings.NewReader(`{"imageID":"` + encodeImageID("test.jpg") + `"}`)
+	r, err := http.NewRequest(http.MethodPost, "/admin/delete_image", body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Header.Set("Content-Type", "application/json")
 	r.AddCookie(&http.Cookie{Name: "auth", Value: "1234"})
 	authArray = []byte("1234")
 
