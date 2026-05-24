@@ -2,12 +2,7 @@
 {{ define "head" }}{{ end }}
 {{ define "main" }}
 <div class="section-div">
-  <ul>
-    <li><a href="/photoaday">years</a></li>
-  </ul>
-</div>
-<div class="section-div">
-  <h1 id="photos">latest photos</h1>
+  <h1 id="photos">{{ if .TagNames }}{{ .TagNames }}{{ else }}latest photos{{ end }}</h1>
   {{ range $i, $image := .ImagesInfo }}
     <div class="image-div">
       <p>{{ .ImageDate }}</p>

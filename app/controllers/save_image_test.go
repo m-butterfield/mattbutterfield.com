@@ -7,6 +7,7 @@ import (
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -36,7 +37,7 @@ func TestSaveImage(t *testing.T) {
 			if queueID != "save-image-uploads" {
 				t.Error("Unexpected queueID")
 			}
-			if *body.(*lib.SaveImageRequest) != *expectedBody {
+			if !reflect.DeepEqual(body.(*lib.SaveImageRequest), expectedBody) {
 				t.Error("Unexpected task body")
 			}
 			return &cloudtaskspb.Task{}, nil

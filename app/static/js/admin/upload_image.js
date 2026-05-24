@@ -23,6 +23,9 @@ document.querySelector("#upload-button").addEventListener("click", async functio
     console.log(err);
   });
 
+  const tagsValue = document.querySelector("#tags").value;
+  const tags = tagsValue ? tagsValue.split(",").map(t => t.trim()).filter(t => t) : [];
+
   saveUpload("save_image", {
     imageFileName: imageFileName,
     createdDate: createdDate,
@@ -32,6 +35,7 @@ document.querySelector("#upload-button").addEventListener("click", async functio
     camera: document.querySelector("#camera").value,
     lens: document.querySelector("#lens").value,
     film: document.querySelector("#film").value,
+    tags: tags,
   }).catch(err => {
     alert("error saving image");
     console.log(err);

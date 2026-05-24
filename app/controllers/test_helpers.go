@@ -26,6 +26,8 @@ type testStore struct {
 	getSongs       func() ([]*data.Song, error)
 	saveSong       func(*data.Song) error
 	saveImage      func(*data.Image) error
+	getImagesByTag func([]string, time.Time, int) ([]*data.Image, error)
+	getTagsBySlugs func([]string) ([]*data.Tag, error)
 }
 
 func (s *testStore) GetImage(id string) (*data.Image, error) {
@@ -46,6 +48,14 @@ func (s *testStore) GetRandomImage() (*data.Image, error) {
 
 func (s *testStore) GetSongs() ([]*data.Song, error) {
 	return s.getSongs()
+}
+
+func (s *testStore) GetImagesByTag(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
+	return s.getImagesByTag(slugs, before, limit)
+}
+
+func (s *testStore) GetTagsBySlugs(slugs []string) ([]*data.Tag, error) {
+	return s.getTagsBySlugs(slugs)
 }
 
 func (s *testStore) SaveSong(*data.Song) error {

@@ -34,6 +34,7 @@ func router() (*gin.Engine, error) {
 	//r.GET("/strava_webhook", stravaWebhook) // needed if adding new webhook subscription
 	r.GET("/video", video)
 	r.GET("/video/connections", videoConnections)
+	r.GET("/tag/:slugs", tagImages)
 
 	adminGroup := r.Group("/admin")
 	adminGroup.Use(authRequired)

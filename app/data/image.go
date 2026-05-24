@@ -15,6 +15,7 @@ type Image struct {
 	Lens       string    `gorm:"type:text"`
 	Film       string    `gorm:"type:text"`
 	ImageTypes []ImageType
+	Tags       []Tag `gorm:"many2many:image_tags;"`
 }
 
 type ImageType struct {

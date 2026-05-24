@@ -39,6 +39,7 @@ type SaveImageRequest struct {
 	Camera        string             `json:"camera"`
 	Lens          string             `json:"lens"`
 	Film          string             `json:"film"`
+	Tags          []string           `json:"tags"`
 }
 
 type CreatedDateJSON struct {
