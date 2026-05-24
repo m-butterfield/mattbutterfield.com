@@ -3,8 +3,10 @@ package controllers
 import (
 	"cloud.google.com/go/pubsub"
 	"context"
+	"crypto/subtle"
 	"encoding/base64"
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
@@ -55,29 +57,51 @@ func Run(port string) error {
 	return r.Run(net.JoinHostPort("", port))
 }
 
+func isLoggedIn(c *gin.Context) bool {
+	authValue, err := c.Cookie("auth")
+	if err != nil {
+		return false
+	}
+	return subtle.ConstantTimeCompare([]byte(authValue), authArray) == 1
+}
+
 type imageInfo struct {
+	ImageID       string
 	ImageURL      string
 	ImageWidth    int
 	ImageHeight   int
 	ImageCaption  string
 	ImageDate     string
 	ImageLocation string
+	EditID        string
+	EditImagePath string
+	ImageTags     []*data.Tag
 }
 
 func getImageInfo(image *data.Image) *imageInfo {
+	encodedID := encodeImageID(image.ID)
+	var tags []*data.Tag
+	for i := range image.Tags {
+		tags = append(tags, &image.Tags[i])
+	}
 	return &imageInfo{
+		ImageID:       image.ID,
 		ImageURL:      lib.ImagesBaseURL + image.ID,
 		ImageWidth:    image.Width,
 		ImageHeight:   image.Height,
 		ImageCaption:  image.Caption,
 		ImageDate:     image.CreatedAt.Format(dateDisplayLayout),
 		ImageLocation: image.Location,
+		EditID:        encodedID,
+		EditImagePath: "/admin/edit_image/" + encodedID,
+		ImageTags:     tags,
 	}
 }
 
 type basePage struct {
 	ImagesBaseURL string
 	Year          string
+	LoggedIn      bool
 }
 
 type singleImagePage struct {

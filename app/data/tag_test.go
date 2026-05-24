@@ -17,8 +17,8 @@ func TestSaveImageWithTags(t *testing.T) {
 		Width:  100,
 		Height: 100,
 		Tags: []Tag{
-			{Name: "Travel", Slug: "travel"},
-			{Name: "Urban", Slug: "urban"},
+			{Name: "Travel"},
+			{Name: "Urban"},
 		},
 	}
 	if err = s.SaveImage(image); err != nil {
@@ -30,6 +30,7 @@ func TestSaveImageWithTags(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, image.ID, result.ID)
+	assert.Len(t, result.Tags, 2)
 
 	tags, err := s.GetImageTags(image.ID)
 	if err != nil {
@@ -37,7 +38,6 @@ func TestSaveImageWithTags(t *testing.T) {
 	}
 	assert.Len(t, tags, 2)
 
-	// cleanup
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
 	s.db.Exec("DELETE FROM image_tags")
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
@@ -53,7 +53,7 @@ func TestSaveImageReusesExistingTag(t *testing.T) {
 		Width:  100,
 		Height: 100,
 		Tags: []Tag{
-			{Name: "Travel", Slug: "travel"},
+			{Name: "Travel"},
 		},
 	}
 	if err = s.SaveImage(image1); err != nil {
@@ -65,7 +65,7 @@ func TestSaveImageReusesExistingTag(t *testing.T) {
 		Width:  200,
 		Height: 200,
 		Tags: []Tag{
-			{Name: "Travel", Slug: "travel"},
+			{Name: "Travel"},
 		},
 	}
 	if err = s.SaveImage(image2); err != nil {
@@ -79,7 +79,6 @@ func TestSaveImageReusesExistingTag(t *testing.T) {
 	assert.Len(t, tags, 1)
 	assert.Equal(t, "Travel", tags[0].Name)
 
-	// cleanup
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
 	s.db.Exec("DELETE FROM image_tags")
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
@@ -95,8 +94,8 @@ func TestGetTags(t *testing.T) {
 		Width:  100,
 		Height: 100,
 		Tags: []Tag{
-			{Name: "Travel", Slug: "travel"},
-			{Name: "Food", Slug: "food"},
+			{Name: "Travel"},
+			{Name: "Food"},
 		},
 	}
 	if err = s.SaveImage(image); err != nil {
@@ -109,7 +108,6 @@ func TestGetTags(t *testing.T) {
 	}
 	assert.Len(t, tags, 2)
 
-	// cleanup
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
 	s.db.Exec("DELETE FROM image_tags")
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
@@ -125,7 +123,7 @@ func TestGetImagesByTag(t *testing.T) {
 		Width:  100,
 		Height: 100,
 		Tags: []Tag{
-			{Name: "Travel", Slug: "travel"},
+			{Name: "Travel"},
 		},
 	}
 	image2 := &Image{
@@ -133,7 +131,7 @@ func TestGetImagesByTag(t *testing.T) {
 		Width:  200,
 		Height: 200,
 		Tags: []Tag{
-			{Name: "Travel", Slug: "travel"},
+			{Name: "Travel"},
 		},
 	}
 	if err = s.SaveImage(image1); err != nil {
@@ -143,13 +141,12 @@ func TestGetImagesByTag(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	images, err := s.GetImagesByTag([]string{"travel"}, time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC), 10)
+	images, err := s.GetImagesByTag([]string{"Travel"}, time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC), 10)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assert.Len(t, images, 2)
 
-	// cleanup
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
 	s.db.Exec("DELETE FROM image_tags")
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
@@ -165,8 +162,8 @@ func TestGetImagesByMultipleTags(t *testing.T) {
 		Width:  100,
 		Height: 100,
 		Tags: []Tag{
-			{Name: "Travel", Slug: "travel"},
-			{Name: "Food", Slug: "food"},
+			{Name: "Travel"},
+			{Name: "Food"},
 		},
 	}
 	image2 := &Image{
@@ -174,7 +171,7 @@ func TestGetImagesByMultipleTags(t *testing.T) {
 		Width:  200,
 		Height: 200,
 		Tags: []Tag{
-			{Name: "Travel", Slug: "travel"},
+			{Name: "Travel"},
 		},
 	}
 	if err = s.SaveImage(image1); err != nil {
@@ -184,14 +181,13 @@ func TestGetImagesByMultipleTags(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	images, err := s.GetImagesByTag([]string{"travel", "food"}, time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC), 10)
+	images, err := s.GetImagesByTag([]string{"Travel", "Food"}, time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC), 10)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assert.Len(t, images, 1)
 	assert.Equal(t, "test_multi1.jpg", images[0].ID)
 
-	// cleanup
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
 	s.db.Exec("DELETE FROM image_tags")
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
@@ -220,10 +216,60 @@ func TestAddImageTag(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Len(t, tags, 1)
-	assert.Equal(t, "night-photography", tags[0].Slug)
 	assert.Equal(t, "Night Photography", tags[0].Name)
 
-	// cleanup
+	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
+	s.db.Exec("DELETE FROM image_tags")
+	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
+}
+
+func TestUpdateImageTags(t *testing.T) {
+	s, err := getDS()
+	if err != nil {
+		t.Fatal(err)
+	}
+	image := &Image{
+		ID:     "test_update_tags.jpg",
+		Width:  100,
+		Height: 100,
+	}
+
+	if err = s.SaveImage(image); err != nil {
+		t.Fatal(err)
+	}
+
+	image.Caption = "updated"
+	image.Tags = []Tag{
+		{Name: "Travel"},
+		{Name: "Food"},
+	}
+
+	if err = s.UpdateImage(image); err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := s.GetImage(image.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, "updated", result.Caption)
+	assert.Len(t, result.Tags, 2)
+
+	image.Tags = []Tag{
+		{Name: "Travel"},
+	}
+
+	if err = s.UpdateImage(image); err != nil {
+		t.Fatal(err)
+	}
+
+	result, err = s.GetImage(image.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Len(t, result.Tags, 1)
+	assert.Equal(t, "Travel", result.Tags[0].Name)
+
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
 	s.db.Exec("DELETE FROM image_tags")
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})
@@ -239,15 +285,15 @@ func TestRemoveImageTag(t *testing.T) {
 		Width:  100,
 		Height: 100,
 		Tags: []Tag{
-			{Name: "Travel", Slug: "travel"},
-			{Name: "Food", Slug: "food"},
+			{Name: "Travel"},
+			{Name: "Food"},
 		},
 	}
 	if err = s.SaveImage(image); err != nil {
 		t.Fatal(err)
 	}
 
-	if err = s.RemoveImageTag(image.ID, "food"); err != nil {
+	if err = s.RemoveImageTag(image.ID, "Food"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -256,9 +302,8 @@ func TestRemoveImageTag(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Len(t, tags, 1)
-	assert.Equal(t, "travel", tags[0].Slug)
+	assert.Equal(t, "Travel", tags[0].Name)
 
-	// cleanup
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Image{})
 	s.db.Exec("DELETE FROM image_tags")
 	s.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Tag{})

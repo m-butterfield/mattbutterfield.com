@@ -6,6 +6,12 @@
   <p>{{ .ImageCaption }}</p>
   <p>{{ .ImageLocation }}</p>
   <p>{{ .ImageDate }}</p>
+  {{ if .ImageTags }}
+  <p>tags:
+    {{ range $i, $tag := .ImageTags }}{{ if $i }}, {{ end }}<a href="/tag/{{ .Name | urlquery }}">{{ .Name }}</a>{{ end }}
+  </p>
+  {{ end }}
+  {{ if .LoggedIn }}<p><a href="{{ .EditImagePath }}">edit</a></p>{{ end }}
   <a href="{{ .NextImagePath }}">get random image</a>
 </div>
 {{ end }}

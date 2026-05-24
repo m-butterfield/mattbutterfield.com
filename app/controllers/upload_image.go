@@ -9,14 +9,22 @@ import (
 type uploadPage struct {
 	*basePage
 	ImageTypes []data.ImageTypeName
+	Tags       []*data.Tag
 }
 
 func uploadImage(c *gin.Context) {
+	tags, err := ds.GetAllTags()
+	if err != nil {
+		lib.InternalError(err, c)
+		return
+	}
+
 	body, err := templateRender("admin/upload_image", uploadPage{
 		basePage: makeBasePage(),
 		ImageTypes: []data.ImageTypeName{
 			data.PhotoADayImageType,
 		},
+		Tags: tags,
 	})
 	if err != nil {
 		lib.InternalError(err, c)

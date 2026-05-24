@@ -15,6 +15,7 @@ func TestGetImage(t *testing.T) {
 		ID:     "test.jpg",
 		Width:  100,
 		Height: 100,
+		Tags:   []Tag{},
 	}
 	if err = s.SaveImage(image); err != nil {
 		t.Fatal(err)

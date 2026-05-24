@@ -11,10 +11,10 @@ import (
 
 func TestTagImages(t *testing.T) {
 	ds = &testStore{
-		getTagsBySlugs: func(slugs []string) ([]*data.Tag, error) {
-			return []*data.Tag{{Name: "Travel", Slug: "travel"}}, nil
+		getTagsByNames: func(names []string) ([]*data.Tag, error) {
+			return []*data.Tag{{Name: "Travel"}}, nil
 		},
-		getImagesByTag: func(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
+		getImagesByTag: func(names []string, before time.Time, limit int) ([]*data.Image, error) {
 			return []*data.Image{
 				{ID: "test.jpg", Width: 100, Height: 100},
 			}, nil
@@ -26,7 +26,7 @@ func TestTagImages(t *testing.T) {
 		},
 	}
 
-	r, err := http.NewRequest(http.MethodGet, "/tag/travel", nil)
+	r, err := http.NewRequest(http.MethodGet, "/tag/Travel", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,13 +40,13 @@ func TestTagImages(t *testing.T) {
 
 func TestTagImagesMulti(t *testing.T) {
 	ds = &testStore{
-		getTagsBySlugs: func(slugs []string) ([]*data.Tag, error) {
+		getTagsByNames: func(names []string) ([]*data.Tag, error) {
 			return []*data.Tag{
-				{Name: "Travel", Slug: "travel"},
-				{Name: "Food", Slug: "food"},
+				{Name: "Travel"},
+				{Name: "Food"},
 			}, nil
 		},
-		getImagesByTag: func(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
+		getImagesByTag: func(names []string, before time.Time, limit int) ([]*data.Image, error) {
 			return []*data.Image{
 				{ID: "test.jpg", Width: 100, Height: 100},
 			}, nil
@@ -58,7 +58,7 @@ func TestTagImagesMulti(t *testing.T) {
 		},
 	}
 
-	r, err := http.NewRequest(http.MethodGet, "/tag/travel,food", nil)
+	r, err := http.NewRequest(http.MethodGet, "/tag/Travel,Food", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,10 +72,10 @@ func TestTagImagesMulti(t *testing.T) {
 
 func TestTagImagesEmpty(t *testing.T) {
 	ds = &testStore{
-		getTagsBySlugs: func(slugs []string) ([]*data.Tag, error) {
+		getTagsByNames: func(names []string) ([]*data.Tag, error) {
 			return []*data.Tag{}, nil
 		},
-		getImagesByTag: func(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
+		getImagesByTag: func(names []string, before time.Time, limit int) ([]*data.Image, error) {
 			return []*data.Image{}, nil
 		},
 	}

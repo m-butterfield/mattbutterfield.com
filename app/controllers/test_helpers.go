@@ -26,8 +26,10 @@ type testStore struct {
 	getSongs       func() ([]*data.Song, error)
 	saveSong       func(*data.Song) error
 	saveImage      func(*data.Image) error
+	updateImage    func(*data.Image) error
+	getAllTags     func() ([]*data.Tag, error)
 	getImagesByTag func([]string, time.Time, int) ([]*data.Image, error)
-	getTagsBySlugs func([]string) ([]*data.Tag, error)
+	getTagsByNames func([]string) ([]*data.Tag, error)
 }
 
 func (s *testStore) GetImage(id string) (*data.Image, error) {
@@ -50,12 +52,16 @@ func (s *testStore) GetSongs() ([]*data.Song, error) {
 	return s.getSongs()
 }
 
+func (s *testStore) GetAllTags() ([]*data.Tag, error) {
+	return s.getAllTags()
+}
+
 func (s *testStore) GetImagesByTag(slugs []string, before time.Time, limit int) ([]*data.Image, error) {
 	return s.getImagesByTag(slugs, before, limit)
 }
 
-func (s *testStore) GetTagsBySlugs(slugs []string) ([]*data.Tag, error) {
-	return s.getTagsBySlugs(slugs)
+func (s *testStore) GetTagsByNames(names []string) ([]*data.Tag, error) {
+	return s.getTagsByNames(names)
 }
 
 func (s *testStore) SaveSong(*data.Song) error {
@@ -64,6 +70,10 @@ func (s *testStore) SaveSong(*data.Song) error {
 
 func (s *testStore) SaveImage(*data.Image) error {
 	panic("do not call this from controllers")
+}
+
+func (s *testStore) UpdateImage(image *data.Image) error {
+	return s.updateImage(image)
 }
 
 func (s *testStore) GetStravaAccessToken(string) (*data.StravaAccessToken, error) {

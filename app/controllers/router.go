@@ -34,7 +34,7 @@ func router() (*gin.Engine, error) {
 	//r.GET("/strava_webhook", stravaWebhook) // needed if adding new webhook subscription
 	r.GET("/video", video)
 	r.GET("/video/connections", videoConnections)
-	r.GET("/tag/:slugs", tagImages)
+	r.GET("/tag/:names", tagImages)
 
 	adminGroup := r.Group("/admin")
 	adminGroup.Use(authRequired)
@@ -42,6 +42,8 @@ func router() (*gin.Engine, error) {
 	adminGroup.GET("/upload_music", uploadMusic)
 	adminGroup.GET("/upload_image", uploadImage)
 	adminGroup.POST("/signed_upload_url", signedUploadURL)
+	adminGroup.GET("/edit_image/:id", editImage)
+	adminGroup.POST("/update_image", updateImage)
 	adminGroup.POST("/save_song", saveSong)
 	adminGroup.POST("/save_image", saveImage)
 

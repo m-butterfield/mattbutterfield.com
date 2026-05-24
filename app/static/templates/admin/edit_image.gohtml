@@ -1,0 +1,47 @@
+{{ template "base" . }}
+{{ define "head" }}{{ end }}
+{{ define "main" }}
+<div class="section-div">
+  <input type="hidden" id="image-id" value="{{ .EditID }}">
+  <p>
+    {{ template "image" . }}
+  </p>
+  <p>
+    <label for="caption">caption: </label>
+    <textarea class="upload-form-element" id="caption" style="vertical-align: top;">{{ .ImageCaption }}</textarea>
+  </p>
+  <p>
+    <label for="created-date">date taken: </label>
+    <input class="upload-form-element" type="date" id="created-date" value="{{ .EditDate }}">
+  </p>
+  <p>
+    <label for="location">location: </label>
+    <input class="upload-form-element" type="text" id="location" value="{{ .ImageLocation }}">
+  </p>
+  <p>
+    <label for="camera">camera: </label>
+    <input class="upload-form-element" type="text" id="camera" value="{{ .EditCamera }}">
+  </p>
+  <p>
+    <label for="lens">lens: </label>
+    <input class="upload-form-element" type="text" id="lens" value="{{ .EditLens }}">
+  </p>
+  <p>
+    <label for="film">film: </label>
+    <input class="upload-form-element" type="text" id="film" value="{{ .EditFilm }}">
+  </p>
+  <p>
+    <label for="tags">tags: </label>
+    <input class="upload-form-element" type="text" id="tags" value="{{ .TagsInput }}" list="tag-list">
+    <datalist id="tag-list">
+    {{range .AllTags}}
+      <option value="{{.Name}}">
+    {{end}}
+    </datalist>
+  </p>
+  <p>
+    <button class="upload-form-element" type="submit" id="save-button">save</button>
+  </p>
+</div>
+<script type="module" src="/js/admin/edit_image.js"></script>
+{{ end }}
