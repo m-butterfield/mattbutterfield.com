@@ -1,20 +1,21 @@
 package controllers
 
 import (
-	"cloud.google.com/go/pubsub"
 	"context"
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
+	"html/template"
+	"net"
+	"os"
+	"time"
+
+	"cloud.google.com/go/pubsub"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"github.com/m-butterfield/mattbutterfield.com/app/data"
 	"github.com/m-butterfield/mattbutterfield.com/app/lib"
 	"github.com/m-butterfield/mattbutterfield.com/app/static"
-	"html/template"
-	"net"
-	"os"
-	"time"
 )
 
 const (

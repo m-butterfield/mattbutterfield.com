@@ -1,0 +1,4 @@
+[build]
+cmd = "go build -o ./tmp/server ./cmd/server"
+bin = "tmp/server"
+exclude_dir = ["node_modules", "scratch"]

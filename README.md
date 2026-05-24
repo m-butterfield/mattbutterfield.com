@@ -44,9 +44,17 @@ Init some env variables in case we want to use the pubsub emulator:
 
     $(gcloud beta emulators pubsub env-init)
 
+Auto-restart on file changes requires [air](https://github.com/air-verse/air):
+
+    go install github.com/air-verse/air@latest
+
 Now the server can be started and accessed at [http://localhost:8000/](http://localhost:8000/):
 
     make run-server
+
+A worker can be started for async tasks as well:
+
+    make run-worker
 
 The pubsub emulator can optionally be started for testing video chat locally:
 
