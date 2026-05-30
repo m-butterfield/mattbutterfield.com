@@ -1,4 +1,7 @@
 import { disableForm } from "./upload_base.js";
+import { initTagInput, getTags } from "./tag_input.js";
+
+initTagInput();
 
 document.querySelector("#save-button").addEventListener("click", async function(e) {
   e.preventDefault();
@@ -11,8 +14,7 @@ document.querySelector("#save-button").addEventListener("click", async function(
 
   disableForm();
 
-  const tagsValue = document.querySelector("#tags").value;
-  const tags = tagsValue ? tagsValue.split(",").map(t => t.trim()).filter(t => t) : [];
+  const tags = getTags();
 
   fetch("/admin/update_image", {
     method: "POST",

@@ -1,4 +1,9 @@
 import { disableForm, uploadFile, saveUpload } from "./upload_base.js";
+import { initTagInput, getTags } from "./tag_input.js";
+import { initDropZone } from "./drop_zone.js";
+
+initTagInput();
+initDropZone();
 
 document.querySelector("#upload-button").addEventListener("click", async function(e) {
   e.preventDefault();
@@ -23,8 +28,7 @@ document.querySelector("#upload-button").addEventListener("click", async functio
     console.log(err);
   });
 
-  const tagsValue = document.querySelector("#tags").value;
-  const tags = tagsValue ? tagsValue.split(",").map(t => t.trim()).filter(t => t) : [];
+  const tags = getTags();
 
   saveUpload("save_image", {
     imageFileName: imageFileName,

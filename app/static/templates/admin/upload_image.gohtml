@@ -4,7 +4,12 @@
 <div class="section-div">
   <p>
     <label for="image-file">image file: </label>
-    <input class="upload-form-element" type="file" id="image-file" accept="image/jpeg">
+  </p>
+  <p>
+    <div id="drop-zone" class="drop-zone">
+      <p>Drag &amp; drop a JPEG here, or click to select</p>
+      <input class="upload-form-element" type="file" id="image-file" accept="image/jpeg">
+    </div>
   </p>
   <p>
     <label for="image-type">image type: </label>
@@ -41,12 +46,17 @@
   </p>
   <p>
     <label for="tags">tags: </label>
-    <input class="upload-form-element" type="text" id="tags" placeholder="comma-separated" list="tag-list">
+  </p>
+  <p>
+    <div class="tag-chips" id="tag-chips"></div>
+    <input type="text" id="tag-input" list="tag-list">
+    <button type="button" id="add-tag-button">add</button>
     <datalist id="tag-list">
     {{range .Tags}}
       <option value="{{.Name}}">
     {{end}}
     </datalist>
+    <input type="hidden" id="tags" value="">
   </p>
   <p>
     <button class="upload-form-element" type="submit" id="upload-button">save</button>

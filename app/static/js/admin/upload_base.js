@@ -28,7 +28,7 @@ export function saveUpload(action, body) {
     body: JSON.stringify(body),
   }).then(resp => {
     if (resp.status === 201) {
-      alert("success!");
+      location.reload();
     }
   }).finally(enableForm);
 }
