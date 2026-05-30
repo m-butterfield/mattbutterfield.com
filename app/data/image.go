@@ -1,12 +1,14 @@
 package data
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Image struct {
 	ID         string    `gorm:"type:varchar(128)"`
+	PreviewID  string    `gorm:"type:varchar(128);not null"`
 	Caption    string    `gorm:"type:text"`
 	Location   string    `gorm:"type:text"`
 	Width      int       `gorm:"type:integer;not null"`

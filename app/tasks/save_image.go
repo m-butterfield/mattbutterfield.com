@@ -43,30 +43,42 @@ func saveImage(c *gin.Context) {
 
 	upload := client.Bucket(lib.FilesBucket).Object(lib.UploadsPrefix + body.ImageFileName)
 
-	size, imgData, err := processImage(ctx, upload)
+	originalData, err := readObject(ctx, upload)
 	if err != nil {
 		lib.InternalError(err, c)
 		return
 	}
 
-	hash, err := getHash(imgData)
+	originalHash, err := getHash(originalData)
 	if err != nil {
 		lib.InternalError(err, c)
 		return
 	}
-	fileName := hash + ".jpg"
+	originalFileName := originalHash + ".jpg"
 
-	result := client.Bucket(lib.ImagesBucket).Object(hash + ".jpg")
-	w := result.NewWriter(ctx)
-	w.ContentType = "image/jpeg"
-	if _, err = w.Write(imgData); err != nil {
+	if err := writeObject(ctx, client, originalFileName, originalData); err != nil {
 		lib.InternalError(err, c)
 		return
 	}
-	if err = w.Close(); err != nil {
+
+	previewData, size, err := processImage(originalData)
+	if err != nil {
 		lib.InternalError(err, c)
 		return
 	}
+
+	previewHash, err := getHash(previewData)
+	if err != nil {
+		lib.InternalError(err, c)
+		return
+	}
+	previewFileName := previewHash + ".jpg"
+
+	if err := writeObject(ctx, client, previewFileName, previewData); err != nil {
+		lib.InternalError(err, c)
+		return
+	}
+
 	if err := upload.Delete(ctx); err != nil {
 		lib.InternalError(err, c)
 		return
@@ -87,7 +99,8 @@ func saveImage(c *gin.Context) {
 	}
 
 	if err = ds.SaveImage(&data.Image{
-		ID:         fileName,
+		ID:         originalFileName,
+		PreviewID:  previewFileName,
 		Caption:    body.Caption,
 		Location:   body.Location,
 		Width:      size.Width,
@@ -104,23 +117,32 @@ func saveImage(c *gin.Context) {
 	}
 }
 
-func processImage(ctx context.Context, obj *storage.ObjectHandle) (*bimg.ImageSize, []byte, error) {
+func readObject(ctx context.Context, obj *storage.ObjectHandle) ([]byte, error) {
 	reader, err := obj.NewReader(ctx)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	defer func(reader *storage.Reader) {
 		if err := reader.Close(); err != nil {
 			log.Println(err)
 		}
 	}(reader)
-	buffer, err := io.ReadAll(reader)
-	if err != nil {
-		return nil, nil, err
-	}
+	return io.ReadAll(reader)
+}
 
-	img := bimg.NewImage(buffer)
-	if _, err = img.AutoRotate(); err != nil {
+func writeObject(ctx context.Context, client *storage.Client, name string, data []byte) error {
+	obj := client.Bucket(lib.ImagesBucket).Object(name)
+	w := obj.NewWriter(ctx)
+	w.ContentType = "image/jpeg"
+	if _, err := w.Write(data); err != nil {
+		return err
+	}
+	return w.Close()
+}
+
+func processImage(data []byte) ([]byte, *bimg.ImageSize, error) {
+	img := bimg.NewImage(data)
+	if _, err := img.AutoRotate(); err != nil {
 		return nil, nil, err
 	}
 
@@ -142,7 +164,7 @@ func processImage(ctx context.Context, obj *storage.ObjectHandle) (*bimg.ImageSi
 		width = int(math.Round(float64(height) * ratio))
 	}
 
-	imgData, err := img.Process(bimg.Options{
+	previewData, err := img.Process(bimg.Options{
 		Width:   width,
 		Height:  height,
 		Quality: 98,
@@ -150,10 +172,7 @@ func processImage(ctx context.Context, obj *storage.ObjectHandle) (*bimg.ImageSi
 	if err != nil {
 		return nil, nil, err
 	}
-	return &bimg.ImageSize{
-		Width:  width,
-		Height: height,
-	}, imgData, nil
+	return previewData, &bimg.ImageSize{Width: width, Height: height}, nil
 }
 
 func getHash(data []byte) (string, error) {

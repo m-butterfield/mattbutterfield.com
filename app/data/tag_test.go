@@ -13,9 +13,10 @@ func TestSaveImageWithTags(t *testing.T) {
 		t.Fatal(err)
 	}
 	image := &Image{
-		ID:     "test_tags.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "test_tags.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 		Tags: []Tag{
 			{Name: "Travel"},
 			{Name: "Urban"},
@@ -49,9 +50,10 @@ func TestSaveImageReusesExistingTag(t *testing.T) {
 		t.Fatal(err)
 	}
 	image1 := &Image{
-		ID:     "first.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "first.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 		Tags: []Tag{
 			{Name: "Travel"},
 		},
@@ -61,9 +63,10 @@ func TestSaveImageReusesExistingTag(t *testing.T) {
 	}
 
 	image2 := &Image{
-		ID:     "second.jpg",
-		Width:  200,
-		Height: 200,
+		ID:        "second.jpg",
+		PreviewID: "preview.jpg",
+		Width:     200,
+		Height:    200,
 		Tags: []Tag{
 			{Name: "Travel"},
 		},
@@ -90,9 +93,10 @@ func TestGetTags(t *testing.T) {
 		t.Fatal(err)
 	}
 	image := &Image{
-		ID:     "test_tags_list.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "test_tags_list.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 		Tags: []Tag{
 			{Name: "Travel"},
 			{Name: "Food"},
@@ -119,17 +123,19 @@ func TestGetImagesByTag(t *testing.T) {
 		t.Fatal(err)
 	}
 	image1 := &Image{
-		ID:     "test_tag1.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "test_tag1.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 		Tags: []Tag{
 			{Name: "Travel"},
 		},
 	}
 	image2 := &Image{
-		ID:     "test_tag2.jpg",
-		Width:  200,
-		Height: 200,
+		ID:        "test_tag2.jpg",
+		PreviewID: "preview.jpg",
+		Width:     200,
+		Height:    200,
 		Tags: []Tag{
 			{Name: "Travel"},
 		},
@@ -158,18 +164,20 @@ func TestGetImagesByMultipleTags(t *testing.T) {
 		t.Fatal(err)
 	}
 	image1 := &Image{
-		ID:     "test_multi1.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "test_multi1.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 		Tags: []Tag{
 			{Name: "Travel"},
 			{Name: "Food"},
 		},
 	}
 	image2 := &Image{
-		ID:     "test_multi2.jpg",
-		Width:  200,
-		Height: 200,
+		ID:        "test_multi2.jpg",
+		PreviewID: "preview.jpg",
+		Width:     200,
+		Height:    200,
 		Tags: []Tag{
 			{Name: "Travel"},
 		},
@@ -199,9 +207,10 @@ func TestAddImageTag(t *testing.T) {
 		t.Fatal(err)
 	}
 	image := &Image{
-		ID:     "test_add_tag.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "test_add_tag.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 	}
 	if err = s.SaveImage(image); err != nil {
 		t.Fatal(err)
@@ -229,9 +238,10 @@ func TestUpdateImageTags(t *testing.T) {
 		t.Fatal(err)
 	}
 	image := &Image{
-		ID:     "test_update_tags.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "test_update_tags.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 	}
 
 	if err = s.SaveImage(image); err != nil {
@@ -281,9 +291,10 @@ func TestRemoveImageTag(t *testing.T) {
 		t.Fatal(err)
 	}
 	image := &Image{
-		ID:     "test_remove_tag.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "test_remove_tag.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 		Tags: []Tag{
 			{Name: "Travel"},
 			{Name: "Food"},

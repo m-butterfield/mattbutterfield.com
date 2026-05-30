@@ -67,18 +67,19 @@ func isLoggedIn(c *gin.Context) bool {
 }
 
 type imageInfo struct {
-	ImageID       string
-	ImagePath     string
-	ImageURL      string
-	ImageWidth    int
-	ImageHeight   int
-	ImageCaption  string
-	ImageDate     string
-	ImageLocation string
-	EditID        string
-	EditImagePath string
-	ImageTags     []*data.Tag
-	LinkImage     bool
+	ImageID         string
+	ImagePath       string
+	ImageURL        string
+	ImagePreviewURL string
+	ImageWidth      int
+	ImageHeight     int
+	ImageCaption    string
+	ImageDate       string
+	ImageLocation   string
+	EditID          string
+	EditImagePath   string
+	ImageTags       []*data.Tag
+	LinkImage       bool
 }
 
 func getImageInfo(image *data.Image) *imageInfo {
@@ -88,18 +89,19 @@ func getImageInfo(image *data.Image) *imageInfo {
 		tags = append(tags, &image.Tags[i])
 	}
 	return &imageInfo{
-		ImageID:       image.ID,
-		ImagePath:     makeImagePath(image.ID),
-		ImageURL:      lib.ImagesBaseURL + image.ID,
-		ImageWidth:    image.Width,
-		ImageHeight:   image.Height,
-		ImageCaption:  image.Caption,
-		ImageDate:     image.CreatedAt.Format(dateDisplayLayout),
-		ImageLocation: image.Location,
-		EditID:        encodedID,
-		EditImagePath: "/admin/edit_image/" + encodedID,
-		ImageTags:     tags,
-		LinkImage:     true,
+		ImageID:         image.ID,
+		ImagePath:       makeImagePath(image.ID),
+		ImageURL:        lib.ImagesBaseURL + image.ID,
+		ImagePreviewURL: lib.ImagesBaseURL + image.PreviewID,
+		ImageWidth:      image.Width,
+		ImageHeight:     image.Height,
+		ImageCaption:    image.Caption,
+		ImageDate:       image.CreatedAt.Format(dateDisplayLayout),
+		ImageLocation:   image.Location,
+		EditID:          encodedID,
+		EditImagePath:   "/admin/edit_image/" + encodedID,
+		ImageTags:       tags,
+		LinkImage:       true,
 	}
 }
 

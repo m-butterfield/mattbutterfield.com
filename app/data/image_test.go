@@ -12,10 +12,11 @@ func TestGetImage(t *testing.T) {
 		t.Fatal(err)
 	}
 	image := &Image{
-		ID:     "test.jpg",
-		Width:  100,
-		Height: 100,
-		Tags:   []Tag{},
+		ID:        "test.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
+		Tags:      []Tag{},
 	}
 	if err = s.SaveImage(image); err != nil {
 		t.Fatal(err)
@@ -36,9 +37,10 @@ func TestDeleteImage(t *testing.T) {
 		t.Fatal(err)
 	}
 	image := &Image{
-		ID:     "test_delete.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "test_delete.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 	}
 	if err = s.SaveImage(image); err != nil {
 		t.Fatal(err)
@@ -60,9 +62,10 @@ func TestGetRandomImage(t *testing.T) {
 		t.Fatal(err)
 	}
 	image := &Image{
-		ID:     "test.jpg",
-		Width:  100,
-		Height: 100,
+		ID:        "test.jpg",
+		PreviewID: "preview.jpg",
+		Width:     100,
+		Height:    100,
 	}
 	if err = s.SaveImage(image); err != nil {
 		t.Fatal(err)
