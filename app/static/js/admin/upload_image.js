@@ -38,6 +38,9 @@ document.querySelector("#upload-button").addEventListener("click", async functio
     lens: document.querySelector("#lens").value,
     film: document.querySelector("#film").value,
     tags: tags,
+  }, () => {
+    document.querySelector("#image-file").value = "";
+    document.querySelector("#drop-zone p").textContent = "Upload complete — select another JPEG";
   }).catch(err => {
     alert("error saving image");
     console.log(err);

@@ -21,15 +21,18 @@ function upload(url, file) {
   });
 }
 
-export function saveUpload(action, body) {
+export function saveUpload(action, body, onSuccess = () => location.reload()) {
   return fetch(`/admin/${action}`, {
     method: "POST",
     headers: new Headers({"Content-Type": "application/json"}),
     body: JSON.stringify(body),
   }).then(resp => {
     if (resp.status === 201) {
-      location.reload();
+      onSuccess();
+      return;
     }
+
+    alert("there was an error");
   }).finally(enableForm);
 }
 
