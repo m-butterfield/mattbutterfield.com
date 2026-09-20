@@ -4,8 +4,8 @@
 <div class="section-div">
   <h1 id="photos">{{ if .TagNames }}{{ .TagNames }}{{ else }}latest photos{{ end }}</h1>
   <nav class="photo-filters" aria-label="Photo filters">
-    {{ if not .TagNames }}<span aria-current="page">all</span>{{ else }}<a href="/photos">all</a>{{ end }} |
-    {{ if eq .TagNames "film" }}<span aria-current="page">film</span>{{ else }}<a href="/tag/film">film</a>{{ end }} |
+    {{ if not .TagNames }}<span aria-current="page">all</span>{{ else }}<a href="/photos">all</a>{{ end }} ·
+    {{ if eq .TagNames "film" }}<span aria-current="page">film</span>{{ else }}<a href="/tag/film">film</a>{{ end }} ·
     {{ if eq .TagNames "digital" }}<span aria-current="page">digital</span>{{ else }}<a href="/tag/digital">digital</a>{{ end }}
   </nav>
   {{ range $i, $image := .ImagesInfo }}
@@ -18,10 +18,10 @@
       {{ .ImageCamera }}
       {{ end }}
       {{ if .ImageLens }}
-      | {{ .ImageLens }}
+      · {{ .ImageLens }}
       {{ end }}
       {{ if .ImageFilm }}
-      | {{ .ImageFilm }}
+      · {{ .ImageFilm }}
       {{ end }}
       {{ if .ImageTags }}
         <p>tags:
