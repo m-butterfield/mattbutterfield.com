@@ -64,6 +64,7 @@ run-server:
 	air -c .air.server.toml
 
 run-worker: export SQL_LOGS=true
+run-worker: export SDKROOT := $(shell xcrun --sdk macosx --show-sdk-path)
 run-worker:
 	air -c .air.worker.toml
 

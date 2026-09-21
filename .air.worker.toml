@@ -1,4 +1,4 @@
 [build]
 cmd = "go build -o ./tmp/worker ./cmd/worker"
-bin = "tmp/worker"
+entrypoint = "tmp/worker"
 exclude_dir = ["node_modules", "scratch"]
