@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	maxWidth  = 1000
-	maxHeight = 1200
+	maxWidth  = 2000
+	maxHeight = 2400
 )
 
 func saveImage(c *gin.Context) {
